@@ -1,9 +1,11 @@
 #include "kyrin_base_server.h"
 #include <iostream>
+#include <string>
 
-using namespace std;
 namespace kyrin {
 namespace server {
+
+using namespace std;
 
 bool KyrinBaseServer::server_initialize(const char *address, int port) {
 
@@ -30,6 +32,21 @@ bool KyrinBaseServer::server_run() {
 
 bool KyrinBaseServer::server_free() {
     evhttp_free(server_http_server);
+}
+
+bool KyrinBaseServer::server_put_callback(const char *path, void(*cb)(struct evhttp_request *, void *), void *cb_arg) {
+    evhttp_set_cb(server_http_server, path, cb, cb_arg);
+}
+
+bool KyrinBaseServer::server_send_reply_ok(evhttp_request *req, string &msg) {
+    evbuffer *buf = evbuffer_new();
+    if (buf == NULL) {
+        cout<<"server_send_reply_ok: new buf failed"<<endl;
+        return false;
+    }
+    evbuffer_add_printf(buf, msg.c_str());
+    evhttp_send_reply(req, HTTP_OK, "OK", buf);
+    evbuffer_free(buf);
 }
 
 } /* server */

@@ -1,21 +1,22 @@
 #include <event2/buffer.h>
+#include <string>
 #include "kyrin_master_server.h"
 
 namespace kyrin {
 namespace server {
 
-void cb1_handler(evhttp_request *req, void *arg) {
+using namespace std;
+
+static void cb1_handler(evhttp_request *req, void *arg) {
     
-    evbuffer *buf = evbuffer_new();
-    evbuffer_add_printf(buf, "cb1_get! %s\n", evhttp_request_get_uri(req));
-    evhttp_send_reply(req, HTTP_OK, "OK", buf);
-    evbuffer_free(buf);
+    string reply = "CB1 Get you";
+    KyrinBaseServer *server = (KyrinBaseServer *) arg;
+    server->server_send_reply_ok(req, reply);
 }
 
 bool KyrinMasterServer::server_set_processor() {
 
-    evhttp_set_cb(server_http_server, "/1", cb1_handler, NULL);
-
+    server_put_callback("/1", cb1_handler, this);
     return true;
 }
 

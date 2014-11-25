@@ -18,8 +18,8 @@
 
 # Compiled Static libraries
 *.lai
-*.la
 *.a
+*.la
 *.lib
 
 # Executables
@@ -27,5 +27,12 @@
 *.out
 *.app
 
-#Scons dblite file
+# Scons dblite file
 .sconsign.dblite
+
+# External headers and libs
+src/external/include/
+src/external/lib/
+
+# Me executable files
+kyrin_master

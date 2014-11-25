@@ -5,6 +5,7 @@
 #include <event2/buffer.h>
 #include <event2/http.h>
 #include <string>
+#include "io/kyrin_database_wrapper.h"
 
 namespace kyrin {
 namespace server {
@@ -18,10 +19,13 @@ public:
 
     bool server_put_callback(const char *path, void(*cb)(evhttp_request *, void *), void *cb_arg);
     bool server_send_reply_ok(evhttp_request *req, std::string &msg);
+    bool server_get_postdata(evhttp_request *req, std::string &post_data);
+    kyrin::io::KyrinDatabaseWrapper* server_get_database();
 
 private:
     event_base *server_event_base;
     evhttp     *server_http_server;
+    kyrin::io::KyrinDatabaseWrapper *server_database_wrapper;
 };
 
 } /* end of server */

@@ -1,7 +1,18 @@
 import os
 
+def prepare_leveldb():
+    os.system("rm -rf leveldb-master/")
+    os.system("unzip miscs/softwares/leveldb-master.zip")
+    os.system("cd leveldb-master && make -j4")
+    os.system("cp leveldb-master/libleveldb.a src/external/lib")
+    os.system("cp -r leveldb-master/include/leveldb src/external/include")
+    os.system("rm -rf leveldb-master/")
+    
 env = Environment(CC = 'gcc', CCFLAGS = '-O2')
 #dbg = Environment(CC = 'gcc', CCFLAGS = '-g')
+
+if os.path.exists("src/external/lib/libleveldb.a") == False:
+    prepare_leveldb()
 
 env.Append(CPPPATH = ['src'])
 env.Append(CPPPATH = ['src/external/include'])

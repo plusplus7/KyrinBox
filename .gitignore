@@ -19,7 +19,6 @@
 # Compiled Static libraries
 *.lai
 *.la
-*.a
 *.lib
 
 # Executables
@@ -27,5 +26,9 @@
 *.out
 *.app
 
-#Scons dblite file
+# Scons dblite file
 .sconsign.dblite
+
+# external headers and libs
+src/external/include/
+src/external/lib/

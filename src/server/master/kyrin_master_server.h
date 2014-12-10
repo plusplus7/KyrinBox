@@ -8,7 +8,7 @@ namespace server {
 
 class KyrinMasterServer : public KyrinBaseServer {
 public:
-    bool server_set_processor();
+    bool server_set_processor(evhttp *server);
 };
 
 } /* server */

@@ -31,10 +31,10 @@ static void db_put_handler(evhttp_request *req, void *arg)
     server->server_get_database()->database_put(post, "asdfqwerzxcvqwerasdfzxcvasdfqwerzxcv");
     server->server_send_reply_ok(req, post);
 }
-bool KyrinMasterServer::server_set_processor() {
+bool KyrinMasterServer::server_set_processor(evhttp *server) {
 
-    server_put_callback("/get", db_get_handler, this);
-    server_put_callback("/put", db_put_handler, this);
+    server_put_callback(server, "/get", db_get_handler, this);
+    server_put_callback(server, "/put", db_put_handler, this);
     return true;
 }
 

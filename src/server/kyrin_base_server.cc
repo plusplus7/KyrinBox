@@ -2,6 +2,8 @@
 #include "common/kyrin_log.h"
 #include <iostream>
 #include <string>
+#include <fcntl.h>
+#include <errno.h>
 
 namespace kyrin {
 namespace server {
@@ -11,40 +13,67 @@ using namespace kyrin::common;
 using namespace kyrin::io;
 
 static KyrinLog *logger = KyrinLog::get_instance();
-bool KyrinBaseServer::server_initialize(const char *address, int port) {
+bool KyrinBaseServer::server_run(const char *address, int port, uint32_t threads, uint32_t backlog)
+{
+    int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    sockaddr_in server_addr;
 
-    server_event_base = event_base_new();
-    if (server_event_base == NULL) {
-        logger->log("server_initialize", "server_event_base new failed");
-        return false;
-    }
-    server_http_server = evhttp_new(server_event_base);
-    if (server_event_base == NULL) {
-        logger->log("server_initialize", "server_event_base new failed");
-        return false;
-    }
-    if (evhttp_bind_socket(server_http_server, address, port) == -1) {
-        logger->log("server_initialize", "socket bind failed");
+    bzero(&server_addr, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    server_addr.sin_port = htons(port);
+
+    int reuseaddr = 1;
+    if (setsockopt(listen_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&reuseaddr, sizeof(int)) < 0) {
+        logger->log("server_initialize", "set socket option failed...");
         return false;
     }
 
+    if (bind(listen_fd, (sockaddr *)&server_addr, sizeof(sockaddr)) < 0) {
+        logger->log("server_initialize", "bind failed...");
+        return false;
+    }
+
+    if (listen(listen_fd, backlog) < 0) {
+        logger->log("server_initialize", "listen failed...");
+        return false;
+    }
+
+    int flags;
+    if ((flags = fcntl(listen_fd, F_GETFL, 0)) < 0 || fcntl(listen_fd, F_SETFL, flags | O_NONBLOCK) < 0) {
+        logger->log("server_initialize", "fcntl failed...");
+        return false;
+    }
+
+    thread_count = threads;
+    thread_t = new pthread_t [threads];
+    for (int i=0; i<threads; i++) {
+        event_base *base = event_base_new();
+        evhttp *server = evhttp_new(base);
+        evhttp_accept_socket(server, listen_fd);
+        server_set_processor(server);
+        pthread_create(thread_t+i, NULL, KyrinBaseServer::server_thread_func, (void *)base);
+    }
     server_database_wrapper = new KyrinDatabaseWrapper();
     return true;
 }
 
-bool KyrinBaseServer::server_run() {
-    event_base_dispatch(server_event_base); 
-    return true;
+void *KyrinBaseServer::server_thread_func(void *arg) {
+    event_base_dispatch((event_base*)arg);
+    return NULL;
 }
 
 bool KyrinBaseServer::server_free() {
-    evhttp_free(server_http_server);
+    for (int i=0; i<thread_count; i++) {
+        pthread_join(thread_t[i], NULL);
+    }
     delete server_database_wrapper;
+    delete [] thread_t;
     return true;
 }
 
-bool KyrinBaseServer::server_put_callback(const char *path, void(*cb)(struct evhttp_request *, void *), void *cb_arg) {
-    evhttp_set_cb(server_http_server, path, cb, cb_arg);
+bool KyrinBaseServer::server_put_callback(evhttp *server, const char *path, void(*cb)(struct evhttp_request *, void *), void *cb_arg) {
+    evhttp_set_cb(server, path, cb, cb_arg);
     return true;
 }
 

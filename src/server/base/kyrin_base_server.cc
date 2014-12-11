@@ -46,29 +46,36 @@ bool KyrinBaseServer::server_run(const char *address, int port, uint32_t threads
     }
 
     thread_count = threads;
-    thread_t = new pthread_t [threads];
+    server_worker_info = new KyrinServerWorkerInfo [thread_count];
     for (int i=0; i<threads; i++) {
-        event_base *base = event_base_new();
-        evhttp *server = evhttp_new(base);
-        evhttp_accept_socket(server, listen_fd);
-        server_set_processor(server);
-        pthread_create(thread_t+i, NULL, KyrinBaseServer::server_thread_func, (void *)base);
+        server_worker_info[i].server_evbase = event_base_new();
+        server_worker_info[i].server_evhttp = evhttp_new(server_worker_info[i].server_evbase);
+        server_set_processor(server_worker_info[i].server_evhttp, i);
+
+        evhttp_accept_socket(server_worker_info[i].server_evhttp, listen_fd);
+
+        pthread_create(&(server_worker_info[i].server_thread_t),
+                       NULL,
+                       KyrinBaseServer::server_thread_func,
+                       (void *)(server_worker_info+i));
     }
     server_database_wrapper = new KyrinDatabaseWrapper();
     return true;
 }
 
 void *KyrinBaseServer::server_thread_func(void *arg) {
-    event_base_dispatch((event_base*)arg);
+    event_base_dispatch(((KyrinServerWorkerInfo*)arg)->server_evbase);
     return NULL;
 }
 
 bool KyrinBaseServer::server_free() {
     for (int i=0; i<thread_count; i++) {
-        pthread_join(thread_t[i], NULL);
+        pthread_join(server_worker_info[i].server_thread_t, NULL);
+        evhttp_free(server_worker_info[i].server_evhttp);
+        event_base_free(server_worker_info[i].server_evbase);
     }
     delete server_database_wrapper;
-    delete [] thread_t;
+    delete [] server_worker_info;
     return true;
 }
 

@@ -11,10 +11,16 @@
 namespace kyrin {
 namespace server {
 
+struct KyrinServerWorkerInfo {
+    event_base *server_evbase;
+    evhttp *server_evhttp;
+    pthread_t server_thread_t;
+};
+
 class KyrinBaseServer {
 public:
     bool server_run(const char *address, int port, uint32_t threads = 1, uint32_t backlog = 1024);
-    virtual bool server_set_processor(evhttp *server) = 0;
+    virtual bool server_set_processor(evhttp *server, int thread_code) = 0;
     static void *server_thread_func(void *arg);
     bool server_free();
 
@@ -25,7 +31,7 @@ public:
 
 private:
     uint32_t thread_count;
-    pthread_t *thread_t;
+    KyrinServerWorkerInfo *server_worker_info;
     kyrin::io::KyrinDatabaseWrapper *server_database_wrapper;
 };
 

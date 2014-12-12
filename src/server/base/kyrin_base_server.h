@@ -19,18 +19,21 @@ struct KyrinServerWorkerInfo {
 
 class KyrinBaseServer {
 public:
-    bool server_run(const char *address, int port, uint32_t threads = 1, uint32_t backlog = 1024);
+    bool server_run(uint32_t threads = 1);
     virtual bool server_set_processor(evhttp *server, int thread_code) = 0;
     static void *server_thread_func(void *arg);
     bool server_free();
 
+    bool server_initialize_kyrin_server_socket(int &listen_fd, int port, uint32_t backlog);
+    bool server_set_evhttp_accept_socket(evhttp *server_evhttp, int listen_fd);
     bool server_put_callback(evhttp *server, const char *path, void(*cb)(evhttp_request *, void *), void *cb_arg);
     bool server_send_reply_ok(evhttp_request *req, std::string &msg);
     bool server_get_postdata(evhttp_request *req, std::string &post_data);
     kyrin::io::KyrinDatabaseWrapper* server_get_database();
 
 private:
-    uint32_t thread_count;
+    int server_listen_fd;
+    uint32_t server_thread_count;
     KyrinServerWorkerInfo *server_worker_info;
     kyrin::io::KyrinDatabaseWrapper *server_database_wrapper;
 };

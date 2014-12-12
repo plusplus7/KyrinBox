@@ -13,11 +13,12 @@ using namespace kyrin::common;
 using namespace kyrin::io;
 
 static KyrinLog *logger = KyrinLog::get_instance();
-bool KyrinBaseServer::server_run(const char *address, int port, uint32_t threads, uint32_t backlog)
-{
-    int listen_fd = socket(AF_INET, SOCK_STREAM, 0);
-    sockaddr_in server_addr;
 
+bool KyrinBaseServer::server_initialize_kyrin_server_socket(int &listen_fd, int port, uint32_t backlog)
+{
+    listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+    sockaddr_in server_addr;
     bzero(&server_addr, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -44,16 +45,22 @@ bool KyrinBaseServer::server_run(const char *address, int port, uint32_t threads
         logger->log("server_initialize", "fcntl failed...");
         return false;
     }
+    return true;
+}
+bool KyrinBaseServer::server_set_evhttp_accept_socket(evhttp* server_evhttp, int listen_fd)
+{
+    evhttp_accept_socket(server_evhttp, listen_fd);
+    return true;
+}
 
-    thread_count = threads;
-    server_worker_info = new KyrinServerWorkerInfo [thread_count];
-    for (int i=0; i<threads; i++) {
+bool KyrinBaseServer::server_run(uint32_t threads)
+{
+    server_thread_count = threads;
+    server_worker_info = new KyrinServerWorkerInfo [server_thread_count];
+    for (int i=0; i<server_thread_count; i++) {
         server_worker_info[i].server_evbase = event_base_new();
         server_worker_info[i].server_evhttp = evhttp_new(server_worker_info[i].server_evbase);
         server_set_processor(server_worker_info[i].server_evhttp, i);
-
-        evhttp_accept_socket(server_worker_info[i].server_evhttp, listen_fd);
-
         pthread_create(&(server_worker_info[i].server_thread_t),
                        NULL,
                        KyrinBaseServer::server_thread_func,
@@ -69,7 +76,7 @@ void *KyrinBaseServer::server_thread_func(void *arg) {
 }
 
 bool KyrinBaseServer::server_free() {
-    for (int i=0; i<thread_count; i++) {
+    for (int i=0; i<server_thread_count; i++) {
         pthread_join(server_worker_info[i].server_thread_t, NULL);
         evhttp_free(server_worker_info[i].server_evhttp);
         event_base_free(server_worker_info[i].server_evbase);

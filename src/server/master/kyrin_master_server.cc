@@ -6,7 +6,8 @@
 #include "kyrin_master_server.h"
 #include "io/kyrin_database_wrapper.h"
 #include "common/kyrin_log.h"
-#include <iostream>
+#include "common/kyrin_config.h"
+#include "common/kyrin_constants.h"
 
 namespace kyrin {
 namespace server {
@@ -39,12 +40,18 @@ static void db_put_handler(evhttp_request *req, void *arg)
 
 bool KyrinMasterServer::server_initialize()
 {
-    if (!server_initialize_kyrin_server_socket(reader_listen_fd, 7770, 10086)) {
+    if (!server_initialize_kyrin_server_socket(reader_listen_fd,
+        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_reader_port).c_str()),
+        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_reader_backlog).c_str()))) {
         return false;
     }
-    if (!server_initialize_kyrin_server_socket(processor_listen_fd, 7070, 10086)) {
+
+    if (!server_initialize_kyrin_server_socket(processor_listen_fd,
+        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_processor_port).c_str()),
+        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_processor_backlog).c_str()))) {
         return false;
     }
+
     return true;
 }
 
@@ -58,7 +65,7 @@ bool KyrinMasterServer::server_free()
 
 bool KyrinMasterServer::server_start()
 {
-    server_run(9);
+    server_run(atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_server_threads).c_str()));
     return true;
 }
 

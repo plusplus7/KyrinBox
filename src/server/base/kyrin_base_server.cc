@@ -1,5 +1,7 @@
 #include "kyrin_base_server.h"
 #include "common/kyrin_log.h"
+#include "common/kyrin_constants.h"
+#include "common/kyrin_macros.h"
 #include <iostream>
 #include <string>
 #include <fcntl.h>
@@ -105,7 +107,7 @@ bool KyrinBaseServer::server_send_reply_ok(evhttp_request *req, string &msg) {
 
 bool KyrinBaseServer::server_get_postdata(evhttp_request *req, string &post_data) {
     size_t post_size = evbuffer_get_length(evhttp_request_get_input_buffer(req));
-    if (/* likely */post_size > 0) {
+    if (kyrin_likely((post_size > 0 && post_size < constants::k_server_max_post_data_size))) {
         char _buf[1024]; /* FIXME */
         memcpy(_buf, evbuffer_pullup(evhttp_request_get_input_buffer(req), -1), post_size);
         post_data.assign(_buf, post_size);

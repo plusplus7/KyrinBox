@@ -48,7 +48,7 @@ bool KyrinConfig::read_config_file(const char *filename)
 
 string &KyrinConfig::get_config(const char *key)
 {
-    if (/* likely */config_map.find(key) != config_map.end()) {
+    if (config_map.find(key) != config_map.end()) {
         return config_map[key];
     } else {
         return config_map.begin()->second;

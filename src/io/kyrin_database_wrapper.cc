@@ -1,5 +1,6 @@
 #include "kyrin_database_wrapper.h"
 #include "common/kyrin_log.h"
+#include "common/kyrin_macros.h"
 
 namespace kyrin {
 namespace io {
@@ -22,7 +23,7 @@ bool KyrinDatabaseWrapper::database_connect()
 {
     database_options.create_if_missing = true;
     leveldb::Status status = leveldb::DB::Open(database_options, "/tmp/kyrindb", &database_connection);
-    if (/* unlikely */!status.ok()) {
+    if (kyrin_unlikely(!status.ok())) {
         logger->log("KyrinDatabaseWrapper", "Open database failed...");
         return false;
     }
@@ -45,7 +46,7 @@ bool KyrinDatabaseWrapper::database_reconnect()
 bool KyrinDatabaseWrapper::database_put(const string &key, const string &value)
 {
     leveldb::Status status = database_connection->Put(leveldb::WriteOptions(), key, value);
-    if (/* likely */status.ok()) {
+    if (kyrin_likely(status.ok())) {
         return true;
     } else {
         if (database_reconnect()) {
@@ -67,7 +68,7 @@ bool KyrinDatabaseWrapper::database_put(const string &key, const string &value)
 bool KyrinDatabaseWrapper::database_get(const string &key, string &value)
 {
     leveldb::Status status = database_connection->Get(leveldb::ReadOptions(), key, &value);
-    if (/* likely */status.ok()) {
+    if (kyrin_likely(status.ok())) {
         return true;
     } else if (status.IsNotFound()) {
         value = "";

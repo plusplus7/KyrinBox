@@ -25,4 +25,7 @@ env.StaticLibrary(target = 'kyrin_database_wrapper', source = 'src/io/kyrin_data
 env.StaticLibrary(target = 'kyrin_log', source = 'src/common/kyrin_log.cc')
 env.StaticLibrary(target = 'kyrin_master_server', source = 'src/server/master/kyrin_master_server.cc')
 
-env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc', LIBS = ['kyrin_master_server', 'event', 'kyrin_base_server', 'kyrin_log', 'kyrin_database_wrapper', 'leveldb',], )
+kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc', LIBS = ['kyrin_master_server', 'event', 'kyrin_base_server', 'kyrin_log', 'kyrin_database_wrapper', 'leveldb',], )
+
+env.Install('release/bin', kyrin_master)
+env.Install('release/test', 'src/test/run_test.sh')

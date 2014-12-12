@@ -20,7 +20,7 @@ env.Append(CPPPATH = ['src/external/include'])
 env.Append(LIBPATH = ['.'])
 env.Append(LIBPATH = ['src/external/lib'])
 
-env.StaticLibrary(target = 'kyrin_base_server', source = 'src/server/kyrin_base_server.cc')
+env.StaticLibrary(target = 'kyrin_base_server', source = 'src/server/base/kyrin_base_server.cc')
 env.StaticLibrary(target = 'kyrin_database_wrapper', source = 'src/io/kyrin_database_wrapper.cc')
 env.StaticLibrary(target = 'kyrin_log', source = 'src/common/kyrin_log.cc')
 env.StaticLibrary(target = 'kyrin_master_server', source = 'src/server/master/kyrin_master_server.cc')

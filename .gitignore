@@ -34,5 +34,8 @@
 src/external/include/
 src/external/lib/
 
+# Folders
+release
+
 # Me executable files
 kyrin_master

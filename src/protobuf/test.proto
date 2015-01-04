@@ -1,0 +1,11 @@
+package kyrinbox.test;
+
+message Person {
+    required string name = 1;
+    required int32 age = 2;
+    optional string email = 3;
+}
+
+message Group {
+    repeated Person person = 1;
+}

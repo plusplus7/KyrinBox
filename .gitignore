@@ -31,11 +31,13 @@
 .sconsign.dblite
 
 # External headers and libs
-src/external/include/
-src/external/lib/
+src/external
 
 # Folders
 release
 
 # Me executable files
 kyrin_master
+
+# Me protobuf
+*.pb.*

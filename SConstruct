@@ -47,5 +47,6 @@ kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.
 test_protobuf = env.Program("test_protobuf", 'src/test/test_protobuf.cc', LIBS = ['proto_test', 'protobuf'])
 test_spinlock = env.Program('test_spinlock', 'src/test/test_spinlock.cpp', LIBS = ['pthread', ])
 
+### release
 env.Install('release/bin', kyrin_master)
 env.Install('release/test', 'src/test/run_test.sh')

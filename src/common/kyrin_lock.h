@@ -9,7 +9,7 @@ public:
     {
         pthread_mutex_init(&m_mutex, NULL);
     }
-    
+
     ~KyrinMutex()
     {
         pthread_mutex_destroy(&m_mutex);

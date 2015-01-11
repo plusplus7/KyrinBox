@@ -39,6 +39,7 @@ env.StaticLibrary(target = 'kyrin_database_wrapper', source = 'src/io/kyrin_data
 env.StaticLibrary(target = 'kyrin_log', source = 'src/common/kyrin_log.cc')
 env.StaticLibrary(target = 'kyrin_master_server', source = 'src/server/master/kyrin_master_server.cc')
 env.StaticLibrary(target = 'kyrin_config', source = 'src/common/kyrin_config.cc')
+env.StaticLibrary(target = 'kyrin_network', source = 'src/io/kyrin_network.cc')
 env.StaticLibrary(target = 'proto_test', source = 'src/protobuf/test.pb.cc')
 
 ### Link
@@ -46,6 +47,7 @@ kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.
 
 test_protobuf = env.Program("test_protobuf", 'src/test/test_protobuf.cc', LIBS = ['proto_test', 'protobuf'])
 test_spinlock = env.Program('test_spinlock', 'src/test/test_spinlock.cpp', LIBS = ['pthread', ])
+test_tcpserver = env.Program('test_tcpserver', 'src/test/test_tcpserver.cpp', LIBS = ['kyrin_network', 'kyrin_log'])
 
 ### release
 env.Install('release/bin', kyrin_master)

@@ -13,25 +13,24 @@ struct KyrinMachineInfo {
     int  port;
 };
 
-enum KyrinMasterRole{
-    role_leader = 1,
-    role_follower = 2
+enum KyrinMasterStatus{
+    k_status_leader = 1,
+    k_status_follower = 2,
+    k_status_consensus = 3
 };
 
 class KyrinMasterSentinel {
 public:
     bool start_sentinel(char *filename);
-    bool get_status(std::string &message) {
-        message = "ahah";
-        return true;
-    }
+    bool get_status(KyrinMasterStatus &message);
 
 private:
     bool read_config(char *filename);
 
-    KyrinMasterRole m_role;
+    KyrinMasterStatus m_status;
+    uint32_t m_code;
     std::vector<KyrinMachineInfo> m_masters;
-    kyrin::common::KyrinMutex m_lock;
+    kyrin::common::KyrinMutex m_status_lock;
 };
 
 } /* server */

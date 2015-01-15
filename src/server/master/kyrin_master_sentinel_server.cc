@@ -13,11 +13,19 @@ static KyrinLog *logger = KyrinLog::get_instance();
 static void get_sentinel_status_handler(evhttp_request *req, void *arg)
 {
     KyrinMasterSentinelServer* server = (KyrinMasterSentinelServer* ) arg;
-    string message = "";
+    KyrinMasterStatus message;
     if (server->get_sentinel()->get_status(message) == false) {
         logger->log("get_sentinel_status", "get failed...");
     }
-    server->server_send_reply_ok(req, message);
+    string reply = "";
+    if (message == k_status_leader) {
+        reply = "leader";
+    } else if (message == k_status_follower) {
+        reply = "follower";
+    } else {
+        reply = "consensus";
+    }
+    server->server_send_reply_ok(req, reply);
 }
 
 KyrinMasterSentinel* KyrinMasterSentinelServer::get_sentinel()
@@ -49,6 +57,7 @@ bool KyrinMasterSentinelServer::server_start() {
 bool KyrinMasterSentinelServer::server_close() {
     KyrinBaseServer::server_free();
     close(server_listen_fd);
+    return true;
 }
 
 } /* server */

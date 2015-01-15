@@ -49,6 +49,7 @@ bool KyrinBaseServer::server_initialize_kyrin_server_socket(int &listen_fd, int 
     }
     return true;
 }
+
 bool KyrinBaseServer::server_set_evhttp_accept_socket(evhttp* server_evhttp, int listen_fd)
 {
     evhttp_accept_socket(server_evhttp, listen_fd);

@@ -6,7 +6,7 @@ using namespace kyrin::server;
 int main(int argv, char** args)
 {
     KyrinMasterSentinel *kyrin_master_sentinel = new KyrinMasterSentinel();
-    kyrin_master_sentinel->start_sentinel(args[0]);
+    kyrin_master_sentinel->start_sentinel(args[1]);
 
     KyrinMasterServer *kyrin_master_server = new KyrinMasterServer();
     kyrin_master_server->server_initialize();

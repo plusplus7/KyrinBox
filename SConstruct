@@ -45,7 +45,7 @@ env.StaticLibrary(target = 'kyrin_config', source = 'src/common/kyrin_config.cc'
 env.StaticLibrary(target = 'proto_test', source = 'src/protobuf/test.pb.cc')
 
 ### Link
-kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc', LIBS = ['kyrin_master_server', 'event', 'kyrin_base_server', 'kyrin_log', 'kyrin_database_wrapper', 'leveldb', 'kyrin_constants', 'kyrin_config', 'kyrin_master_sentinel', 'kyrin_master_sentinel_server', 'kyrin_http_client'], )
+kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc', LIBS = ['kyrin_master_server', 'event', 'kyrin_base_server', 'kyrin_log', 'kyrin_database_wrapper', 'leveldb', 'kyrin_constants', 'kyrin_config', 'kyrin_master_sentinel', 'kyrin_master_sentinel_server', 'curl', 'kyrin_http_client'], )
 
 test_protobuf = env.Program("test_protobuf", 'src/test/test_protobuf.cc', LIBS = ['proto_test', 'protobuf'])
 test_spinlock = env.Program('test_spinlock', 'src/test/test_spinlock.cpp', LIBS = ['pthread', ])

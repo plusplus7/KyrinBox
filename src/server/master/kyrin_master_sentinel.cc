@@ -35,7 +35,6 @@ static void *sentinel_sync_func(void *arg)
     bool is_running = true;
     while (is_running) {
         KyrinMasterStatus status;
-        sleep(1);
         sentinel->get_status(status);
         switch (status) {
             case k_status_leader:

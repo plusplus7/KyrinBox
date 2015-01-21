@@ -67,5 +67,63 @@ bool KyrinHttpClient::make_request_get(const char *host, uint32_t port, const ch
     return true;
 }
 
+bool KyrinHttpClient::make_request_post(const char *host, uint32_t port, const char *uri, string &response, string &postdata, int timeout)
+{
+    CURL *curl;
+    CURLcode res;
+
+    curl = curl_easy_init();
+    if (curl) {
+        char url[1024];
+        sprintf(url, "http://%s:%d%s", host, port, uri);
+        res = curl_easy_setopt(curl, CURLOPT_URL, url);
+        if (res != CURLE_OK) {
+            response = "";
+            return false;
+        }
+
+        /*
+        res = curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
+        if (res != CURLE_OK) {
+            response = "";
+            return false;
+        }
+        */
+
+        res = curl_easy_setopt(curl, CURLOPT_POST, 1);
+        if (res != CURLE_OK) {
+            response = "";
+            return false;
+        }
+
+        res = curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postdata.c_str());
+        if (res != CURLE_OK) {
+            response = "";
+            return false;
+        }
+
+        res = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_function);
+        if (res != CURLE_OK) {
+            response = "";
+            return false;
+        }
+
+        res = curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+        if (res != CURLE_OK) {
+            response = "";
+            return false;
+        }
+
+        res = curl_easy_perform(curl);
+        if (res != CURLE_OK) {
+            response = "";
+            return false;
+        }
+    }
+
+    curl_easy_cleanup(curl);
+    return true;
+}
+
 } /* io */
 } /* kyrin */

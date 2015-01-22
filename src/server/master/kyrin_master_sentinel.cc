@@ -44,10 +44,9 @@ static void *sentinel_sync_func(void *arg)
 {
     KyrinMasterSentinel *sentinel = (KyrinMasterSentinel *) arg;
     vector<KyrinMachineInfo> masters = sentinel->get_all_masters();
-    int prev_leader = -1;
     //TODO: Add control to close server
     bool is_running = true;
-    int leader = 0;
+    int leader = -1;
     while (is_running) {
         KyrinMasterStatus status;
         sentinel->get_status(status);
@@ -74,17 +73,12 @@ static void *sentinel_sync_func(void *arg)
             case k_status_consensus:
                 {
                     vector< pair<uint64_t, uint64_t> > votes(masters.size(), make_pair(0, 0));
-                    // votes for leader
-                    set<int> voted;
-                    voted.clear();
-                    while (voted.size() + (prev_leader != -1) != masters.size()) {
+                    vector<bool> voted(masters.size(), false);
+                    while (true) {
                         string me_vote;
                         sentinel->get_vote(me_vote);
                         for (uint32_t i=0; i < masters.size(); i++) {
 
-                            if (i == prev_leader) {
-                                continue;
-                            }
                             string response;
                             KyrinHttpClient::make_request_post((const char *)masters[i].ip,
                                                                masters[i].port,
@@ -105,39 +99,51 @@ static void *sentinel_sync_func(void *arg)
                                 } else {
                                     votes[i].first = epoch;
                                     votes[i].second = vote;
-                                    voted.insert(i);
+                                    voted[i] = true;
                                 }
                             }
                         }
+
+                        vector<int> vote_result(masters.size(), 0);
+                        for (uint32_t i=0; i < votes.size(); i++) {
+                            if (voted[i]) {
+                                vote_result[votes[i].second]++;
+                            }
+                        }
+
+                        leader = -1;
+                        int max_candidate = -1;
+                        for (uint32_t i=0; i < vote_result.size(); i++) {
+                            if (vote_result[i] >= (masters.size()>>1)+1) {
+                                leader = i;
+                            }
+                            if (vote_result[i]) {
+                                max_candidate = i;
+                            }
+                        }
+
+                        if (max_candidate == -1) {
+                            cout << "unexpected candidate" << endl;
+                            break;
+                        }
+                        if (leader == -1) {
+                            sentinel->set_vote(max_candidate);
+                        } else {
+                            sentinel->set_vote(leader);
+                            if (leader != sentinel->get_kbid()) {
+                                cout << "status: follower" << endl;
+                                sentinel->set_status(k_status_follower);
+                            } else {
+                                cout << "status: leader" << endl;
+                                sentinel->set_status(k_status_leader);
+                            }
+                            cout << "leader: " << leader << endl;
+                            break;
+                        }
                         sleep(2);
                     }
-
-                    leader = masters.size()-1;
-                    if (leader == prev_leader) {
-                        leader--;
-                    }
-                    vector<int> vote_result(masters.size(), 0);
-                    for (uint32_t i=0; i < votes.size(); i++) {
-                        vote_result[votes[i].second]++;
-                    }
-                    for (uint32_t i=0; i < vote_result.size(); i++) {
-                        if (vote_result[i] > vote_result[leader]) {
-                            leader = i;
-                        }
-                    }
-
-                    prev_leader = leader;
-                    sentinel->set_vote(leader);
-                    if (leader != sentinel->get_kbid()) {
-                    cout << "status: follower" << endl;
-                        sentinel->set_status(k_status_follower);
-                    } else {
-                    cout << "status: leader" << endl;
-                        sentinel->set_status(k_status_leader);
-                    }
-                    cout << "leader: " << leader << endl;
-                    break;
                 }
+                break;
             default:
                 is_running = false;
                 break;

@@ -36,8 +36,15 @@ static void get_sentinel_status_handler(evhttp_request *req, void *arg)
 static void get_sentinel_vote_handler(evhttp_request *req, void *arg)
 {
     KyrinMasterSentinelServer* server = (KyrinMasterSentinelServer* ) arg;
+    KyrinMasterSentinel* sentinel = server->get_sentinel();
     string reply = "";
-    server->get_sentinel()->get_vote(reply);
+    server->server_get_postdata(req, reply);
+    uint64_t epoch, vote;
+    sscanf(reply.c_str(), "%llu %llu", &epoch, &vote);
+    while (epoch > sentinel->get_epoch()) {
+        sentinel->set_vote(sentinel->get_kbid(), true);
+    }
+    sentinel->get_vote(reply);
     server->server_send_reply_ok(req, reply);
 }
 

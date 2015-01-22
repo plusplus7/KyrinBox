@@ -23,15 +23,21 @@ class KyrinMasterSentinel {
 public:
     bool start_sentinel(char *filename);
     bool get_vote(std::string &message);
-    bool set_vote(uint64_t vote);
+    bool set_vote(uint64_t vote, bool next_epoch = false);
     bool get_status(KyrinMasterStatus &message);
     bool set_status(KyrinMasterStatus status);
+    uint64_t get_epoch() {
+        return m_epoch;
+    }
+
     uint64_t get_kbid() {
         return m_kbid;
     }
+
     int get_listen_port() {
         return m_masters[m_kbid].port;
     }
+
     std::vector<KyrinMachineInfo> get_all_masters() {
         return m_masters;
     }

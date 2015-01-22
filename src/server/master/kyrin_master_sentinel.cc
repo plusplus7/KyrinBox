@@ -44,8 +44,10 @@ static void *sentinel_sync_func(void *arg)
 {
     KyrinMasterSentinel *sentinel = (KyrinMasterSentinel *) arg;
     vector<KyrinMachineInfo> masters = sentinel->get_all_masters();
+    int prev_leader = -1;
     //TODO: Add control to close server
     bool is_running = true;
+    int leader = 0;
     while (is_running) {
         KyrinMasterStatus status;
         sentinel->get_status(status);
@@ -53,6 +55,21 @@ static void *sentinel_sync_func(void *arg)
             case k_status_leader:
                 break;
             case k_status_follower:
+                {
+                    string response;
+                    int retry = 0;
+                    while (!KyrinHttpClient::make_request_get((const char *)masters[leader].ip,
+                                                      masters[leader].port,
+                                                      "/get_status",
+                                                      response)
+                          && retry != 3) {
+                          retry++;
+                    }
+                    if (retry == 3) {
+                        sentinel->set_status(k_status_consensus);
+                        sentinel->set_vote(sentinel->get_kbid(), true);
+                    }
+                }
                 break;
             case k_status_consensus:
                 {
@@ -60,32 +77,56 @@ static void *sentinel_sync_func(void *arg)
                     // votes for leader
                     set<int> voted;
                     voted.clear();
-                    while (voted.size() != masters.size()) {
+                    while (voted.size() + (prev_leader != -1) != masters.size()) {
+                        string me_vote;
+                        sentinel->get_vote(me_vote);
                         for (uint32_t i=0; i < masters.size(); i++) {
+
+                            if (i == prev_leader) {
+                                continue;
+                            }
                             string response;
-                            KyrinHttpClient::make_request_get((const char *)masters[i].ip,
-                                                              masters[i].port,
-                                                              "/get_vote",
-                                                               response);
+                            KyrinHttpClient::make_request_post((const char *)masters[i].ip,
+                                                               masters[i].port,
+                                                               "/get_vote",
+                                                               response,
+                                                               me_vote);
                             if (check_response(response)) {
                                 uint64_t epoch, vote;
-                                voted.insert(i);
                                 sscanf(response.c_str(), "%llu %llu", &epoch, &vote);
-                                cout<< epoch << " " << vote << endl;
-                                votes[i].first = epoch;
-                                votes[i].second = vote;
+
+                                cout<<epoch<<" "<<vote<<endl;
+
+                                if (epoch != sentinel->get_epoch()) {
+                                    while (epoch > sentinel->get_epoch()) {
+                                        sentinel->set_vote(sentinel->get_kbid(), true);
+                                    }
+                                    break;
+                                } else {
+                                    votes[i].first = epoch;
+                                    votes[i].second = vote;
+                                    voted.insert(i);
+                                }
                             }
                         }
                         sleep(2);
                     }
 
-                    int leader = 0;
-                    for (uint32_t i=0; i < masters.size(); i++) {
-                        if (votes[leader].second < votes[i].second) {
+                    leader = masters.size()-1;
+                    if (leader == prev_leader) {
+                        leader--;
+                    }
+                    vector<int> vote_result(masters.size(), 0);
+                    for (uint32_t i=0; i < votes.size(); i++) {
+                        vote_result[votes[i].second]++;
+                    }
+                    for (uint32_t i=0; i < vote_result.size(); i++) {
+                        if (vote_result[i] > vote_result[leader]) {
                             leader = i;
                         }
                     }
 
+                    prev_leader = leader;
                     sentinel->set_vote(leader);
                     if (leader != sentinel->get_kbid()) {
                     cout << "status: follower" << endl;
@@ -101,7 +142,7 @@ static void *sentinel_sync_func(void *arg)
                 is_running = false;
                 break;
         }
-        sleep(5);
+        sleep(2);
     }
     return NULL;
 }
@@ -146,15 +187,18 @@ bool KyrinMasterSentinel::get_vote(string &message)
 
     char msg[128];
     sprintf(msg, "%llu %llu", m_epoch, m_leader);
-    message = string(msg);
+    message.assign(msg, strlen(msg));
 
     m_vote_lock.unlock();
     return true;
 }
 
-bool KyrinMasterSentinel::set_vote(uint64_t vote)
+bool KyrinMasterSentinel::set_vote(uint64_t vote, bool next_epoch)
 {
     m_vote_lock.lock();
+    if (next_epoch) {
+        m_epoch++;
+    }
     m_leader = vote;
     m_vote_lock.unlock();
     return true;

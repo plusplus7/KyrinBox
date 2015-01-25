@@ -9,7 +9,7 @@ namespace io {
 
 class KyrinDatabaseWrapper {
 public:
-    KyrinDatabaseWrapper();
+    KyrinDatabaseWrapper(std::string &db_name);
     ~KyrinDatabaseWrapper();
 
     bool database_put(const std::string &key, const std::string &value);
@@ -20,6 +20,7 @@ private:
     bool database_disconnect();
     bool database_reconnect();
 
+    std::string database_path;
     leveldb::DB *database_connection;
     leveldb::Options database_options;
 };

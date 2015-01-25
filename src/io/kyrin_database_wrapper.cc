@@ -9,8 +9,9 @@ using namespace std;
 using namespace kyrin::common;
 
 static KyrinLog *logger = KyrinLog::get_instance(); 
-KyrinDatabaseWrapper::KyrinDatabaseWrapper()
+KyrinDatabaseWrapper::KyrinDatabaseWrapper(string &db_path)
 {
+    database_path = db_path;
     database_connect();
 }
 
@@ -22,7 +23,7 @@ KyrinDatabaseWrapper::~KyrinDatabaseWrapper()
 bool KyrinDatabaseWrapper::database_connect()
 {
     database_options.create_if_missing = true;
-    leveldb::Status status = leveldb::DB::Open(database_options, "/tmp/kyrindb", &database_connection);
+    leveldb::Status status = leveldb::DB::Open(database_options, database_path, &database_connection);
     if (kyrin_unlikely(!status.ok())) {
         logger->log("KyrinDatabaseWrapper", "Open database failed...");
         return false;

@@ -12,7 +12,6 @@ namespace server {
 
 using namespace std;
 using namespace kyrin::common;
-using namespace kyrin::io;
 
 static KyrinLog *logger = KyrinLog::get_instance();
 
@@ -69,7 +68,6 @@ bool KyrinBaseServer::server_run(uint32_t threads)
                        KyrinBaseServer::server_thread_func,
                        (void *)(server_worker_info+i));
     }
-    server_database_wrapper = new KyrinDatabaseWrapper();
     return true;
 }
 
@@ -84,7 +82,6 @@ bool KyrinBaseServer::server_free() {
         evhttp_free(server_worker_info[i].server_evhttp);
         event_base_free(server_worker_info[i].server_evbase);
     }
-    delete server_database_wrapper;
     delete [] server_worker_info;
     return true;
 }
@@ -115,11 +112,6 @@ bool KyrinBaseServer::server_get_postdata(evhttp_request *req, string &post_data
         return true;
     }
     return false;
-}
-
-KyrinDatabaseWrapper* KyrinBaseServer::server_get_database()
-{
-    return server_database_wrapper;
 }
 
 } /* server */

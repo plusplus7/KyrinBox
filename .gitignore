@@ -41,3 +41,4 @@ kyrin_master
 
 # Me protobuf
 *.pb.*
+*_pb2.py*

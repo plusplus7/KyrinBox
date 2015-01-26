@@ -15,8 +15,11 @@ def main():
     request.add_header('KYRIN-SIGNATURE', "signature")
 
     response = urllib2.urlopen(request)
-    print response.read()
-
+    upload_file_response = upload_file_pb2.UploadFileResponse()
+    upload_file_response.ParseFromString(response.read())
+    print upload_file_response.file_hosts
+    print upload_file_response.file_size
+    print upload_file_response.merkle_sha1
 
 if __name__ == "__main__":
     main()

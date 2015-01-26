@@ -43,6 +43,19 @@ static void upload_file_handler(evhttp_request *req, void *arg) {
     string signature = "";
     server->server_get_header(req, "KYRIN-SIGNATURE", signature);
     logger->log("header data signature", signature.c_str());
+
+    kyrinbox::api::UploadFileResponse response_pb;
+    for (int i=0; i<3; i++) {
+        string *new_file_hosts = response_pb.add_file_hosts();
+        new_file_hosts->assign("127.0.0.1");
+    }
+    response_pb.set_file_size(1024);
+    response_pb.set_merkle_sha1("sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1");
+    if (!response_pb.SerializeToString(&reply)) {
+        reply = "Fail to serialize protobuf";
+        server->server_send_reply_bad(req, reply);
+        return ;
+    }
     server->server_send_reply_ok(req, reply);
     return ;
 }
@@ -55,10 +68,8 @@ bool KyrinMasterServer::server_initialize()
         return false;
     }
 
-    //FIXME: strange string usage
-    string db_path = "/tmp/kyrin_userdata";
-
-    m_userdata_db = new KyrinDatabaseWrapper(db_path);
+    m_userdata_db = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_userdata_database_path));
+    m_oplog_db    = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_oplog_database_path));
     return true;
 }
 

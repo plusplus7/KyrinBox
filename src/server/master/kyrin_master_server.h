@@ -13,9 +13,19 @@ public:
     bool server_start();
     bool server_free();
     bool server_set_processor(evhttp *server, int thread_code);
+    kyrin::io::KyrinDatabaseWrapper* get_userdata_db()
+    {
+        return m_userdata_db;
+    }
+    kyrin::io::KyrinDatabaseWrapper* get_oplog_db()
+    {
+        return m_oplog_db;
+    }
+
 private:
     int upload_file_fd;
     kyrin::io::KyrinDatabaseWrapper *m_userdata_db;
+    kyrin::io::KyrinDatabaseWrapper *m_oplog_db;
 
 };
 

@@ -15,6 +15,12 @@ KyrinDatabaseWrapper::KyrinDatabaseWrapper(string &db_path)
     database_connect();
 }
 
+KyrinDatabaseWrapper::KyrinDatabaseWrapper(const char *db_path)
+{
+    database_path.assign(db_path);
+    database_connect();
+}
+
 KyrinDatabaseWrapper::~KyrinDatabaseWrapper()
 {
     database_disconnect();

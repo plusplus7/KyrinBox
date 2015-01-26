@@ -9,7 +9,8 @@ namespace io {
 
 class KyrinDatabaseWrapper {
 public:
-    KyrinDatabaseWrapper(std::string &db_name);
+    explicit KyrinDatabaseWrapper(std::string &db_path);
+    explicit KyrinDatabaseWrapper(const char *db_path);
     ~KyrinDatabaseWrapper();
 
     bool database_put(const std::string &key, const std::string &value);

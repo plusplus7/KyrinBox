@@ -23,12 +23,13 @@ KyrinConfig *KyrinConfig::get_instance()
 KyrinConfig::KyrinConfig()
 {
     config_map.clear();
-    config_map[constants::k_json_master_reader_port]        = "7770";
-    config_map[constants::k_json_master_processor_port]     = "7070";
-    config_map[constants::k_json_master_reader_backlog]     = "8192";
-    config_map[constants::k_json_master_processor_backlog]  = "8192";
-    config_map[constants::k_json_master_server_threads]     = "4";
-    config_map[constants::k_json_master_database_path]      = "/tmp/kyrinmaster_db";
+    config_map[constants::k_json_master_reader_port]                = "7770";
+    config_map[constants::k_json_master_processor_port]             = "7070";
+    config_map[constants::k_json_master_reader_backlog]             = "8192";
+    config_map[constants::k_json_master_processor_backlog]          = "8192";
+    config_map[constants::k_json_master_server_threads]             = "4";
+    config_map[constants::k_json_master_userdata_database_path]     = "/tmp/kyrinmaster_userdata_db";
+    config_map[constants::k_json_master_oplog_database_path]        = "/tmp/kyrinmaster_oplog_db";
 }
 
 bool KyrinConfig::read_config_file(const char *filename)

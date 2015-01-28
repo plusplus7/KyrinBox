@@ -12,3 +12,13 @@ message UploadFileResponse {
     required int64  file_size   = 2;
     required string merkle_sha1 = 3;
 }
+
+message UploadFileOperation {
+    required string key = 1;
+    required UploadFileResponse data = 2;
+}
+
+message OperationLog {
+    required int64 op_type = 1;
+    required string log_data = 2; 
+}

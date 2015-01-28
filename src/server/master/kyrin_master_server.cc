@@ -21,8 +21,8 @@ using namespace kyrin::io;
 
 static KyrinLog *logger = KyrinLog::get_instance();
 
-static void upload_file_handler(evhttp_request *req, void *arg) {
-    KyrinMasterServer *server = (KyrinMasterServer *) arg;
+static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *server)
+{
     string request_body = "";
     string reply = "";
     if (!server->server_get_postdata(req, request_body)) {
@@ -30,6 +30,8 @@ static void upload_file_handler(evhttp_request *req, void *arg) {
         server->server_send_reply_bad(req, reply);
         return ;
     }
+
+    //// Collect data
 
     kyrinbox::api::UploadFileRequest request_pb;
     request_pb.ParseFromString(request_body);
@@ -44,24 +46,71 @@ static void upload_file_handler(evhttp_request *req, void *arg) {
     server->server_get_header(req, "KYRIN-SIGNATURE", signature);
     logger->log("header data signature", signature.c_str());
 
-    kyrinbox::api::UploadFileResponse response_pb;
+    //// Process data
+
+    UploadFileOperation operation;
+    kyrinbox::api::UploadFileResponse *response = operation.mutable_data();
     for (int i=0; i<3; i++) {
-        string *new_file_hosts = response_pb.add_file_hosts();
+        string *new_file_hosts = response_pb->add_file_hosts();
         new_file_hosts->assign("127.0.0.1");
     }
-    response_pb.set_file_size(1024);
-    response_pb.set_merkle_sha1("sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1");
+    response_pb->set_file_size(1024);
+    response_pb->set_merkle_sha1("sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1");
     if (!response_pb.SerializeToString(&reply)) {
         reply = "Fail to serialize protobuf";
         server->server_send_reply_bad(req, reply);
         return ;
     }
+    operation.set_key(request_pb.account()+request_pb.file_name());
+    string value;
+    if (server->get_userdata_db()->database_get(operation.key(), value)) {
+        reply = "Filename existed";
+        server->server_send_reply_bad(req, reply);
+        return ;
+    }
+
+    ////  Two phase
+    string two_phase_msg;
+    operation.SerializeToString(&two_phase_msg);
+
+    OperationLog op_log;
+    op_log.set_op_type(1);
+    op_log.set_log_data(two_phase_msg);
+    string confirm_msg;
+    op_log.SerializeToString(confirm_msg);
+    KyrinHttpClient::make_request_post()
+
+
     server->server_send_reply_ok(req, reply);
-    return ;
+    return ;   
 }
 
-bool KyrinMasterServer::server_initialize()
+static void upload_file_follower_handler(evhttp_request *req, KyrinMasterServer *server)
 {
+    
+}
+static void upload_file_handler(evhttp_request *req, void *arg)
+{
+    KyrinMasterServer *server = (KyrinMasterServer *) arg;
+    KyrinMasterStatus status;
+    if (!server->get_sentinel()->get_status(status)) {
+        evhttp_send_reply_end(req);
+        return ;
+    }
+    while (status == k_status_consensus);
+    if (status == k_status_follower) {
+        upload_file_follower_handler(req, server);
+    } else {
+        upload_file_leader_handler(req, server);
+    }
+}
+
+bool KyrinMasterServer::server_initialize(KyrinMasterSentinel *sentinel)
+{
+    if (sentinel == NULL) {
+        return false;
+    }
+    m_sentinel = sentinel;
     if (!server_initialize_kyrin_server_socket(upload_file_fd,
         atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_reader_port).c_str()),
         atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_reader_backlog).c_str()))) {

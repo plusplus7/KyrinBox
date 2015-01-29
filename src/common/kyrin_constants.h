@@ -1,3 +1,6 @@
+#ifndef KYRINBOX_SRC_COMMON_KYRIN_CONSTANTS_H_
+#define KYRINBOX_SRC_COMMON_KYRIN_CONSTANTS_H_
+
 #include <string>
 
 namespace kyrin {
@@ -21,3 +24,5 @@ extern const int   k_server_max_post_data_size;
 } /* constants */
 } /* common */
 } /* kyrin */
+
+#endif /* end of include guard: KYRINBOX_SRC_COMMON_KYRIN_CONSTANTS_H_ */

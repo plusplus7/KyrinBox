@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include "kyrin_master_server.h"
 #include "common/kyrin_log.h"
+#include "common/kyrin_lexicographically_helper.h"
 #include "common/kyrin_config.h"
 #include "common/kyrin_constants.h"
 #include "protobuf/upload_file.pb.h"
@@ -25,13 +26,14 @@ static KyrinLog *logger = KyrinLog::get_instance();
 static void get_oplog_handler(evhttp_request *req, void *arg)
 {
 }
+
 static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *server)
 {
     string request_body = "";
     string reply = "";
     if (!server->server_get_postdata(req, request_body)) {
         reply = "Can't read postdata";
-        server->server_send_reply_bad(req, reply);
+        server->server_send_reply_ok(req, reply);
         return ;
     }
 
@@ -60,30 +62,56 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
     }
     response->set_file_size(1024);
     response->set_merkle_sha1("sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1");
-    if (!response->SerializeToString(&reply)) {
+    string operation_data;
+    if (!response->SerializeToString(&operation_data)) {
         reply = "Fail to serialize protobuf";
-        server->server_send_reply_bad(req, reply);
+        server->server_send_reply_ok(req, reply);
         return ;
     }
+
     operation.set_key(request_pb.account()+request_pb.file_name());
     string value;
-    if (server->get_userdata_db()->database_get(operation.key(), value)) {
+    if (server->get_userdata_db()->get(operation.key(), value)) {
         reply = "Filename existed";
-        server->server_send_reply_bad(req, reply);
+        server->server_send_reply_ok(req, reply);
         return ;
     }
 
     ////  Two phase
-    kyrinbox::api::OperationLog op_log;
-    operation.SerializeToString(op_log.mutable_log_data());
+    kyrinbox::api::OperationLogMessage message;
+    string last_key;
+    if (server->get_oplog_db()->fetch_last_key(last_key)) {
+        KyrinLexicographicallyHelper::add_one(last_key);
+    } else {
+        KyrinLexicographicallyHelper::get_zero(last_key);
+    }
+    message.set_op_id(last_key);
 
-    op_log.set_op_type(1);
-    op_log.set_uuid(10086);
+    kyrinbox::api::OperationLog *op_log = message.mutable_op_log();
+    operation.SerializeToString(op_log->mutable_log_data());
+    op_log->set_op_type(1);
+    message.set_op_id(last_key);
     string confirm_msg;
-    op_log.SerializeToString(&confirm_msg);
+    /// Two phase confirm success
+    string op_log_str;
+    if (!op_log->SerializeToString(&op_log_str)) {
+        reply = "Serialize op_log failed";
+        server->server_send_reply_ok(req, reply);
+        return ;
+    }
+    if (!server->get_oplog_db()->put(last_key, op_log_str)) {
+        reply = "put in oplog failed";
+        server->server_send_reply_ok(req, reply);
+        return ;
+    }
+    if (!server->get_userdata_db()->put(operation.key(), operation_data)) {
+        reply = "put in userdata failed";
+        server->get_oplog_db()->remove(last_key);
+        server->server_send_reply_ok(req, reply);
+        return ;
+    }
 
-
-    server->server_send_reply_ok(req, reply);
+    server->server_send_reply_ok(req, operation_data);
     return ;   
 }
 
@@ -121,6 +149,8 @@ bool KyrinMasterServer::server_initialize(KyrinMasterSentinel *sentinel)
 
     m_userdata_db = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_userdata_database_path));
     m_oplog_db    = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_oplog_database_path));
+    cout << "!!" << endl;
+    m_oplog_db->hahaha();
     return true;
 }
 

@@ -22,6 +22,9 @@ using namespace kyrin::io;
 
 static KyrinLog *logger = KyrinLog::get_instance();
 
+static void get_oplog_handler(evhttp_request *req, void *arg)
+{
+}
 static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *server)
 {
     string request_body = "";
@@ -111,8 +114,8 @@ bool KyrinMasterServer::server_initialize(KyrinMasterSentinel *sentinel)
     }
     m_sentinel = sentinel;
     if (!server_initialize_kyrin_server_socket(upload_file_fd,
-        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_reader_port).c_str()),
-        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_reader_backlog).c_str()))) {
+        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_upload_file_port).c_str()),
+        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_upload_file_backlog).c_str()))) {
         return false;
     }
 
@@ -140,7 +143,8 @@ bool KyrinMasterServer::server_set_processor(evhttp *server, int thread_code)
         server_put_callback(server, "/UploadFile", upload_file_handler, this);
         server_set_evhttp_accept_socket(server, upload_file_fd);
     } else {
-
+        server_put_callback(server, "/GetOplog", get_oplog_handler, this);
+        server_set_evhttp_accept_socket(server, get_oplog_fd);
     }
     return true;
 }

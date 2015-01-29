@@ -28,6 +28,7 @@ public:
 
 private:
     int upload_file_fd;
+    int get_oplog_fd;
     kyrin::server::KyrinMasterSentinel *m_sentinel;
     kyrin::io::KyrinDatabaseWrapper *m_userdata_db;
     kyrin::io::KyrinDatabaseWrapper *m_oplog_db;

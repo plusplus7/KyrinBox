@@ -1,0 +1,7 @@
+package kyrinbox.api;
+
+message OperationLog {
+    required int64 uuid = 1;
+    required int64 op_type = 2;
+    required string log_data = 3; 
+}

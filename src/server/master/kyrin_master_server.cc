@@ -11,6 +11,7 @@
 #include "common/kyrin_config.h"
 #include "common/kyrin_constants.h"
 #include "protobuf/upload_file.pb.h"
+#include "protobuf/operation_log.pb.h"
 
 namespace kyrin {
 namespace server {
@@ -48,15 +49,15 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
 
     //// Process data
 
-    UploadFileOperation operation;
+    kyrinbox::api::UploadFileOperation operation;
     kyrinbox::api::UploadFileResponse *response = operation.mutable_data();
     for (int i=0; i<3; i++) {
-        string *new_file_hosts = response_pb->add_file_hosts();
+        string *new_file_hosts = response->add_file_hosts();
         new_file_hosts->assign("127.0.0.1");
     }
-    response_pb->set_file_size(1024);
-    response_pb->set_merkle_sha1("sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1");
-    if (!response_pb.SerializeToString(&reply)) {
+    response->set_file_size(1024);
+    response->set_merkle_sha1("sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1");
+    if (!response->SerializeToString(&reply)) {
         reply = "Fail to serialize protobuf";
         server->server_send_reply_bad(req, reply);
         return ;
@@ -70,15 +71,13 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
     }
 
     ////  Two phase
-    string two_phase_msg;
-    operation.SerializeToString(&two_phase_msg);
+    kyrinbox::api::OperationLog op_log;
+    operation.SerializeToString(op_log.mutable_log_data());
 
-    OperationLog op_log;
     op_log.set_op_type(1);
-    op_log.set_log_data(two_phase_msg);
+    op_log.set_uuid(10086);
     string confirm_msg;
-    op_log.SerializeToString(confirm_msg);
-    KyrinHttpClient::make_request_post()
+    op_log.SerializeToString(&confirm_msg);
 
 
     server->server_send_reply_ok(req, reply);

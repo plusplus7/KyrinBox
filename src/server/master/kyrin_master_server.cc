@@ -7,11 +7,14 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "kyrin_master_server.h"
+#include "common/kyrin_macros.h"
 #include "common/kyrin_log.h"
+#include "common/kyrin_base64.h"
 #include "common/kyrin_lexicographically_helper.h"
 #include "common/kyrin_config.h"
 #include "common/kyrin_constants.h"
 #include "protobuf/upload_file.pb.h"
+#include "protobuf/get_oplog.pb.h"
 #include "protobuf/operation_log.pb.h"
 
 namespace kyrin {
@@ -25,6 +28,53 @@ static KyrinLog *logger = KyrinLog::get_instance();
 
 static void get_oplog_handler(evhttp_request *req, void *arg)
 {
+    KyrinMasterServer *server = (KyrinMasterServer *) arg;
+    string reply = "";
+    string request_body = "";
+    if (!server->server_get_postdata(req, request_body)) {
+        reply = "Can't read post";
+        server->server_send_reply_ok(req, reply);
+        return ;
+    }
+    request_body = crypto::base64_decode(request_body);
+    for (int i=0; i<request_body.size(); i++) {
+        cout << int(request_body[i]) << " ";
+    }
+    cout << endl;
+
+    server->get_oplog_db()->hahaha();
+    if (!server->get_oplog_db()->exist(request_body)) {
+        reply = "No such op id";
+        server->server_send_reply_ok(req, reply);
+        return ;
+    }
+
+    leveldb::Iterator* it = server->get_oplog_db()->new_iterator();
+    kyrinbox::api::GetOplogResponse response;
+    int cnt = 0;
+    it->Seek(request_body);
+    if (!it->Valid()) {
+        reply = "Iterator invalid";
+        server->server_send_reply_ok(req, reply);
+        return ;
+    }
+    while (true) {
+        string key = it->key().ToString();
+        cout <<"value: " <<  it->value().ToString() << endl;
+
+        *(response.add_log_data()) = it->value().ToString();
+        it->Next();
+        if (!(it->Valid()) || cnt == constants::k_server_max_get_oplog_size) {
+            response.set_last_id(key);
+            break;
+        }
+    }
+    delete it;
+
+    response.SerializeToString(&reply);
+    reply = crypto::base64_encode((unsigned char const*)reply.c_str(), reply.length());
+    cout << reply << endl;
+    server->server_send_reply_ok(req, reply);
 }
 
 static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *server)
@@ -80,7 +130,7 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
     ////  Two phase
     kyrinbox::api::OperationLogMessage message;
     string last_key;
-    if (server->get_oplog_db()->fetch_last_key(last_key)) {
+    if (kyrin_likely(server->get_oplog_db()->fetch_last_key(last_key))) {
         KyrinLexicographicallyHelper::add_one(last_key);
     } else {
         KyrinLexicographicallyHelper::get_zero(last_key);
@@ -88,10 +138,11 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
     message.set_op_id(last_key);
 
     kyrinbox::api::OperationLog *op_log = message.mutable_op_log();
+    string op_protobuf;
     operation.SerializeToString(op_log->mutable_log_data());
     op_log->set_op_type(1);
-    message.set_op_id(last_key);
-    string confirm_msg;
+
+
     /// Two phase confirm success
     string op_log_str;
     if (!op_log->SerializeToString(&op_log_str)) {
@@ -119,6 +170,7 @@ static void upload_file_follower_handler(evhttp_request *req, KyrinMasterServer 
 {
     
 }
+
 static void upload_file_handler(evhttp_request *req, void *arg)
 {
     KyrinMasterServer *server = (KyrinMasterServer *) arg;
@@ -146,11 +198,16 @@ bool KyrinMasterServer::server_initialize(KyrinMasterSentinel *sentinel)
         atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_upload_file_backlog).c_str()))) {
         return false;
     }
+    if (!server_initialize_kyrin_server_socket(get_oplog_fd,
+        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_get_oplog_port).c_str()),
+        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_get_oplog_backlog).c_str()))) {
+        return false;
+    }
 
     m_userdata_db = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_userdata_database_path));
     m_oplog_db    = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_oplog_database_path));
     cout << "!!" << endl;
-    m_oplog_db->hahaha();
+    //m_oplog_db->hahaha();
     return true;
 }
 

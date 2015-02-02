@@ -16,7 +16,8 @@ const char *k_json_master_confirm_oplog_backlog     = "MasterConfirmOplogBacklog
 const char *k_json_master_server_threads            = "MasterServerThreads";
 const char *k_json_master_userdata_database_path    = "MasterUserdataDatabasePath";
 const char *k_json_master_oplog_database_path       = "MasterOplogDatabasePath";
-const int   k_server_max_post_data_size             = 1024;
+const uint32_t k_server_max_post_data_size          = 1024;
+const uint32_t k_server_max_get_oplog_size          = 100;
 
 } /* constants */
 } /* common */

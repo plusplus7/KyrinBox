@@ -19,7 +19,8 @@ extern const char* k_json_master_confirm_oplog_backlog;
 extern const char* k_json_master_server_threads;
 extern const char* k_json_master_userdata_database_path;
 extern const char* k_json_master_oplog_database_path;
-extern const int   k_server_max_post_data_size;
+extern const uint32_t   k_server_max_post_data_size;
+extern const uint32_t   k_server_max_get_oplog_size;
 
 } /* constants */
 } /* common */

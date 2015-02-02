@@ -19,6 +19,23 @@ public:
     bool remove(const std::string &key);
     bool exist(const std::string &key);
     bool fetch_last_key(std::string &key);
+    leveldb::Iterator* new_iterator() {
+        leveldb::Iterator* iter = database_connection->NewIterator(leveldb::ReadOptions());
+        return iter;
+    }
+
+    void hahaha()
+    {
+        leveldb::Iterator* it = new_iterator();
+        for (it->SeekToFirst(); it->Valid(); it->Next()) {
+            std::string k = it->key().ToString();
+            std::string v = it->value().ToString();
+            for (auto i : k) {
+                std::cout << int(i) << " ";
+            }
+            std::cout << std::endl;
+        }
+    }
 
 private:
     bool database_connect();

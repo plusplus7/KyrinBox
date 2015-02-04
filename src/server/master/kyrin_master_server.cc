@@ -8,7 +8,7 @@
 #include "kyrin_master_server.h"
 #include "common/kyrin_macros.h"
 #include "common/kyrin_log.h"
-#include "common/kyrin_base64.h"
+#include "common/crypto/kyrin_base64.h"
 #include "common/kyrin_lexicographically_helper.h"
 #include "common/kyrin_config.h"
 #include "common/kyrin_constants.h"

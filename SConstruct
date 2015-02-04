@@ -44,7 +44,7 @@ env.Append(LIBPATH = ['src/external/lib'])
 ### Compile statics
 env.StaticLibrary(target = 'kyrin_base_server', source = 'src/server/base/kyrin_base_server.cc')
 env.StaticLibrary(target = 'kyrin_constants', source = 'src/common/kyrin_constants.cc')
-env.StaticLibrary(target = 'kyrin_base64', source = 'src/common/kyrin_base64.cc')
+env.StaticLibrary(target = 'kyrin_base64', source = 'src/common/crypto/kyrin_base64.cc')
 env.StaticLibrary(target = 'kyrin_database_wrapper', source = 'src/io/kyrin_database_wrapper.cc')
 env.StaticLibrary(target = 'kyrin_http_client', source = 'src/io/kyrin_http_client.cc')
 env.StaticLibrary(target = 'kyrin_log', source = 'src/common/kyrin_log.cc')

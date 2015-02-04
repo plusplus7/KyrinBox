@@ -6,7 +6,7 @@ url = "http://localhost:17770/UploadFile"
 def main():
     upload_file_request = upload_file_pb2.UploadFileRequest()
     upload_file_request.account        = "plusplus7"
-    upload_file_request.file_name      = "sssogs2"
+    upload_file_request.file_name      = "sssogs100"
     upload_file_request.merkle_sha1    = "sha1"
     upload_file_request.file_size      = 1024
     post_data = upload_file_request.SerializeToString()

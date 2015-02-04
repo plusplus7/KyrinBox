@@ -1,4 +1,3 @@
-#include <iostream>
 #include <event2/event.h>
 #include <event2/buffer.h>
 #include <event2/http.h>
@@ -37,12 +36,7 @@ static void get_oplog_handler(evhttp_request *req, void *arg)
         return ;
     }
     request_body = crypto::base64_decode(request_body);
-    for (int i=0; i<request_body.size(); i++) {
-        cout << int(request_body[i]) << " ";
-    }
-    cout << endl;
 
-    server->get_oplog_db()->hahaha();
     if (!server->get_oplog_db()->exist(request_body)) {
         reply = "No such op id";
         server->server_send_reply_ok(req, reply);
@@ -60,7 +54,6 @@ static void get_oplog_handler(evhttp_request *req, void *arg)
     }
     while (true) {
         string key = it->key().ToString();
-        cout <<"value: " <<  it->value().ToString() << endl;
 
         *(response.add_log_data()) = it->value().ToString();
         it->Next();
@@ -73,7 +66,6 @@ static void get_oplog_handler(evhttp_request *req, void *arg)
 
     response.SerializeToString(&reply);
     reply = crypto::base64_encode((unsigned char const*)reply.c_str(), reply.length());
-    cout << reply << endl;
     server->server_send_reply_ok(req, reply);
 }
 
@@ -94,7 +86,6 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
     logger->log("pb data account",     request_pb.account().c_str());
     logger->log("pb data file name",   request_pb.file_name().c_str());
     logger->log("pb data merkle sha1", request_pb.merkle_sha1().c_str());
-    cout << request_pb.file_size() << endl;
     string timestamp = "";
     server->server_get_header(req, "KYRIN-TIMESTAMP", timestamp);
     logger->log("header data timestamp", timestamp.c_str());
@@ -206,8 +197,6 @@ bool KyrinMasterServer::server_initialize(KyrinMasterSentinel *sentinel)
 
     m_userdata_db = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_userdata_database_path));
     m_oplog_db    = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_oplog_database_path));
-    cout << "!!" << endl;
-    //m_oplog_db->hahaha();
     return true;
 }
 

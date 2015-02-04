@@ -24,19 +24,6 @@ public:
         return iter;
     }
 
-    void hahaha()
-    {
-        leveldb::Iterator* it = new_iterator();
-        for (it->SeekToFirst(); it->Valid(); it->Next()) {
-            std::string k = it->key().ToString();
-            std::string v = it->value().ToString();
-            for (auto i : k) {
-                std::cout << int(i) << " ";
-            }
-            std::cout << std::endl;
-        }
-    }
-
 private:
     bool database_connect();
     bool database_disconnect();

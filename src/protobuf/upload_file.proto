@@ -1,0 +1,19 @@
+package kyrinbox.api;
+
+message UploadFileRequest {
+    required string account     = 1;
+    required string file_name   = 2;
+    required string merkle_sha1 = 3;
+    required int64  file_size   = 4;
+}
+
+message UploadFileResponse {
+    repeated string file_hosts  = 1;
+    required int64  file_size   = 2;
+    required string merkle_sha1 = 3;
+}
+
+message UploadFileOperation {
+    required string key = 1;
+    required UploadFileResponse data = 2;
+}

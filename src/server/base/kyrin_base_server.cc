@@ -91,6 +91,15 @@ bool KyrinBaseServer::server_put_callback(evhttp *server, const char *path, void
     return true;
 }
 
+bool KyrinBaseServer::server_get_header(evhttp_request *req, const char *key, string &value) {
+    const char *value_cstr = evhttp_find_header(evhttp_request_get_input_headers(req), key);
+    if (value_cstr == NULL) {
+        return false;
+    }
+    value.assign(value_cstr, strlen(value_cstr));
+    return true;
+}
+
 bool KyrinBaseServer::server_send_reply_ok(evhttp_request *req, string &msg) {
     evbuffer *buf = evbuffer_new();
     if (buf == NULL) {
@@ -99,6 +108,18 @@ bool KyrinBaseServer::server_send_reply_ok(evhttp_request *req, string &msg) {
     }
     evbuffer_add_printf(buf, "%s", msg.c_str());
     evhttp_send_reply(req, HTTP_OK, "OK", buf);
+    evbuffer_free(buf);
+    return true;
+}
+
+bool KyrinBaseServer::server_send_reply_bad(evhttp_request *req, string &msg) {
+    evbuffer *buf = evbuffer_new();
+    if (buf == NULL) {
+        logger->log("server_send_reply_ok", "new buf failed");
+        return false;
+    }
+    evbuffer_add_printf(buf, "%s", msg.c_str());
+    evhttp_send_reply(req, HTTP_BADREQUEST, "OK", buf);
     evbuffer_free(buf);
     return true;
 }

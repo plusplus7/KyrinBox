@@ -1,0 +1,11 @@
+package kyrinbox.api;
+
+message OperationLog {
+    required int64 op_type = 1;
+    required bytes log_data = 2;
+}
+
+message OperationLogMessage {
+    required string op_id = 1;
+    required OperationLog op_log = 2;
+}

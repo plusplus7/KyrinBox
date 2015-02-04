@@ -1,3 +1,5 @@
+#ifndef KYRINBOX_SRC_COMMON_KYRIN_LOCK_H_
+#define KYRINBOX_SRC_COMMON_KYRIN_LOCK_H_
 #include <pthread.h>
 
 namespace kyrin {
@@ -37,3 +39,5 @@ private:
 
 } /* common */
 } /* kyrin */
+
+#endif /* end of include guard: KYRINBOX_SRC_COMMON_KYRIN_LOCK_H_ */

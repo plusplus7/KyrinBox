@@ -2,6 +2,7 @@
 #define KYRINBOX_SRC_IO_KYRIN_DATABASE_WRAPPER_H_
 
 #include "leveldb/db.h"
+#include <iostream>
 #include <string>
 
 namespace kyrin {
@@ -9,11 +10,19 @@ namespace io {
 
 class KyrinDatabaseWrapper {
 public:
-    KyrinDatabaseWrapper(std::string &db_name);
+    explicit KyrinDatabaseWrapper(std::string &db_path);
+    explicit KyrinDatabaseWrapper(const char *db_path);
     ~KyrinDatabaseWrapper();
 
-    bool database_put(const std::string &key, const std::string &value);
-    bool database_get(const std::string &key, std::string &value);
+    bool put(const std::string &key, const std::string &value);
+    bool get(const std::string &key, std::string &value);
+    bool remove(const std::string &key);
+    bool exist(const std::string &key);
+    bool fetch_last_key(std::string &key);
+    leveldb::Iterator* new_iterator() {
+        leveldb::Iterator* iter = database_connection->NewIterator(leveldb::ReadOptions());
+        return iter;
+    }
 
 private:
     bool database_connect();

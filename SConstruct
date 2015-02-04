@@ -17,13 +17,22 @@ def prepare_for_external():
     os.system("cp -r src/external/protobuf-2.6.0/src/google src/external/include")
     os.system("cp src/external/protobuf-2.6.0/src/*.la src/external/lib")
 
+def compile_protobuf(proto_list):
+    for i in proto_list:
+        os.system("./src/external/protobuf-2.6.0/src/protoc -I=./src/protobuf --cpp_out=./src/protobuf --python_out=./src/protobuf ./src/protobuf/" + i)
+
 env = Environment(CC = 'gcc', CCFLAGS = '-O2')
 #dbg = Environment(CC = 'gcc', CCFLAGS = '-g')
 
 if os.path.exists("src/external/") == False:
     prepare_for_external()
 
-os.system("./src/external/protobuf-2.6.0/src/protoc -I=./src/protobuf --cpp_out=./src/protobuf ./src/protobuf/test.proto")
+proto_list = ["test.proto",
+              "upload_file.proto",
+              "operation_log.proto",
+              "get_oplog.proto",
+             ]
+compile_protobuf(proto_list)
 
 ### Append paths
 env.Append(CPPPATH = ['src'])
@@ -35,6 +44,7 @@ env.Append(LIBPATH = ['src/external/lib'])
 ### Compile statics
 env.StaticLibrary(target = 'kyrin_base_server', source = 'src/server/base/kyrin_base_server.cc')
 env.StaticLibrary(target = 'kyrin_constants', source = 'src/common/kyrin_constants.cc')
+env.StaticLibrary(target = 'kyrin_base64', source = 'src/common/kyrin_base64.cc')
 env.StaticLibrary(target = 'kyrin_database_wrapper', source = 'src/io/kyrin_database_wrapper.cc')
 env.StaticLibrary(target = 'kyrin_http_client', source = 'src/io/kyrin_http_client.cc')
 env.StaticLibrary(target = 'kyrin_log', source = 'src/common/kyrin_log.cc')
@@ -43,13 +53,21 @@ env.StaticLibrary(target = 'kyrin_master_sentinel', source = 'src/server/master/
 env.StaticLibrary(target = 'kyrin_master_sentinel_server', source = 'src/server/master/kyrin_master_sentinel_server.cc')
 env.StaticLibrary(target = 'kyrin_config', source = 'src/common/kyrin_config.cc')
 env.StaticLibrary(target = 'proto_test', source = 'src/protobuf/test.pb.cc')
+env.StaticLibrary(target = 'proto_upload_file', source = 'src/protobuf/upload_file.pb.cc')
+env.StaticLibrary(target = 'proto_operation_log', source = 'src/protobuf/operation_log.pb.cc')
+env.StaticLibrary(target = 'proto_get_oplog', source = 'src/protobuf/get_oplog.pb.cc')
 
 ### Link
-kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc', LIBS = ['kyrin_master_server', 'event', 'kyrin_base_server', 'kyrin_log', 'kyrin_database_wrapper', 'leveldb', 'kyrin_constants', 'kyrin_config', 'kyrin_master_sentinel', 'kyrin_master_sentinel_server', 'curl', 'kyrin_http_client'], )
+kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc', LIBS = ['kyrin_master_server', 'event', 'kyrin_base_server', 'kyrin_log', 'kyrin_database_wrapper', 'leveldb', 'kyrin_constants', 'kyrin_config', 'kyrin_master_sentinel', 'kyrin_master_sentinel_server', 'curl', 'kyrin_http_client', 'kyrin_base64'
+, 'proto_upload_file'
+, 'proto_operation_log'
+, 'proto_get_oplog'
+, 'protobuf'], )
 
 test_protobuf = env.Program("test_protobuf", 'src/test/test_protobuf.cc', LIBS = ['proto_test', 'protobuf'])
 test_spinlock = env.Program('test_spinlock', 'src/test/test_spinlock.cpp', LIBS = ['pthread', ])
 test_http_client= env.Program('test_http_client', 'src/test/test_http_client.cpp', LIBS = ['event', 'curl', 'kyrin_http_client'])
+test_lexicographically_helper = env.Program('test_lexicographically_helper', 'src/test/test_lexicographically_helper.cpp', LIBS = ['leveldb', ])
 
 ### release
 env.Install('release/bin', kyrin_master)

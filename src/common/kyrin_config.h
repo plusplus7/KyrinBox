@@ -1,3 +1,5 @@
+#ifndef KYRINBOX_SRC_COMMON_KYRIN_CONFIG_H_
+#define KYRINBOX_SRC_COMMON_KYRIN_CONFIG_H_
 #include <string>
 #include <map>
 
@@ -19,3 +21,5 @@ private:
 
 } /* common */
 } /* kyrin */
+
+#endif /* end of include guard: KYRINBOX_SRC_COMMON_KYRIN_CONFIG_H_ */

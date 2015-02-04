@@ -5,6 +5,7 @@
 #include <event2/event.h>
 #include <event2/buffer.h>
 #include <event2/http.h>
+#include <event2/util.h>
 #include <string>
 
 namespace kyrin {
@@ -26,7 +27,9 @@ public:
     bool server_initialize_kyrin_server_socket(int &listen_fd, int port, uint32_t backlog);
     bool server_set_evhttp_accept_socket(evhttp *server_evhttp, int listen_fd);
     bool server_put_callback(evhttp *server, const char *path, void(*cb)(evhttp_request *, void *), void *cb_arg);
+    bool server_get_header(evhttp_request *req, const char *key, std::string &value);
     bool server_send_reply_ok(evhttp_request *req, std::string &msg);
+    bool server_send_reply_bad(evhttp_request *req, std::string &msg);
     bool server_get_postdata(evhttp_request *req, std::string &post_data);
 
 private:

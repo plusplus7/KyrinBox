@@ -8,10 +8,16 @@ namespace io {
 using namespace std;
 using namespace kyrin::common;
 
-static KyrinLog *logger = KyrinLog::get_instance(); 
+static KyrinLog *logger = KyrinLog::get_instance();
 KyrinDatabaseWrapper::KyrinDatabaseWrapper(string &db_path)
 {
     database_path = db_path;
+    database_connect();
+}
+
+KyrinDatabaseWrapper::KyrinDatabaseWrapper(const char *db_path)
+{
+    database_path.assign(db_path);
     database_connect();
 }
 
@@ -44,14 +50,14 @@ bool KyrinDatabaseWrapper::database_reconnect()
     return database_connect();
 }
 
-bool KyrinDatabaseWrapper::database_put(const string &key, const string &value)
+bool KyrinDatabaseWrapper::put(const string &key, const string &value)
 {
     leveldb::Status status = database_connection->Put(leveldb::WriteOptions(), key, value);
     if (kyrin_likely(status.ok())) {
         return true;
     } else {
         if (database_reconnect()) {
-            status = database_connection->Put(leveldb::WriteOptions(), key, value); 
+            status = database_connection->Put(leveldb::WriteOptions(), key, value);
 
             if (!status.ok()) {
                 logger->log("database_put", ("key: " + key + " value: " + value + " put failed then reconnect but put failed again...").c_str());
@@ -66,7 +72,7 @@ bool KyrinDatabaseWrapper::database_put(const string &key, const string &value)
     }
 }
 
-bool KyrinDatabaseWrapper::database_get(const string &key, string &value)
+bool KyrinDatabaseWrapper::get(const string &key, string &value)
 {
     leveldb::Status status = database_connection->Get(leveldb::ReadOptions(), key, &value);
     if (kyrin_likely(status.ok())) {
@@ -76,7 +82,7 @@ bool KyrinDatabaseWrapper::database_get(const string &key, string &value)
         return false;
     } else {
         if (database_reconnect()) {
-            status = database_connection->Get(leveldb::ReadOptions(), key, &value); 
+            status = database_connection->Get(leveldb::ReadOptions(), key, &value);
 
             if (!status.ok()) {
                 logger->log("database_get", ("key: " + key + " get failed then reconnect but get failed again..." + status.ToString()).c_str());
@@ -90,6 +96,40 @@ bool KyrinDatabaseWrapper::database_get(const string &key, string &value)
         }
     }
 }
-    
+
+bool KyrinDatabaseWrapper::exist(const string &key)
+{
+    string value;
+    return get(key, value);
+}
+
+bool KyrinDatabaseWrapper::remove(const string &key)
+{
+    leveldb::Status status = database_connection->Delete(leveldb::WriteOptions(), key);
+    if (kyrin_likely(status.ok())) {
+        return true;
+    }
+    return false;
+}
+
+bool KyrinDatabaseWrapper::fetch_last_key(string &key)
+{
+    leveldb::Iterator* it = database_connection->NewIterator(leveldb::ReadOptions());
+    if (it == NULL) {
+        return false;
+    }
+
+    it->SeekToLast();
+    if (!it->Valid()) {
+        return false;
+    }
+
+    key.assign(it->key().ToString());
+
+    assert(it->status().ok());
+    delete it;
+    return true;
+}
+
 } /* io */
 } /* kyrin */

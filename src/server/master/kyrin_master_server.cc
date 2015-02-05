@@ -32,14 +32,14 @@ static void get_oplog_handler(evhttp_request *req, void *arg)
     string request_body = "";
     if (!server->server_get_postdata(req, request_body)) {
         reply = "Can't read post";
-        server->server_send_reply_ok(req, reply);
+        server->server_send_reply_bad(req, reply);
         return ;
     }
     request_body = crypto::base64_decode(request_body);
 
     if (!server->get_oplog_db()->exist(request_body)) {
         reply = "No such op id";
-        server->server_send_reply_ok(req, reply);
+        server->server_send_reply_bad(req, reply);
         return ;
     }
 
@@ -49,7 +49,7 @@ static void get_oplog_handler(evhttp_request *req, void *arg)
     it->Seek(request_body);
     if (!it->Valid()) {
         reply = "Invalid status";
-        server->server_send_reply_ok(req, reply);
+        server->server_send_reply_bad(req, reply);
         return ;
     }
     while (true) {
@@ -74,7 +74,7 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
     string reply = "";
     if (!server->server_get_postdata(req, request_body)) {
         reply = "Can't read postdata";
-        server->server_send_reply_ok(req, reply);
+        server->server_send_reply_bad(req, reply);
         return ;
     }
 
@@ -105,7 +105,7 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
     string operation_data;
     if (!response->SerializeToString(&operation_data)) {
         reply = "Fail to serialize protobuf";
-        server->server_send_reply_ok(req, reply);
+        server->server_send_reply_bad(req, reply);
         return ;
     }
 
@@ -113,7 +113,7 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
     string value;
     if (server->get_userdata_db()->get(operation.key(), value)) {
         reply = "Filename existed";
-        server->server_send_reply_ok(req, reply);
+        server->server_send_reply_bad(req, reply);
         return ;
     }
 
@@ -137,18 +137,18 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
     string op_log_str;
     if (!op_log->SerializeToString(&op_log_str)) {
         reply = "Serialize op_log failed";
-        server->server_send_reply_ok(req, reply);
+        server->server_send_reply_bad(req, reply);
         return ;
     }
     if (!server->get_oplog_db()->put(last_key, op_log_str)) {
         reply = "put in oplog failed";
-        server->server_send_reply_ok(req, reply);
+        server->server_send_reply_bad(req, reply);
         return ;
     }
     if (!server->get_userdata_db()->put(operation.key(), operation_data)) {
         reply = "put in userdata failed";
         server->get_oplog_db()->remove(last_key);
-        server->server_send_reply_ok(req, reply);
+        server->server_send_reply_bad(req, reply);
         return ;
     }
 

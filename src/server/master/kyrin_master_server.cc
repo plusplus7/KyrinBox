@@ -48,13 +48,12 @@ static void get_oplog_handler(evhttp_request *req, void *arg)
     int cnt = 0;
     it->Seek(request_body);
     if (!it->Valid()) {
-        reply = "Iterator invalid";
+        reply = "Invalid status";
         server->server_send_reply_ok(req, reply);
         return ;
     }
     while (true) {
         string key = it->key().ToString();
-
         *(response.add_log_data()) = it->value().ToString();
         it->Next();
         if (!(it->Valid()) || cnt == constants::k_server_max_get_oplog_size) {

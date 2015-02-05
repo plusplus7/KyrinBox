@@ -45,3 +45,6 @@ kyrin_master
 
 # Vim swap
 *.swp
+
+# Python
+*.pyc

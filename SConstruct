@@ -80,4 +80,3 @@ test_sha1 = env.Program('test_sha1', 'src/test/test_sha1.cpp', LIBS = ['kyrin_sh
 
 ### release
 env.Install('release/bin', kyrin_master)
-env.Install('release/test', 'src/test/run_test.sh')

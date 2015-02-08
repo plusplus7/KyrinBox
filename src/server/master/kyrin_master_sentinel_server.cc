@@ -70,12 +70,14 @@ bool KyrinMasterSentinelServer::server_set_processor(evhttp *server, int thread_
     return true;
 }
 
-bool KyrinMasterSentinelServer::server_start() {
+bool KyrinMasterSentinelServer::server_start()
+{
     server_run(1);
     return true;
 }
 
-bool KyrinMasterSentinelServer::server_close() {
+bool KyrinMasterSentinelServer::server_close()
+{
     KyrinBaseServer::server_free();
     close(server_listen_fd);
     return true;

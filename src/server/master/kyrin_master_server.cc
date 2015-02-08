@@ -101,7 +101,7 @@ static void upload_file_leader_handler(evhttp_request *req, KyrinMasterServer *s
         new_file_hosts->assign("127.0.0.1");
     }
     response->set_file_size(1024);
-    response->set_merkle_sha1("sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1");
+    response->set_merkle_sha1(request_pb.merkle_sha1());
     string operation_data;
     if (!response->SerializeToString(&operation_data)) {
         reply = "Fail to serialize protobuf";

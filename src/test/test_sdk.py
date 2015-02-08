@@ -50,7 +50,26 @@ def UploadFile(host, port, request, headers):
     upload_file_response.ParseFromString(response.read())
     return (200, upload_file_response)
 
+def FindLeader(host, ports):
+    url = "http://%s:%d/get_status"
+    ret = None
+    for i in range(len(ports)):
+        request = urllib2.Request(url % (host, ports[i]))
+        try:
+            response = urllib2.urlopen(request)
+        except urllib2.HTTPError, e:
+            response = e
+            return (response.getcode(), response.read())
+        get_status_response = response.read()
+        if cmp(get_status_response, "leader") == 0:
+            if ret == None:
+                ret = (host, i)
+            else:
+                return None
+    return ret
+
 if __name__ == "__main__":
+    print FindLeader("127.0.0.1", (7777, 17777, 27777))
     id = LexicographicallyGetZero()
     for i in list(id):
         print ord(i),

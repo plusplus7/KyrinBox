@@ -6,19 +6,13 @@ import get_oplog_pb2
 import upload_file_pb2
 import operation_log_pb2
 import base64
+import test_sdk
 
-url = "http://localhost:17070/GetOplog"
 def main():
-    post_data = [chr(0), chr(0), chr(0), chr(0), chr(0), chr(0), chr(0), chr(0)]
-    post_data = base64.b64encode("".join(post_data))
-    request = urllib2.Request(url, post_data)
-
-    response = urllib2.urlopen(request)
-    a = response.read()
-    ste = base64.b64decode(a)
-    get_oplog_response = get_oplog_pb2.GetOplogResponse()
-    get_oplog_response.ParseFromString(ste)
-    print get_oplog_response.log_data
+    (code, get_oplog_response) = test_sdk.GetOplog("localhost", 37070)
+    if code != 200:
+        print get_oplog_response
+        return
 
     for i in range(len(get_oplog_response.last_id)):
         print ord(get_oplog_response.last_id[i]),

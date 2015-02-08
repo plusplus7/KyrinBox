@@ -17,6 +17,13 @@ def prepare_for_external():
     os.system("cp -r src/external/protobuf-2.6.0/src/google src/external/include")
     os.system("cp src/external/protobuf-2.6.0/src/*.la src/external/lib")
 
+    ### Prepare for openssl
+    os.system("tar zxvf miscs/softwares/openssl-1.0.2.tar.gz -C src/external/")
+    os.system("cd src/external/openssl-1.0.2 && ./Configure darwin64-x86_64-cc && make")
+    os.system("cp -r src/external/openssl-1.0.2/include/openssl src/external/include")
+    os.system("cp src/external/openssl-1.0.2/*.a src/external/lib")
+    os.system("rm -rf src/external/openssl-1.0.2/")
+
 def compile_protobuf(proto_list):
     for i in proto_list:
         os.system("./src/external/protobuf-2.6.0/src/protoc -I=./src/protobuf --cpp_out=./src/protobuf --python_out=./src/protobuf ./src/protobuf/" + i)
@@ -44,7 +51,8 @@ env.Append(LIBPATH = ['src/external/lib'])
 ### Compile statics
 env.StaticLibrary(target = 'kyrin_base_server', source = 'src/server/base/kyrin_base_server.cc')
 env.StaticLibrary(target = 'kyrin_constants', source = 'src/common/kyrin_constants.cc')
-env.StaticLibrary(target = 'kyrin_base64', source = 'src/common/kyrin_base64.cc')
+env.StaticLibrary(target = 'kyrin_base64', source = 'src/common/crypto/kyrin_base64.cc')
+env.StaticLibrary(target = 'kyrin_sha1', source = 'src/common/crypto/kyrin_sha1.cc')
 env.StaticLibrary(target = 'kyrin_database_wrapper', source = 'src/io/kyrin_database_wrapper.cc')
 env.StaticLibrary(target = 'kyrin_http_client', source = 'src/io/kyrin_http_client.cc')
 env.StaticLibrary(target = 'kyrin_log', source = 'src/common/kyrin_log.cc')
@@ -68,7 +76,7 @@ test_protobuf = env.Program("test_protobuf", 'src/test/test_protobuf.cc', LIBS =
 test_spinlock = env.Program('test_spinlock', 'src/test/test_spinlock.cpp', LIBS = ['pthread', ])
 test_http_client= env.Program('test_http_client', 'src/test/test_http_client.cpp', LIBS = ['event', 'curl', 'kyrin_http_client'])
 test_lexicographically_helper = env.Program('test_lexicographically_helper', 'src/test/test_lexicographically_helper.cpp', LIBS = ['leveldb', ])
+test_sha1 = env.Program('test_sha1', 'src/test/test_sha1.cpp', LIBS = ['kyrin_sha1', 'ssl', 'crypto'])
 
 ### release
 env.Install('release/bin', kyrin_master)
-env.Install('release/test', 'src/test/run_test.sh')

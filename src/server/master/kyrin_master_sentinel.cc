@@ -182,6 +182,8 @@ bool KyrinMasterSentinel::read_config(char *filename)
         m_masters.push_back(KyrinMachineInfo());
         file >> m_masters[i].ip >> tport;
         m_masters[i].port = atoi(tport);
+        file >> tport;
+        m_masters[i].confirm_oplog_port = atoi(tport);
     }
     file.close();
     return true;

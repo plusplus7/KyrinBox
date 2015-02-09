@@ -1,6 +1,8 @@
 #include "common/kyrin_log.h"
+#include "common/crypto/kyrin_base64.h"
 #include "common/kyrin_macros.h"
 #include "common/kyrin_lexicographically_helper.h"
+#include "io/kyrin_http_client.h"
 #include "upload_file_request_handler.h"
 #include "protobuf/upload_file.pb.h"
 #include "protobuf/get_oplog.pb.h"
@@ -11,6 +13,7 @@ namespace server {
 
 using namespace std;
 using namespace kyrin::common;
+using namespace kyrin::io;
 
 static KyrinLog *logger = KyrinLog::get_instance();
 void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_request *req)
@@ -18,7 +21,7 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
     KyrinMasterStatus status;
     string reply = "Service denied...";
     if (!m_sentinel->get_status(status)) {
-        evhttp_send_reply_end(req);
+        server->server_send_reply_bad(req, reply);
         return ;
     }
     while (status == k_status_consensus);
@@ -81,6 +84,7 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
         KyrinLexicographicallyHelper::get_zero(last_key);
     }
     message.set_op_id(last_key);
+    message.set_state(1);
 
     kyrinbox::api::OperationLog *op_log = message.mutable_op_log();
     string op_protobuf;
@@ -89,7 +93,41 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
     string confirm_response;
     string message_post;
     message.SerializeToString(&message_post);
-
+    message_post = crypto::base64_encode((unsigned char const*)message_post.c_str(), message_post.length());
+    uint32_t tp_cnt = 1;
+    for (uint32_t i=0; i<m_masters.size(); i++) {
+        if (i == m_kbid)
+            continue;
+        string tp_res;
+        KyrinHttpClient::make_request_post(m_masters[i].ip,
+                                          m_masters[i].confirm_oplog_port,
+                                          "/ConfirmOplog",
+                                          tp_res,
+                                          message_post);
+        if (tp_res == "ok") {
+            tp_cnt++;
+        }
+    }
+    if (tp_cnt <= (m_masters.size()>>1)) {
+        reply = "Two phase rejected..";
+        server->server_send_reply_bad(req, reply);
+        return ;
+    }
+    kyrinbox::api::OperationLogMessage message_confirm;
+    message_confirm.set_state(2);
+    message_confirm.set_op_id(message.op_id());
+    message_confirm.SerializeToString(&message_post);
+    message_post = crypto::base64_encode((unsigned char const*)message_post.c_str(), message_post.length());
+    for (uint32_t i=0; i<m_masters.size(); i++) {
+        if (i == m_kbid)
+            continue;
+        string tp_res;
+        KyrinHttpClient::make_request_post(m_masters[i].ip,
+                                          m_masters[i].confirm_oplog_port,
+                                          "/ConfirmOplog",
+                                          tp_res,
+                                          message_post);
+    }
     //// Two phase confirm success
     string op_log_str;
     if (!op_log->SerializeToString(&op_log_str)) {

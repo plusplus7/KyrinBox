@@ -3,6 +3,8 @@
 
 #define kyrin_likely(x)       __builtin_expect(!!(x), 1)
 #define kyrin_unlikely(x)     __builtin_expect(!!(x), 0)
+#define kyrin_todo()          do{
+#define kyrin_done()          }while(0);
 
 
 #endif /* end of include guard: KYRINBOX_SRC_COMMON_KYRIN_MACROS_H_ */

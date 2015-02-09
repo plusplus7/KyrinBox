@@ -58,6 +58,7 @@ env.StaticLibrary(target = 'kyrin_http_client', source = 'src/io/kyrin_http_clie
 env.StaticLibrary(target = 'kyrin_log', source = 'src/common/kyrin_log.cc')
 env.StaticLibrary(target = 'upload_file_request_handler', source = 'src/server/request_handlers/upload_file_request_handler.cc')
 env.StaticLibrary(target = 'get_oplog_request_handler', source = 'src/server/request_handlers/get_oplog_request_handler.cc')
+env.StaticLibrary(target = 'confirm_oplog_request_handler', source = 'src/server/request_handlers/confirm_oplog_request_handler.cc')
 env.StaticLibrary(target = 'kyrin_master_server', source = 'src/server/master/kyrin_master_server.cc')
 env.StaticLibrary(target = 'kyrin_master_sentinel', source = 'src/server/master/kyrin_master_sentinel.cc')
 env.StaticLibrary(target = 'kyrin_master_sentinel_server', source = 'src/server/master/kyrin_master_sentinel_server.cc')
@@ -68,11 +69,29 @@ env.StaticLibrary(target = 'proto_operation_log', source = 'src/protobuf/operati
 env.StaticLibrary(target = 'proto_get_oplog', source = 'src/protobuf/get_oplog.pb.cc')
 
 ### Link
-kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc', LIBS = ['kyrin_master_server', 'event', 'kyrin_base_server', 'kyrin_log', 'get_oplog_request_handler', 'upload_file_request_handler', 'kyrin_database_wrapper', 'leveldb', 'kyrin_constants', 'kyrin_config', 'kyrin_master_sentinel', 'kyrin_master_sentinel_server', 'curl', 'kyrin_http_client', 'kyrin_base64'
-, 'proto_upload_file'
-, 'proto_operation_log'
-, 'proto_get_oplog'
-, 'protobuf'], )
+kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc',
+                            LIBS = ['kyrin_master_server',
+                                    'event',
+                                    'kyrin_base_server',
+                                    'kyrin_log',
+                                    'get_oplog_request_handler',
+                                    'confirm_oplog_request_handler',
+                                    'upload_file_request_handler',
+                                    'kyrin_database_wrapper',
+                                    'leveldb',
+                                    'kyrin_constants',
+                                    'kyrin_config',
+                                    'kyrin_master_sentinel',
+                                    'kyrin_master_sentinel_server',
+                                    'curl',
+                                    'kyrin_http_client',
+                                    'kyrin_base64',
+                                    'proto_upload_file',
+                                    'proto_operation_log',
+                                    'proto_get_oplog',
+                                    'protobuf',
+                                   ],
+                          )
 
 test_protobuf = env.Program("test_protobuf", 'src/test/test_protobuf.cc', LIBS = ['proto_test', 'protobuf'])
 test_spinlock = env.Program('test_spinlock', 'src/test/test_spinlock.cpp', LIBS = ['pthread', ])

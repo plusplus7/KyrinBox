@@ -11,6 +11,7 @@ namespace server {
 struct KyrinMachineInfo {
     char ip[15];
     int  port;
+    int  confirm_oplog_port;
 };
 
 enum KyrinMasterStatus{

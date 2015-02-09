@@ -1,7 +1,7 @@
 /*_This_is_a_fake_json_file,_do_*NOT*_change_the_format_of_data_nor_delete_this_line_*/
 {
     "MasterUploadFilePort"          : "7770",
-    "MasterConfirmOplogPort         : "7700",
+    "MasterConfirmOplogPort"        : "7700",
     "MasterGetOplogPort"            : "7070",
     "MasterUploadFileBacklog"       : "4096",
     "MasterConfirmOplogBacklog"     : "4096",

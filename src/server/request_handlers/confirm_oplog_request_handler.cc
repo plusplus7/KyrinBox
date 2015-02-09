@@ -23,7 +23,6 @@ void ConfirmOplogRequestHandler::handle_request(KyrinMasterServer *server, evhtt
         reply = "Service denied";
         break;
     }
-    cout << "not here" << endl;
     if (status == k_status_leader) {
         break;
     }
@@ -39,7 +38,6 @@ void ConfirmOplogRequestHandler::handle_request(KyrinMasterServer *server, evhtt
         break;
     }
     uint32_t state = message.state();
-    m_state_id = "";
     if (state == 1) {
         m_state_id = message.op_id();
         string last_id;

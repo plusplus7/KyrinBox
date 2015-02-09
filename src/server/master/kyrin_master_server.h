@@ -4,6 +4,7 @@
 #include "server/base/kyrin_base_server.h"
 #include "server/request_handlers/upload_file_request_handler.h"
 #include "server/request_handlers/get_oplog_request_handler.h"
+#include "server/request_handlers/confirm_oplog_request_handler.h"
 #include "kyrin_master_sentinel.h"
 #include "io/kyrin_database_wrapper.h"
 
@@ -27,15 +28,20 @@ public:
         return get_oplog_request_handler;
     }
 
+    ConfirmOplogRequestHandler* get_confirm_oplog_request_handler() {
+        return confirm_oplog_request_handler;
+    }
+
 private:
     int upload_file_fd;
     int get_oplog_fd;
-    int get_confirm_fd;
+    int confirm_oplog_fd;
     kyrin::server::KyrinMasterSentinel *m_sentinel;
     kyrin::io::KyrinDatabaseWrapper *m_userdata_db;
     kyrin::io::KyrinDatabaseWrapper *m_oplog_db;
     UploadFileRequestHandler *upload_file_request_handler;
     GetOplogRequestHandler *get_oplog_request_handler;
+    ConfirmOplogRequestHandler *confirm_oplog_request_handler;
 
 };
 

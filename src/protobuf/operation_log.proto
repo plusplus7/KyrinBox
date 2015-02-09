@@ -6,6 +6,7 @@ message OperationLog {
 }
 
 message OperationLogMessage {
-    required string op_id = 1;
-    required OperationLog op_log = 2;
+    optional int32 state = 1;
+    required string op_id = 2;
+    optional OperationLog op_log = 3;
 }

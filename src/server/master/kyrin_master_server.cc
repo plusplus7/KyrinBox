@@ -35,6 +35,11 @@ static void upload_file_handler(evhttp_request *req, void *arg)
     ((KyrinMasterServer *) arg)->get_upload_file_request_handler()->handle_request((KyrinMasterServer *) arg, req);
 }
 
+static void confirm_oplog_handler(evhttp_request *req, void *arg)
+{
+    ((KyrinMasterServer *) arg)->get_confirm_oplog_request_handler()->handle_request((KyrinMasterServer *) arg, req);
+}
+
 bool KyrinMasterServer::server_initialize(KyrinMasterSentinel *sentinel)
 {
     if (sentinel == NULL) {
@@ -51,11 +56,17 @@ bool KyrinMasterServer::server_initialize(KyrinMasterSentinel *sentinel)
         atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_get_oplog_backlog).c_str()))) {
         return false;
     }
+    if (!server_initialize_kyrin_server_socket(confirm_oplog_fd,
+        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_confirm_oplog_port).c_str()),
+        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_confirm_oplog_backlog).c_str()))) {
+        return false;
+    }
 
     m_userdata_db = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_userdata_database_path));
     m_oplog_db    = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_oplog_database_path));
     upload_file_request_handler = new UploadFileRequestHandler(m_sentinel, m_userdata_db, m_oplog_db);
     get_oplog_request_handler = new GetOplogRequestHandler(m_oplog_db);
+    confirm_oplog_request_handler = new ConfirmOplogRequestHandler(m_sentinel, m_userdata_db, m_oplog_db);
 
     return true;
 }
@@ -65,6 +76,7 @@ bool KyrinMasterServer::server_free()
     KyrinBaseServer::server_free();
     close(upload_file_fd);
     close(get_oplog_fd);
+    close(confirm_oplog_fd);
     delete m_userdata_db;
     delete m_oplog_db;
     delete upload_file_request_handler;
@@ -79,9 +91,12 @@ bool KyrinMasterServer::server_start()
 
 bool KyrinMasterServer::server_set_processor(evhttp *server, int thread_code)
 {
-    if (!thread_code) {
+    if (thread_code == 0) {
         server_put_callback(server, "/UploadFile", upload_file_handler, this);
         server_set_evhttp_accept_socket(server, upload_file_fd);
+    } else if (thread_code == 1) {
+        server_put_callback(server, "/ConfirmOplog", confirm_oplog_handler, this);
+        server_set_evhttp_accept_socket(server, confirm_oplog_fd);
     } else {
         server_put_callback(server, "/GetOplog", get_oplog_handler, this);
         server_set_evhttp_accept_socket(server, get_oplog_fd);

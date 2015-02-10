@@ -158,5 +158,21 @@ class TwoPhaseTest(unittest.TestCase):
             self.assertEqual(ufo.data.file_size, 1024)
             self.assertEqual(ufo.data.merkle_sha1, "sha1")
 
+    def test_UploadFile_and_GetOplog_ten(self):
+        for i in range(10):
+            ret = test_sdk.UploadFile(self.host, self.upload_file_port, self.get_new_request(), self.headers)
+            self.assertEqual(ret[0], 200)
+        for port in self.get_oplog_ports:
+            ret = test_sdk.GetOplog(self.host, port)
+            self.assertEqual(ret[0], 200)
+            op = operation_log_pb2.OperationLog()
+            for i in range(1, 11):
+                op.ParseFromString(ret[1].log_data[-i])
+                ufo = upload_file_pb2.UploadFileOperation()
+                ufo.ParseFromString(op.log_data)
+                self.assertEqual(ufo.key, self.get_prev_key(i))
+                self.assertEqual(ufo.data.file_size, 1024)
+                self.assertEqual(ufo.data.merkle_sha1, "sha1")
+
 if __name__ == "__main__":
     unittest.main()

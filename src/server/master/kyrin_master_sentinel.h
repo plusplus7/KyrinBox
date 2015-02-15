@@ -17,22 +17,29 @@ enum KyrinMasterStatus{
 class KyrinMasterSentinel {
 public:
     bool start_sentinel();
-    bool get_vote(std::string &message);
-    bool set_vote(uint64_t vote, bool next_epoch = false);
+    void sentinel_sync();
+
     bool get_status(KyrinMasterStatus &message);
     bool set_status(KyrinMasterStatus status);
-    uint64_t get_epoch() {
-        return m_epoch;
-    }
+    bool get_vote(uint64_t &vote);
+    bool set_vote(uint64_t vote);
+    bool get_leader(uint64_t &leader);
+    bool set_leader(uint64_t leader);
+    bool get_epoch(uint64_t &epoch);
+    bool set_epoch(uint64_t epoch);
+    bool get_vote_ticket(std::string &ticket);
 
 private:
     bool read_config(char *filename);
 
     KyrinMasterStatus m_status;
     uint64_t m_leader;
+    uint64_t m_vote;
     uint64_t m_epoch;
     kyrin::common::KyrinMutex m_status_lock;
     kyrin::common::KyrinMutex m_vote_lock;
+    kyrin::common::KyrinMutex m_leader_lock;
+    kyrin::common::KyrinMutex m_epoch_lock;
 };
 
 } /* server */

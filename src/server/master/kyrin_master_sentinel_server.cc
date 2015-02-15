@@ -42,10 +42,14 @@ static void get_sentinel_vote_handler(evhttp_request *req, void *arg)
     server->server_get_postdata(req, reply);
     uint64_t epoch, vote;
     sscanf(reply.c_str(), "%llu %llu", &epoch, &vote);
-    while (epoch > sentinel->get_epoch()) {
-        sentinel->set_vote(KyrinCluster::get_instance()->get_kbid(), true);
+    uint64_t now_epoch;
+    sentinel->get_epoch(now_epoch);
+    if (epoch > now_epoch) {
+        sentinel->set_epoch(epoch);
+        sentinel->set_vote(KyrinCluster::get_instance()->get_kbid());
+        sentinel->set_status(k_status_consensus);
     }
-    sentinel->get_vote(reply);
+    sentinel->get_vote_ticket(reply);
     server->server_send_reply_ok(req, reply);
 }
 

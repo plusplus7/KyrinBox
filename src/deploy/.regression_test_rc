@@ -1,6 +1,5 @@
 master_list=('kyrinbox_master_one' 'kyrinbox_master_two' 'kyrinbox_master_three')
 workspace_dir='/tmp/kyrinbox_regression_test'
 kyrin_master_binary='/Users/apple/Workspace/KyrinBox/release/bin/kyrin_master'
-kyrin_master_config_example='/Users/apple/Workspace/KyrinBox/src/deploy/kyrinbox_master_config.json.example'
-kyrin_master_sentinel_example='/Users/apple/Workspace/KyrinBox/src/deploy/sentinel_config.ksc.example'
+kyrin_config_example='/Users/apple/Workspace/KyrinBox/src/deploy/kyrinbox_config.json'
 

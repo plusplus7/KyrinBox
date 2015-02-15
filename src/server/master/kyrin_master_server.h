@@ -46,7 +46,6 @@ private:
 };
 
 } /* server */
-
 } /* kyrin */
 
 #endif /* end of include guard KYRINBOX_SRC_SERVER_KYRIN_MASTER_SERVER_H_ */

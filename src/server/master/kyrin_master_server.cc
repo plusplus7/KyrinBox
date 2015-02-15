@@ -10,7 +10,6 @@
 #include "common/kyrin_log.h"
 #include "common/crypto/kyrin_base64.h"
 #include "common/kyrin_lexicographically_helper.h"
-#include "common/kyrin_config.h"
 #include "common/kyrin_constants.h"
 #include "protobuf/upload_file.pb.h"
 #include "protobuf/get_oplog.pb.h"
@@ -45,25 +44,26 @@ bool KyrinMasterServer::server_initialize(KyrinMasterSentinel *sentinel)
     if (sentinel == NULL) {
         return false;
     }
+
     m_sentinel = sentinel;
     if (!server_initialize_kyrin_server_socket(upload_file_fd,
-        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_upload_file_port).c_str()),
-        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_upload_file_backlog).c_str()))) {
+        KyrinCluster::get_instance()->get_master_config()->upload_file_port(),
+        KyrinCluster::get_instance()->get_master_config()->upload_file_backlog())) {
         return false;
     }
     if (!server_initialize_kyrin_server_socket(get_oplog_fd,
-        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_get_oplog_port).c_str()),
-        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_get_oplog_backlog).c_str()))) {
+        KyrinCluster::get_instance()->get_master_config()->get_oplog_port(),
+        KyrinCluster::get_instance()->get_master_config()->get_oplog_backlog())) {
         return false;
     }
     if (!server_initialize_kyrin_server_socket(confirm_oplog_fd,
-        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_confirm_oplog_port).c_str()),
-        atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_confirm_oplog_backlog).c_str()))) {
+        KyrinCluster::get_instance()->get_master_config()->confirm_oplog_port(),
+        KyrinCluster::get_instance()->get_master_config()->confirm_oplog_backlog())) {
         return false;
     }
 
-    m_userdata_db = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_userdata_database_path));
-    m_oplog_db    = new KyrinDatabaseWrapper(KyrinConfig::get_instance()->get_config(constants::k_json_master_oplog_database_path));
+    m_userdata_db = new KyrinDatabaseWrapper(KyrinCluster::get_instance()->get_master_config()->userdata_database_path());
+    m_oplog_db    = new KyrinDatabaseWrapper(KyrinCluster::get_instance()->get_master_config()->oplog_database_path());
     upload_file_request_handler = new UploadFileRequestHandler(m_sentinel, m_userdata_db, m_oplog_db);
     get_oplog_request_handler = new GetOplogRequestHandler(m_oplog_db);
     confirm_oplog_request_handler = new ConfirmOplogRequestHandler(m_sentinel, m_userdata_db, m_oplog_db);
@@ -85,7 +85,7 @@ bool KyrinMasterServer::server_free()
 
 bool KyrinMasterServer::server_start()
 {
-    server_run(atoi(KyrinConfig::get_instance()->get_config(constants::k_json_master_server_threads).c_str()));
+    server_run(KyrinCluster::get_instance()->get_master_config()->server_threads());
     return true;
 }
 

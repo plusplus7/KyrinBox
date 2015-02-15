@@ -95,20 +95,22 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
     message.SerializeToString(&message_post);
     message_post = crypto::base64_encode((unsigned char const*)message_post.c_str(), message_post.length());
     uint32_t tp_cnt = 1;
-    for (uint32_t i=0; i<m_masters.size(); i++) {
+    KyrinCluster *cluster = KyrinCluster::get_instance();
+    uint32_t master_count = cluster->get_master_count();
+    for (uint32_t i=1; i<=master_count; i++) {
         if (i == m_kbid)
             continue;
         string tp_res;
-        KyrinHttpClient::make_request_post(m_masters[i].ip,
-                                          m_masters[i].confirm_oplog_port,
-                                          "/ConfirmOplog",
-                                          tp_res,
-                                          message_post);
+        KyrinHttpClient::make_request_post(cluster->get_master_ip(i),
+                                           cluster->get_master_confirm_oplog_port(i),
+                                           "/ConfirmOplog",
+                                           tp_res,
+                                           message_post);
         if (tp_res == "ok") {
             tp_cnt++;
         }
     }
-    if (tp_cnt <= (m_masters.size()>>1)) {
+    if (tp_cnt <= (master_count>>1)) {
         reply = "Two phase rejected..";
         server->server_send_reply_bad(req, reply);
         return ;
@@ -118,12 +120,12 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
     message_confirm.set_op_id(message.op_id());
     message_confirm.SerializeToString(&message_post);
     message_post = crypto::base64_encode((unsigned char const*)message_post.c_str(), message_post.length());
-    for (uint32_t i=0; i<m_masters.size(); i++) {
+    for (uint32_t i=1; i<=master_count; i++) {
         if (i == m_kbid)
             continue;
         string tp_res;
-        KyrinHttpClient::make_request_post(m_masters[i].ip,
-                                          m_masters[i].confirm_oplog_port,
+        KyrinHttpClient::make_request_post(cluster->get_master_ip(i),
+                                          cluster->get_master_confirm_oplog_port(i),
                                           "/ConfirmOplog",
                                           tp_res,
                                           message_post);

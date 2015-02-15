@@ -3,6 +3,7 @@
 #include "server/base/kyrin_base_server.h"
 #include "kyrin_master_sentinel_server.h"
 #include "common/kyrin_log.h"
+#include "common/kyrin_cluster.h"
 #include <unistd.h>
 #include <set>
 #include <fstream>
@@ -22,7 +23,7 @@ static void *sentinel_thread_func(void *arg)
     KyrinMasterSentinel *sentinel = (KyrinMasterSentinel *) arg;
     KyrinMasterSentinelServer *server = new KyrinMasterSentinelServer();
 
-    if (!server->server_initialize(sentinel, sentinel->get_listen_port(), 128*8)) {
+    if (!server->server_initialize(sentinel, KyrinCluster::get_instance()->get_master_sentinel_port(), 128*8)) {
         logger->log("sentinel_thread_func", "start_server failed...");
         return NULL;
     }
@@ -43,7 +44,7 @@ static bool check_response(string &response)
 static void *sentinel_sync_func(void *arg)
 {
     KyrinMasterSentinel *sentinel = (KyrinMasterSentinel *) arg;
-    vector<KyrinMachineInfo> masters = sentinel->get_all_masters();
+    KyrinCluster *cluster = KyrinCluster::get_instance();
     //TODO: Add control to close server
     bool is_running = true;
     int leader = -1;
@@ -57,31 +58,32 @@ static void *sentinel_sync_func(void *arg)
                 {
                     string response;
                     int retry = 0;
-                    while (!KyrinHttpClient::make_request_get((const char *)masters[leader].ip,
-                                                      masters[leader].port,
-                                                      "/get_status",
-                                                      response)
+                    while (!KyrinHttpClient::make_request_get(cluster->get_master_ip(leader),
+                                                              cluster->get_master_sentinel_port(leader),
+                                                              "/get_status",
+                                                              response)
                           && retry != 3) {
                           retry++;
                     }
                     if (retry == 3) {
                         sentinel->set_status(k_status_consensus);
-                        sentinel->set_vote(sentinel->get_kbid(), true);
+                        sentinel->set_vote(cluster->get_kbid(), true);
                     }
                 }
                 break;
             case k_status_consensus:
                 {
-                    vector< pair<uint64_t, uint64_t> > votes(masters.size(), make_pair(0, 0));
-                    vector<bool> voted(masters.size(), false);
+                    uint32_t master_count = cluster->get_master_count();
+                    vector< pair<uint64_t, uint64_t> > votes(master_count+1, make_pair(0, 0));
+                    vector<bool> voted(master_count, false);
                     while (true) {
                         string me_vote;
                         sentinel->get_vote(me_vote);
-                        for (uint32_t i=0; i < masters.size(); i++) {
+                        for (uint32_t i=1; i <= master_count; i++) {
 
                             string response;
-                            KyrinHttpClient::make_request_post((const char *)masters[i].ip,
-                                                               masters[i].port,
+                            KyrinHttpClient::make_request_post(cluster->get_master_ip(i),
+                                                               cluster->get_master_sentinel_port(i),
                                                                "/get_vote",
                                                                response,
                                                                me_vote);
@@ -93,7 +95,7 @@ static void *sentinel_sync_func(void *arg)
 
                                 if (epoch != sentinel->get_epoch()) {
                                     while (epoch > sentinel->get_epoch()) {
-                                        sentinel->set_vote(sentinel->get_kbid(), true);
+                                        sentinel->set_vote(cluster->get_kbid(), true);
                                     }
                                     break;
                                 } else {
@@ -104,8 +106,8 @@ static void *sentinel_sync_func(void *arg)
                             }
                         }
 
-                        vector<int> vote_result(masters.size(), 0);
-                        for (uint32_t i=0; i < votes.size(); i++) {
+                        vector<int> vote_result(master_count+1, 0);
+                        for (uint32_t i=1; i < votes.size(); i++) {
                             if (voted[i]) {
                                 vote_result[votes[i].second]++;
                             }
@@ -113,8 +115,8 @@ static void *sentinel_sync_func(void *arg)
 
                         leader = -1;
                         int max_candidate = -1;
-                        for (uint32_t i=0; i < vote_result.size(); i++) {
-                            if (vote_result[i] >= (masters.size()>>1)+1) {
+                        for (uint32_t i=1; i < vote_result.size(); i++) {
+                            if (vote_result[i] >= (master_count>>1)+1) {
                                 leader = i;
                             }
                             if (vote_result[i]) {
@@ -130,7 +132,7 @@ static void *sentinel_sync_func(void *arg)
                             sentinel->set_vote(max_candidate);
                         } else {
                             sentinel->set_vote(leader);
-                            if (leader != sentinel->get_kbid()) {
+                            if (leader != cluster->get_kbid()) {
                                 cout << "status: follower" << endl;
                                 sentinel->set_status(k_status_follower);
                             } else {
@@ -153,11 +155,10 @@ static void *sentinel_sync_func(void *arg)
     return NULL;
 }
 
-bool KyrinMasterSentinel::start_sentinel(char *filename)
+bool KyrinMasterSentinel::start_sentinel()
 {
-    read_config(filename);
     m_epoch = 0;
-    m_leader = m_kbid;
+    m_leader = KyrinCluster::get_instance()->get_kbid();
     m_status = k_status_consensus;
     pthread_t sentinel_thread_t;
     pthread_t sentinel_sync_t;
@@ -168,24 +169,6 @@ bool KyrinMasterSentinel::start_sentinel(char *filename)
     if (pthread_create(&sentinel_sync_t, NULL, sentinel_sync_func, (void *)this)) {
         return false;
     }
-    return true;
-}
-
-bool KyrinMasterSentinel::read_config(char *filename)
-{
-    ifstream file(filename);
-    int count;
-    file >> count >> m_kbid;
-    m_masters.clear();
-    for (int i=0; i<count; i++) {
-        char tport[10];
-        m_masters.push_back(KyrinMachineInfo());
-        file >> m_masters[i].ip >> tport;
-        m_masters[i].port = atoi(tport);
-        file >> tport;
-        m_masters[i].confirm_oplog_port = atoi(tport);
-    }
-    file.close();
     return true;
 }
 

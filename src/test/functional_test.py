@@ -17,7 +17,7 @@ class FindLeaderTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def get_leader(self):
+    def test_get_leader(self):
         ret = test_sdk.FindLeader(self.host, self.sentinel_ports)
         self.assertNotEqual(ret, None)
 

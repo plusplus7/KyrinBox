@@ -9,12 +9,17 @@ namespace constants {
 
 extern const char* k_config_filepath;
 
+extern const char* k_json_server_type;
+extern const char* k_json_kbid;
+extern const char* k_json_master_server_count;
+extern const char* k_json_machine_address;
 extern const char* k_json_master_upload_file_port;
 extern const char* k_json_master_upload_file_backlog;
 extern const char* k_json_master_get_oplog_port;
 extern const char* k_json_master_get_oplog_backlog;
 extern const char* k_json_master_confirm_oplog_port;
 extern const char* k_json_master_confirm_oplog_backlog;
+extern const char* k_json_master_sentinel_port;
 
 extern const char* k_json_master_server_threads;
 extern const char* k_json_master_userdata_database_path;

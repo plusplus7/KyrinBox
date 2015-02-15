@@ -1,5 +1,6 @@
 #include "kyrin_master_sentinel_server.h"
 #include "common/kyrin_log.h"
+#include "common/kyrin_cluster.h"
 #include <unistd.h>
 
 namespace kyrin {
@@ -42,7 +43,7 @@ static void get_sentinel_vote_handler(evhttp_request *req, void *arg)
     uint64_t epoch, vote;
     sscanf(reply.c_str(), "%llu %llu", &epoch, &vote);
     while (epoch > sentinel->get_epoch()) {
-        sentinel->set_vote(sentinel->get_kbid(), true);
+        sentinel->set_vote(KyrinCluster::get_instance()->get_kbid(), true);
     }
     sentinel->get_vote(reply);
     server->server_send_reply_ok(req, reply);

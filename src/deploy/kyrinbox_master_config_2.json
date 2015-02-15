@@ -1,0 +1,14 @@
+/*_This_is_a_fake_json_file,_do_*NOT*_change_the_format_of_data_nor_delete_this_line_*/
+{
+    "MachineAddress"                : "127.0.0.1",
+    "MasterUploadFilePort"          : "27770",
+    "MasterConfirmOplogPort"        : "27700",
+    "MasterGetOplogPort"            : "27070",
+    "MasterSentinelPort"            : "17777",
+    "MasterUploadFileBacklog"       : "4096",
+    "MasterConfirmOplogBacklog"     : "4096",
+    "MasterGetOplogBacklog"         : "4096",
+    "MasterServerThreads"           : "5",
+    "MasterUserdataDatabasePath"    : "/tmp/kyrinuserdata_db_2",
+    "MasterOplogDatabasePath"       : "/tmp/kyrinoplog_db_2",
+}

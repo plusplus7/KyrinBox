@@ -12,7 +12,7 @@ def main():
     headers = {'KYRIN-TIMESTAMP' : "19930916",
                'KYRIN-SIGNATURE' : "signature"}
 
-    (code, upload_file_response) = test_sdk.UploadFile("localhost", 37770, upload_file_request, headers)
+    (code, upload_file_response) = test_sdk.UploadFile("localhost", 27770, upload_file_request, headers)
     if code != 200:
         print upload_file_response
     else:

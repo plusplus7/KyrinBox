@@ -6,11 +6,5 @@ for i in ${pids[*]}; do
 done
 
 echo "* Setup database..."
-rm -rf /tmp/kyrinuserdata_db
-rm -rf /tmp/kyrinuserdata_db1
-rm -rf /tmp/kyrinuserdata_db2
-rm -rf /tmp/kyrinuserdata_db3
-rm -rf /tmp/kyrinoplog_db
-rm -rf /tmp/kyrinoplog_db1
-rm -rf /tmp/kyrinoplog_db2
-rm -rf /tmp/kyrinoplog_db3
+rm -rf /tmp/kyrinuserdata_db*
+rm -rf /tmp/kyrinoplog_db*

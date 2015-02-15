@@ -62,7 +62,8 @@ env.StaticLibrary(target = 'confirm_oplog_request_handler', source = 'src/server
 env.StaticLibrary(target = 'kyrin_master_server', source = 'src/server/master/kyrin_master_server.cc')
 env.StaticLibrary(target = 'kyrin_master_sentinel', source = 'src/server/master/kyrin_master_sentinel.cc')
 env.StaticLibrary(target = 'kyrin_master_sentinel_server', source = 'src/server/master/kyrin_master_sentinel_server.cc')
-env.StaticLibrary(target = 'kyrin_config', source = 'src/common/kyrin_config.cc')
+env.StaticLibrary(target = 'kyrin_base_config', source = 'src/common/configs/kyrin_base_config.cc')
+env.StaticLibrary(target = 'kyrin_cluster', source = 'src/common/kyrin_cluster.cc')
 env.StaticLibrary(target = 'proto_test', source = 'src/protobuf/test.pb.cc')
 env.StaticLibrary(target = 'proto_upload_file', source = 'src/protobuf/upload_file.pb.cc')
 env.StaticLibrary(target = 'proto_operation_log', source = 'src/protobuf/operation_log.pb.cc')
@@ -80,7 +81,8 @@ kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.
                                     'kyrin_database_wrapper',
                                     'leveldb',
                                     'kyrin_constants',
-                                    'kyrin_config',
+                                    'kyrin_base_config',
+                                    'kyrin_cluster',
                                     'kyrin_master_sentinel',
                                     'kyrin_master_sentinel_server',
                                     'curl',

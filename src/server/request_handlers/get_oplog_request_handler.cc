@@ -43,6 +43,7 @@ void GetOplogRequestHandler::handle_request(KyrinMasterServer *server, evhttp_re
     while (true) {
         string key = it->key().ToString();
         *(response.add_log_data()) = it->value().ToString();
+        cnt++;
         it->Next();
         if (!(it->Valid()) || cnt == constants::k_server_max_get_oplog_size) {
             response.set_last_id(key);

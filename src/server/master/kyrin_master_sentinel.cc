@@ -51,7 +51,7 @@ void KyrinMasterSentinel::sentinel_sync()
     KyrinCluster *cluster = KyrinCluster::get_instance();
     //TODO: Add control to close server
     bool is_running = true;
-    int leader = -1;
+    uint32_t leader = -1;
     while (is_running) {
         KyrinMasterStatus status;
         get_status(status);
@@ -236,7 +236,7 @@ bool KyrinMasterSentinel::set_vote(uint64_t vote)
     return true;
 }
 
-bool KyrinMasterSentinel::get_leader(uint64_t &leader)
+bool KyrinMasterSentinel::get_leader(uint32_t &leader)
 {
     m_leader_lock.lock();
     leader = m_leader;
@@ -244,7 +244,7 @@ bool KyrinMasterSentinel::get_leader(uint64_t &leader)
     return true;
 }
 
-bool KyrinMasterSentinel::set_leader(uint64_t leader)
+bool KyrinMasterSentinel::set_leader(uint32_t leader)
 {
     m_leader_lock.lock();
     m_leader = leader;

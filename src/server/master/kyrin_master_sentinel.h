@@ -23,8 +23,8 @@ public:
     bool set_status(KyrinMasterStatus status);
     bool get_vote(uint64_t &vote);
     bool set_vote(uint64_t vote);
-    bool get_leader(uint64_t &leader);
-    bool set_leader(uint64_t leader);
+    bool get_leader(uint32_t &leader);
+    bool set_leader(uint32_t leader);
     bool get_epoch(uint64_t &epoch);
     bool set_epoch(uint64_t epoch);
     bool get_vote_ticket(std::string &ticket);
@@ -33,7 +33,7 @@ private:
     bool read_config(char *filename);
 
     KyrinMasterStatus m_status;
-    uint64_t m_leader;
+    uint32_t m_leader;
     uint64_t m_vote;
     uint64_t m_epoch;
     kyrin::common::KyrinMutex m_status_lock;

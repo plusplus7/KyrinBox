@@ -43,6 +43,12 @@ public:
         return m_master_configs[kbid-1].confirm_oplog_port();
     }
 
+    uint32_t get_master_get_oplog_port(uint32_t kbid = 0) {
+        if (!kbid)
+            kbid = m_kbid;
+        return m_master_configs[kbid-1].get_oplog_port();
+    }
+
     uint32_t get_kbid() {
         return m_kbid;
     }

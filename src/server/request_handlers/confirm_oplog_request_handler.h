@@ -29,6 +29,8 @@ public:
     void handle_request(KyrinMasterServer *server, evhttp_request *req);
 
 private:
+    bool update_oplog(std::string &last_id, std::string &target_id);
+
     kyrin::io::KyrinDatabaseWrapper *m_oplog_db;
     kyrin::io::KyrinDatabaseWrapper *m_userdata_db;
     KyrinMasterSentinel *m_sentinel;

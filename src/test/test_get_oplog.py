@@ -8,8 +8,11 @@ import operation_log_pb2
 import base64
 import test_sdk
 
-def main():
-    (code, get_oplog_response) = test_sdk.GetOplog("localhost", 37070)
+def main(port):
+    print "###########"
+    print "testing %d" % (port)
+    print "###########"
+    (code, get_oplog_response) = test_sdk.GetOplog("localhost", port)
     if code != 200:
         print get_oplog_response
         return
@@ -31,4 +34,6 @@ def main():
         print "### op ###"
 
 if __name__ == "__main__":
-    main()
+    main(17070)
+    main(27070)
+    main(37070)

@@ -24,6 +24,14 @@ def prepare_for_external():
     os.system("cp src/external/openssl-1.0.2/*.a src/external/lib")
     os.system("rm -rf src/external/openssl-1.0.2/")
 
+    ### Prepare for redis
+    os.system("tar zxvf miscs/softwares/redis-2.8.19.tar.gz -C src/external/")
+    os.system("cd src/external/redis-2.8.19 && make")
+
+    ### Prepare for hiredis
+    os.system("tar zxvf miscs/softwares/hiredis-0.12.1.tar.gz -C src/external/")
+    os.system("cd src/external/hiredis-0.12.1 && make && make install")
+
 def compile_protobuf(proto_list):
     for i in proto_list:
         os.system("./src/external/protobuf-2.6.0/src/protoc -I=./src/protobuf --cpp_out=./src/protobuf --python_out=./src/protobuf ./src/protobuf/" + i)

@@ -17,7 +17,7 @@ public:
     }
 
     int redis_port() {
-        return get_config(kyrin::common::constants::k_json_slavenode_redis_port);
+        return atoi(get_config(kyrin::common::constants::k_json_slavenode_redis_port).c_str());
     }
 };
 

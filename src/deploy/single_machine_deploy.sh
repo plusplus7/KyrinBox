@@ -14,6 +14,9 @@ mkdir $workspace_dir
 for s_dir in ${master_list[*]}; do
     mkdir $workspace_dir/$s_dir
 done
+for s_dir in ${slavenode_list[*]}; do
+    mkdir $workspace_dir/$s_dir
+done
 
 echo "* Copy binary to working directory..."
 if [ ! -f "$kyrin_master_binary" ]; then
@@ -23,10 +26,21 @@ fi
 for s_dir in ${master_list[*]}; do
     cp $kyrin_master_binary $workspace_dir/$s_dir
 done
+if [ ! -f "$kyrin_slavenode_binary" ]; then
+    echo "Cannot find kyrin master binary at $kyrin_slavenode_binary"
+    exit 1
+fi
+for s_dir in ${slavenode_list[*]}; do
+    cp $kyrin_slavenode_binary $workspace_dir/$s_dir
+done
 
 echo "* Place configuration file..."
 if [ ! -f "$kyrin_config_example" ]; then
     echo "Cannot find kyrin master config example file at $kyrin_config_example"
+    exit 1
+fi
+if [ ! -f "$kyrin_slavenode_config_example" ]; then
+    echo "Cannot find kyrin slavenode config example file at $kyrin_slavenode_config_example"
     exit 1
 fi
 for (( i=0; i<${#master_list[@]}; i++)) do
@@ -35,7 +49,17 @@ for (( i=0; i<${#master_list[@]}; i++)) do
         $kyrin_config_example\
         > $workspace_dir"/"${master_list[$i]}"/"kyrinbox_config.json
 done
+for (( i=0; i<${#slavenode_list[@]}; i++)) do
+    (( bp=$i+1 ))
+    sed -e "s/DEPLOY_TO_PUT_KBID_IN/2"$bp"/g"\
+        -e "s/DEPLOY_TO_PUT_REDISPORT_IN/"$bp"6379/g"\
+        $kyrin_slavenode_config_example\
+        > $workspace_dir"/"${slavenode_list[$i]}"/"kyrinbox_config.json
+done
 for s_dir in ${master_list[*]}; do
+    cp kyrinbox_master_* $workspace_dir/$s_dir
+done
+for s_dir in ${slavenode_list[*]}; do
     cp kyrinbox_master_* $workspace_dir/$s_dir
 done
 
@@ -43,5 +67,10 @@ echo "* Start services..."
 for s_dir in ${master_list[*]}; do
     cd "$workspace_dir"/"$s_dir"
     nohup ./kyrin_master 2>&1 > /dev/null &
+    cd - > /dev/null
+done
+for s_dir in ${slavenode_list[*]}; do
+    cd "$workspace_dir"/"$s_dir"
+    nohup ./kyrin_slavenode 2>&1 > /dev/null &
     cd - > /dev/null
 done

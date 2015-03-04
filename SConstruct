@@ -68,6 +68,7 @@ env.StaticLibrary(target = 'upload_file_request_handler', source = 'src/server/r
 env.StaticLibrary(target = 'get_oplog_request_handler', source = 'src/server/request_handlers/get_oplog_request_handler.cc')
 env.StaticLibrary(target = 'confirm_oplog_request_handler', source = 'src/server/request_handlers/confirm_oplog_request_handler.cc')
 env.StaticLibrary(target = 'kyrin_master_server', source = 'src/server/master/kyrin_master_server.cc')
+env.StaticLibrary(target = 'kyrin_slavenode_sync', source = 'src/server/slavenode/kyrin_slavenode_sync.cc')
 env.StaticLibrary(target = 'kyrin_master_sentinel', source = 'src/server/master/kyrin_master_sentinel.cc')
 env.StaticLibrary(target = 'kyrin_master_sentinel_server', source = 'src/server/master/kyrin_master_sentinel_server.cc')
 env.StaticLibrary(target = 'kyrin_base_config', source = 'src/common/configs/kyrin_base_config.cc')
@@ -102,6 +103,23 @@ kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.
                                     'protobuf',
                                    ],
                           )
+kyrin_slavenode = env.Program('kyrin_slavenode', 'src/server/slavenode/kyrin_slavenode_main.cc',
+                               LIBS = ['kyrin_log',
+                                      'event',
+                                      'kyrin_constants',
+                                      'kyrin_base_config',
+                                      'kyrin_slavenode_sync',
+                                      'kyrin_cluster',
+                                      'kyrin_http_client',
+                                      'kyrin_base64',
+                                      'curl',
+                                      'proto_upload_file',
+                                      'proto_operation_log',
+                                      'proto_get_oplog',
+                                      'protobuf',
+                                      'hiredis',
+                                     ],
+                             )
 
 test_protobuf = env.Program("test_protobuf", 'src/test/test_protobuf.cc', LIBS = ['proto_test', 'protobuf'])
 test_spinlock = env.Program('test_spinlock', 'src/test/test_spinlock.cpp', LIBS = ['pthread', ])
@@ -110,4 +128,5 @@ test_lexicographically_helper = env.Program('test_lexicographically_helper', 'sr
 test_sha1 = env.Program('test_sha1', 'src/test/test_sha1.cpp', LIBS = ['kyrin_sha1', 'ssl', 'crypto'])
 
 ### release
-env.Install('release/bin', kyrin_master)
+env.Install('release/bin/master', kyrin_master)
+env.Install('release/bin/slavenode', kyrin_slavenode)

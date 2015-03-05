@@ -9,6 +9,7 @@ using namespace kyrin::common;
 
 static void download_file_handler(evhttp_request *req, void *arg)
 {
+    ((KyrinSlavenodeServer *) arg)->get_download_file_request_handler()->handle_request((KyrinBaseServer *) arg, req);
 }
 
 bool KyrinSlavenodeServer::server_initialize(KyrinSlavenodeSync *sync)

@@ -48,7 +48,7 @@ static void *kyrin_slavenode_sync_func(void *arg)
                                                 "/GetOplog",
                                                 response,
                                                 to_post)) {
-            return NULL;
+            continue;
         }
         kyrinbox::api::GetOplogResponse data;
         data.ParseFromString(crypto::base64_decode(response));

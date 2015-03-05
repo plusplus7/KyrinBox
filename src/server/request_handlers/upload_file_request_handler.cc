@@ -68,7 +68,7 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
         return ;
     }
 
-    operation.set_key(request_pb.account()+request_pb.file_name());
+    operation.set_key(request_pb.account()+request_pb.file_name()); /* FIXME */
     string value;
     if (m_userdata_db->exist(operation.key())) {
         reply = "Filename existed...";

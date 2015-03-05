@@ -27,6 +27,7 @@ bool KyrinSlavenodeServer::server_initialize(KyrinSlavenodeSync *sync)
         return false;
     }
 
+    download_file_request_handler = new DownloadFileRequestHandler((char *)config->redis_host().c_str(), config->redis_port());
     delete config;
     return true;
 }
@@ -35,6 +36,7 @@ bool KyrinSlavenodeServer::server_free()
 {
     KyrinBaseServer::server_free();
     close(download_file_fd);
+    delete download_file_request_handler;
     return true;
 }
 

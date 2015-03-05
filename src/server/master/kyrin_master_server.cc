@@ -80,6 +80,8 @@ bool KyrinMasterServer::server_free()
     delete m_userdata_db;
     delete m_oplog_db;
     delete upload_file_request_handler;
+    delete get_oplog_request_handler;
+    delete confirm_oplog_request_handler;
     return true;
 }
 

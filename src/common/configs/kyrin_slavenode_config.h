@@ -19,6 +19,14 @@ public:
     int redis_port() {
         return atoi(get_config(kyrin::common::constants::k_json_slavenode_redis_port).c_str());
     }
+
+    int download_file_port() {
+        return atoi(get_config(kyrin::common::constants::k_json_slavenode_download_file_port).c_str());
+    }
+
+    int download_file_backlog() {
+        return atoi(get_config(kyrin::common::constants::k_json_slavenode_download_file_backlog).c_str());
+    }
 };
 
 } /* configs */

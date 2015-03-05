@@ -12,8 +12,6 @@
 #include "protobuf/operation_log.pb.h"
 #include "protobuf/upload_file.pb.h"
 
-#include <iostream>
-
 namespace kyrin {
 namespace server {
 
@@ -27,7 +25,6 @@ static void *kyrin_slavenode_sync_func(void *arg)
     KyrinCluster *cluster = KyrinCluster::get_instance();
     configs::KyrinSlavenodeConfig *config = new configs::KyrinSlavenodeConfig();
     config->read_config_file((char *)"kyrinbox_config.json");
-    cout << config->redis_host() << " " << config->redis_port() << endl;
     redisContext *redis_context = redisConnect(config->redis_host().c_str(), config->redis_port());
     delete config;
 
@@ -40,7 +37,6 @@ static void *kyrin_slavenode_sync_func(void *arg)
     KyrinLexicographicallyHelper::get_zero(current_id);
     srand(time(NULL));
     while (true) {
-        logger->log("Slavenode sync", "sync sleep");
         usleep(((rand()&15)+5) * 100000);
         logger->log("Slavenode sync", "start sync");
 
@@ -52,7 +48,6 @@ static void *kyrin_slavenode_sync_func(void *arg)
                                                 "/GetOplog",
                                                 response,
                                                 to_post)) {
-            cout << "[GetOplog failed]: " << "master" << cluster->get_master_ip(random_master) << " " << cluster->get_master_get_oplog_port(random_master) << endl;
             return NULL;
         }
         kyrinbox::api::GetOplogResponse data;

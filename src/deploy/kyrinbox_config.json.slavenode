@@ -1,8 +1,10 @@
 /*_This_is_a_fake_json_file,_do_*NOT*_change_the_format_of_data_nor_delete_this_line_*/
 {
-    "ServerType"            : "Slavenode",
-    "Kbid"                  : "DEPLOY_TO_PUT_KBID_IN",
-    "MasterServerCount"     : "3",
-    "SlavenodeRedisHost"    : "127.0.0.1",
-    "SlavenodeRedisPort"    : "DEPLOY_TO_PUT_REDISPORT_IN"
+    "ServerType"                    : "Slavenode",
+    "Kbid"                          : "DEPLOY_TO_PUT_KBID_IN",
+    "MasterServerCount"             : "3",
+    "SlavenodeRedisHost"            : "127.0.0.1",
+    "SlavenodeRedisPort"            : "DEPLOY_TO_PUT_REDISPORT_IN",
+    "SlavenodeDownloadFilePort"     : "7000",
+    "SlavenodeDownloadFileBacklog"  : "4096"
 }

@@ -23,6 +23,8 @@ const char *k_json_master_userdata_database_path    = "MasterUserdataDatabasePat
 const char *k_json_master_oplog_database_path       = "MasterOplogDatabasePath";
 const char *k_json_slavenode_redis_host             = "SlavenodeRedisHost";
 const char *k_json_slavenode_redis_port             = "SlavenodeRedisPort";
+const char *k_json_slavenode_download_file_port     = "SlavenodeDownloadFilePort";
+const char *k_json_slavenode_download_file_backlog  = "SlavenodeDownloadFileBacklog";
 
 const uint32_t k_server_max_post_data_size          = 1024;
 const uint32_t k_server_max_get_oplog_size          = 100;

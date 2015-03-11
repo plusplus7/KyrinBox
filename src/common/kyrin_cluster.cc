@@ -1,7 +1,6 @@
 #include "kyrin_cluster.h"
 #include "kyrin_constants.h"
 #include <fstream>
-#include <iostream>
 #include <string>
 
 namespace kyrin {
@@ -49,6 +48,7 @@ bool KyrinCluster::read_config_file(const char *filename)
 
     m_kbid = atoi(t_map[constants::k_json_kbid].c_str());
     m_master_server_count = atoi(t_map[constants::k_json_master_server_count].c_str());
+    m_chunk_seed_count = atoi(t_map[constants::k_json_chunk_seed_count].c_str());
 
     m_master_configs.clear();
     for (uint32_t i = 1; i <= m_master_server_count; i++) {
@@ -57,6 +57,14 @@ bool KyrinCluster::read_config_file(const char *filename)
         sprintf(t_filename, "kyrinbox_master_config_%u.json", i);
         master_config.read_config_file(t_filename);
         m_master_configs.push_back(master_config);
+    }
+    m_chunk_configs.clear();
+    for (uint32_t i = 1; i <= m_chunk_seed_count; i++) {
+        KyrinChunkConfig chunk_config;
+        char t_filename[40];
+        sprintf(t_filename, "kyrinbox_chunk_config_%u.json", i);
+        chunk_config.read_config_file(t_filename);
+        m_chunk_configs.push_back(chunk_config);
     }
     return true;
 }

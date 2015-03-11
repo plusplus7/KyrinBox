@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "configs/kyrin_master_config.h"
+#include "configs/kyrin_chunk_config.h"
 
 namespace kyrin {
 namespace common {
@@ -20,11 +21,18 @@ public:
 
     bool read_config_file(const char *filename);
 
-    configs::KyrinMasterConfig* get_master_config(uint32_t kbid = 0) {
+    configs::KyrinMasterConfig *get_master_config(uint32_t kbid = 0) {
         if (!kbid)
             kbid = m_kbid;
         return &m_master_configs[kbid-1];
     }
+
+    configs::KyrinChunkConfig *get_chunk_config(uint32_t kbid = 0) {
+        if (!kbid)
+            kbid = m_kbid;
+        return &m_chunk_configs[kbid-3001];
+    }
+
     const char *get_master_ip(uint32_t kbid = 0) {
         if (!kbid)
             kbid = m_kbid;
@@ -65,7 +73,9 @@ private:
     KyrinServerType m_server_type;
     uint32_t m_kbid;
     uint32_t m_master_server_count;
+    uint32_t m_chunk_seed_count;
     std::vector<configs::KyrinMasterConfig> m_master_configs;
+    std::vector<configs::KyrinChunkConfig> m_chunk_configs;
 };
 
 } /* common */

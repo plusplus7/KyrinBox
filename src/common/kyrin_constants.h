@@ -12,6 +12,7 @@ extern const char* k_config_filepath;
 extern const char* k_json_server_type;
 extern const char* k_json_kbid;
 extern const char* k_json_master_server_count;
+extern const char* k_json_chunk_seed_count;
 extern const char* k_json_machine_address;
 extern const char* k_json_master_upload_file_port;
 extern const char* k_json_master_upload_file_backlog;
@@ -29,6 +30,10 @@ extern const char* k_json_slavenode_redis_host;
 extern const char* k_json_slavenode_redis_port;
 extern const char* k_json_slavenode_download_file_port;
 extern const char* k_json_slavenode_download_file_backlog;
+
+extern const char* k_json_chunk_gossip_server_port;
+extern const char* k_json_chunk_gossip_server_backlog;
+extern const char* k_json_chunk_machine_address;
 
 extern const uint32_t   k_server_max_post_data_size;
 extern const uint32_t   k_server_max_get_oplog_size;

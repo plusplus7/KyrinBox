@@ -23,6 +23,10 @@ public:
     std::string& machine_address() {
         return get_config(kyrin::common::constants::k_json_chunk_machine_address);
     }
+
+    std::string& role() {
+        return get_config(kyrin::common::constants::k_json_chunk_role);
+    }
 };
 
 } /* configs */

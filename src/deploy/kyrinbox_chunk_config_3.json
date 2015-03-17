@@ -2,5 +2,6 @@
 {
     "ChunkMachineAddress"           : "127.0.0.1",
     "ChunkGossipServerPort"         : "37170",
-    "ChunkGossipServerBacklog"      : "4096"
+    "ChunkGossipServerBacklog"      : "4096",
+    "ChunkRole"                     : "Common"
 }

@@ -34,6 +34,7 @@ extern const char* k_json_slavenode_download_file_backlog;
 extern const char* k_json_chunk_gossip_server_port;
 extern const char* k_json_chunk_gossip_server_backlog;
 extern const char* k_json_chunk_machine_address;
+extern const char* k_json_chunk_role;
 
 extern const uint32_t   k_server_max_post_data_size;
 extern const uint32_t   k_server_max_get_oplog_size;

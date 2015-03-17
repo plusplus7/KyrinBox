@@ -2,6 +2,7 @@
 #include <iostream>
 #include "kyrin_chunk_gossiper_server.h"
 #include "server/base/kyrin_base_server.h"
+#include "common/crypto/kyrin_base64.h"
 
 namespace kyrin {
 namespace server {
@@ -44,7 +45,9 @@ bool KyrinChunkGossiperServer::server_close()
 
 bool KyrinChunkGossiperServer::handle_request(evhttp_request *req)
 {
-    string reply = "Tom loves Lilei.";
+    string reply = "";
+    m_gossiper->get_status_string(reply);
+    reply = common::crypto::base64_encode((unsigned char const*)reply.c_str(), reply.length());
     server_send_reply_ok(req, reply);
     return true;
 }

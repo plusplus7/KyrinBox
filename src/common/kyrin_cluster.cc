@@ -9,14 +9,10 @@ namespace common {
 using namespace std;
 using namespace kyrin::common::configs;
 
-KyrinCluster *KyrinCluster::m_kyrin_cluster = NULL;
+KyrinCluster *KyrinCluster::m_kyrin_cluster = new KyrinCluster();
 
 KyrinCluster *KyrinCluster::get_instance()
 {
-    if (m_kyrin_cluster == NULL) {
-        m_kyrin_cluster = new KyrinCluster();
-        m_kyrin_cluster->read_config_file(constants::k_config_filepath);
-    }
     return m_kyrin_cluster;
 }
 

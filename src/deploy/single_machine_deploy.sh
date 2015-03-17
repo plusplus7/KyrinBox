@@ -73,6 +73,7 @@ for (( i=0; i<${#slavenode_list[@]}; i++)) do
     (( bp=$i+1 ))
     sed -e "s/DEPLOY_TO_PUT_KBID_IN/2"$bp"/g"\
         -e "s/DEPLOY_TO_PUT_REDISPORT_IN/"$bp"6379/g"\
+        -e "s/7000/"$bp"7000/g"\
         $kyrin_slavenode_config_example\
         > $workspace_dir"/"${slavenode_list[$i]}"/"kyrinbox_config.json
 done

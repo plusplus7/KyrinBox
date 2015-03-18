@@ -45,7 +45,20 @@ bool KyrinChunkGossiperServer::server_close()
 
 bool KyrinChunkGossiperServer::handle_request(evhttp_request *req)
 {
+    string request_body = "";
     string reply = "";
+
+    if (!server_get_postdata(req, request_body)) {
+        reply = "Can't read post";
+        server_send_reply_bad(req, reply);
+        return false;
+    }
+    request_body = common::crypto::base64_decode(request_body);
+    kyrinbox::server::ChunkClusterGossipSend send;
+    send.ParseFromString(request_body);
+    uint32_t req_kbid = send.kbid();
+    m_gossiper->check_commons(req_kbid);
+
     m_gossiper->get_status_string(reply);
     reply = common::crypto::base64_encode((unsigned char const*)reply.c_str(), reply.length());
     server_send_reply_ok(req, reply);

@@ -11,3 +11,7 @@ message ChunkClusterStatus {
     repeated ChunkStatus dead_commons = 4;
     required uint64 timestamp = 5;
 }
+
+message ChunkClusterGossipSend {
+    required uint32 kbid = 1;
+}

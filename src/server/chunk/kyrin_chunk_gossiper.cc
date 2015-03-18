@@ -85,7 +85,10 @@ void KyrinChunkGossiper::gossip_sync()
             uint32_t retry = 0;
             string response;
             string to_post = "";
-            m_status.to_string(to_post);
+            kyrinbox::server::ChunkClusterGossipSend send;
+            send.set_kbid(cluster->get_kbid());
+            send.SerializeToString(&to_post);
+            to_post = crypto::base64_encode((unsigned char const*)to_post.c_str(), to_post.length());
 
             while (!KyrinHttpClient::make_request_post(cluster->get_chunk_ip(random_chunk),
                                                        cluster->get_chunk_gossip_port(random_chunk),

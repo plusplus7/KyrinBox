@@ -13,10 +13,11 @@ class KyrinChunkGossiperStatus {
 public:
     void initialize(std::vector<uint32_t> &seeds, std::vector<uint32_t> &commons, uint64_t timestamp = 0);
     bool to_protobuf(kyrinbox::server::ChunkClusterStatus &status);
-    bool to_string(std::string &status_str);
+    bool to_string(std::string *status_str);
     bool from_string(std::string &status_str);
     void set_dead(uint32_t kbid, int flag);
     void set_alive(uint32_t kbid, int flag);
+    bool check_commons(uint32_t kbid);
     uint64_t get_timestamp() {
         return m_timestamp;
     }

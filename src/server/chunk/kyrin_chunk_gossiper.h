@@ -12,7 +12,10 @@ public:
     bool start_gossip();
     void gossip_sync();
     void get_status_string(std::string &status) {
-        m_status.to_string(status);
+        m_status.to_string(&status);
+    }
+    void check_commons(uint32_t kbid) {
+        m_status.check_commons(kbid);
     }
 
 private:

@@ -17,6 +17,24 @@ void KyrinChunkGossiperStatus::initialize(vector<uint32_t> &seeds, vector<uint32
     srand(time(NULL));
 }
 
+bool KyrinChunkGossiperStatus::check_commons(uint32_t kbid)
+{
+    /* FIXME: O(n) */
+    for (uint32_t i=0; i<m_seeds.size(); i++) {
+        if (m_seeds[i] == kbid)
+            return false;
+    }
+
+    for (uint32_t i=0; i<m_commons.size(); i++) {
+        if (m_commons[i] == kbid)
+            return false;
+    }
+
+    m_status_lock.lock();
+    m_commons.push_back(kbid);
+    m_status_lock.unlock();
+}
+
 bool KyrinChunkGossiperStatus::to_protobuf(kyrinbox::server::ChunkClusterStatus &status)
 {
     status.clear_seeds();
@@ -50,11 +68,11 @@ bool KyrinChunkGossiperStatus::to_protobuf(kyrinbox::server::ChunkClusterStatus 
     return true;
 }
 
-bool KyrinChunkGossiperStatus::to_string(string &status_str)
+bool KyrinChunkGossiperStatus::to_string(string *status_str)
 {
     kyrinbox::server::ChunkClusterStatus status;
     to_protobuf(status);
-    return status.SerializeToString(&status_str);
+    return status.SerializeToString(status_str);
 }
 
 bool KyrinChunkGossiperStatus::from_string(string &status_str)

@@ -87,14 +87,12 @@ void KyrinChunkGossiper::gossip_sync()
             string to_post = "";
             m_status.to_string(to_post);
 
-            bool ret = false;
-            while (!ret
-                   && retry < 3) {
-                ret = KyrinHttpClient::make_request_post(cluster->get_chunk_ip(random_chunk),
+            while (!KyrinHttpClient::make_request_post(cluster->get_chunk_ip(random_chunk),
                                                        cluster->get_chunk_gossip_port(random_chunk),
                                                        "/get_status",
                                                        response,
-                                                       to_post);
+                                                       to_post)
+                   && retry < 3) {
                 retry++;
             }
             /* FIXME: Not best practise */

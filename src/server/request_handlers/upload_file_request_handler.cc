@@ -7,6 +7,7 @@
 #include "protobuf/upload_file.pb.h"
 #include "protobuf/get_oplog.pb.h"
 #include "protobuf/operation_log.pb.h"
+#include "server/chunk/kyrin_chunk_gossiper_status.h"
 
 namespace kyrin {
 namespace server {
@@ -39,6 +40,7 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
 
     //// Collect data
 
+    KyrinCluster *cluster = KyrinCluster::get_instance();
     kyrinbox::api::UploadFileRequest request_pb;
     request_pb.ParseFromString(request_body);
     logger->log("pb data account",     request_pb.account().c_str());
@@ -55,9 +57,26 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
 
     kyrinbox::api::UploadFileOperation operation;
     kyrinbox::api::UploadFileResponse *response = operation.mutable_data();
-    for (int i=0; i<3; i++) {
+    pair<const char *, int> to_gossip = cluster->get_random_chunk_seed_for_gossip();
+
+    string gossip_response;
+    string gossip_request = "Read"; /* FIXME: hardcode */
+    KyrinHttpClient::make_request_post(to_gossip.first,
+                                       to_gossip.second,
+                                       "/get_status",
+                                       gossip_response,
+                                       gossip_request);
+    logger->log("gossip_response", gossip_response.c_str());
+    gossip_response = crypto::base64_decode(gossip_response);
+    KyrinChunkGossiperStatus chunk_status;
+    chunk_status.from_string(gossip_response);
+    vector<ChunkStatusConfig> hosts;
+    chunk_status.get_random_alive_3(hosts);
+    for (uint32_t i=0; i<3; i++) {
         string *new_file_hosts = response->add_file_hosts();
-        new_file_hosts->assign("127.0.0.1");
+        char gsp_port[30]; /* FIXME: hardcode */
+        sprintf(gsp_port, "%s:%u", hosts[i].host.c_str(), hosts[i].gossip_port);
+        new_file_hosts->assign(gsp_port, strlen(gsp_port));
     }
     response->set_file_size(request_pb.file_size());
     response->set_merkle_sha1(request_pb.merkle_sha1());
@@ -75,6 +94,8 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
         server->server_send_reply_bad(req, reply);
         return ;
     }
+
+    logger->log("Two phase", "start");
     //// Two phase
     kyrinbox::api::OperationLogMessage message;
     string last_key;
@@ -95,7 +116,6 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
     message.SerializeToString(&message_post);
     message_post = crypto::base64_encode((unsigned char const*)message_post.c_str(), message_post.length());
     uint32_t tp_cnt = 1;
-    KyrinCluster *cluster = KyrinCluster::get_instance();
     uint32_t master_count = cluster->get_master_count();
     for (uint32_t i=1; i<=master_count; i++) {
         if (i == m_kbid)

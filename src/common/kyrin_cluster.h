@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 #include "configs/kyrin_master_config.h"
 #include "configs/kyrin_chunk_config.h"
 
@@ -27,6 +28,10 @@ public:
         return &m_master_configs[kbid-1];
     }
 
+    std::pair<const char *, int> get_random_chunk_seed_for_gossip() {
+        int rnd = 3001+rand()%m_chunk_seed_count;
+        return std::make_pair(get_chunk_ip(rnd), get_chunk_gossip_port(rnd));
+    }
     const char *get_chunk_ip(uint32_t kbid = 0) {
         if (!kbid)
             kbid = m_kbid;
@@ -90,6 +95,7 @@ public:
 private:
     KyrinCluster() {
         read_config_file(constants::k_config_filepath);
+        srand(time(NULL));
     }
     virtual ~KyrinCluster() {}
 

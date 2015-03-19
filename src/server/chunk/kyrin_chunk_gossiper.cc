@@ -27,7 +27,7 @@ static void *gossip_server_thread_func(void *arg)
        logger->log("gossip_thread_func", "start_server failed...");
        return NULL;
     }
-    logger->log("gossip_server_thread_func", "start_server");
+    logger->log("gossip_server_thread_func", "server started");
     server->server_start();
     server->server_close();
 
@@ -85,13 +85,20 @@ void KyrinChunkGossiper::gossip_sync()
             uint32_t retry = 0;
             string response;
             string to_post = "";
-            kyrinbox::server::ChunkClusterGossipSend send;
+            kyrinbox::server::ChunkClusterGossipData send;
             send.set_kbid(cluster->get_kbid());
+            send.set_host(cluster->get_chunk_ip());
+            send.set_gossip_port(cluster->get_chunk_gossip_port());
             send.SerializeToString(&to_post);
+            ChunkStatusConfig config;
+            if (m_status.get_config(random_chunk, config) == false) {
+                logger->log("gossip_sync", "Can't find random_chunk");
+                continue;
+            }
             to_post = crypto::base64_encode((unsigned char const*)to_post.c_str(), to_post.length());
 
-            while (!KyrinHttpClient::make_request_post(cluster->get_chunk_ip(random_chunk),
-                                                       cluster->get_chunk_gossip_port(random_chunk),
+            while (!KyrinHttpClient::make_request_post(config.host.c_str(),
+                                                       config.gossip_port,
                                                        "/get_status",
                                                        response,
                                                        to_post)
@@ -104,20 +111,24 @@ void KyrinChunkGossiper::gossip_sync()
             } else if (retry < 3 && to_gossip[i].second < 0) {
                 m_status.set_alive(to_gossip[i].first, to_gossip[i].second);
             }
+            if (retry == 3) {
+                logger->log("gossip_sync", "detect failure");
+                continue;
+            }
             cout << " ====== my status ======" << endl;
             m_status.show();
             cout << " ====== my status end ======" << endl;
-            if (retry == 3) {
+            response = crypto::base64_decode(response);
+            /* FIXME: waste of resource*/
+            KyrinChunkGossiperStatus t_status;
+            if (t_status.from_string(response) == false) {
+                logger->log("gossip_sync", "t_status from_string failed");
                 continue;
             }
-            response = crypto::base64_decode(response);
-            KyrinChunkGossiperStatus t_status;
-            t_status.from_string(response);
-            cout << " ====== t status ======" << endl;
-            t_status.show();
-            cout << " ====== t status end ======" << endl;
             if (t_status.get_timestamp() > m_status.get_timestamp()) {
-                m_status = t_status;
+                if (!m_status.from_string(response)) {
+                    logger->log("gossip_sync", "Assign m_status failed");
+                }
             }
         }
     }

@@ -9,6 +9,13 @@
 namespace kyrin {
 namespace server {
 
+struct ChunkStatusConfig {
+    std::string host;
+    uint32_t gossip_port;
+    ChunkStatusConfig(std::string th = "", uint32_t gp = 0):host(th), gossip_port(gp) {}
+    ~ChunkStatusConfig(){}
+};
+
 class KyrinChunkGossiperStatus {
 public:
     void initialize(std::vector<uint32_t> &seeds, std::vector<uint32_t> &commons, uint64_t timestamp = 0);
@@ -17,7 +24,8 @@ public:
     bool from_string(std::string &status_str);
     void set_dead(uint32_t kbid, int flag);
     void set_alive(uint32_t kbid, int flag);
-    bool check_commons(uint32_t kbid);
+    bool check_commons(kyrinbox::server::ChunkClusterGossipData &data);
+    bool get_config(uint32_t kbid, ChunkStatusConfig &config);
     uint64_t get_timestamp() {
         return m_timestamp;
     }
@@ -74,6 +82,7 @@ private:
 
     kyrin::common::KyrinMutex m_status_lock;
     uint64_t m_timestamp;
+    std::map<uint32_t, ChunkStatusConfig> m_configs;
     std::vector<uint32_t> m_seeds;
     std::vector<uint32_t> m_commons;
     std::vector<uint32_t> m_dead_seeds;

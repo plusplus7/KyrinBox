@@ -54,10 +54,9 @@ bool KyrinChunkGossiperServer::handle_request(evhttp_request *req)
         return false;
     }
     request_body = common::crypto::base64_decode(request_body);
-    kyrinbox::server::ChunkClusterGossipSend send;
+    kyrinbox::server::ChunkClusterGossipData send;
     send.ParseFromString(request_body);
-    uint32_t req_kbid = send.kbid();
-    m_gossiper->check_commons(req_kbid);
+    m_gossiper->check_commons(send);
 
     m_gossiper->get_status_string(reply);
     reply = common::crypto::base64_encode((unsigned char const*)reply.c_str(), reply.length());

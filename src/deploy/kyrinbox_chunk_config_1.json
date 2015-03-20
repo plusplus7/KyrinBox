@@ -1,0 +1,7 @@
+/*_This_is_a_fake_json_file,_do_*NOT*_change_the_format_of_data_nor_delete_this_line_*/
+{
+    "ChunkMachineAddress"           : "127.0.0.1",
+    "ChunkGossipServerPort"         : "17170",
+    "ChunkGossipServerBacklog"      : "4096",
+    "ChunkRole"                     : "Seed"
+}

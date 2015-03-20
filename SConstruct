@@ -46,6 +46,7 @@ proto_list = ["test.proto",
               "upload_file.proto",
               "operation_log.proto",
               "get_oplog.proto",
+              "chunk_cluster_status.proto"
              ]
 compile_protobuf(proto_list)
 
@@ -69,9 +70,13 @@ env.StaticLibrary(target = 'get_oplog_request_handler', source = 'src/server/req
 env.StaticLibrary(target = 'confirm_oplog_request_handler', source = 'src/server/request_handlers/confirm_oplog_request_handler.cc')
 env.StaticLibrary(target = 'download_file_request_handler', source = 'src/server/request_handlers/download_file_request_handler.cc')
 env.StaticLibrary(target = 'kyrin_master_server', source = 'src/server/master/kyrin_master_server.cc')
+# env.StaticLibrary(target = 'kyrin_chunk_server', source = 'src/server/chunk/kyrin_chunk_server.cc')
 env.StaticLibrary(target = 'kyrin_slavenode_server', source = 'src/server/slavenode/kyrin_slavenode_server.cc')
 env.StaticLibrary(target = 'kyrin_slavenode_sync', source = 'src/server/slavenode/kyrin_slavenode_sync.cc')
 env.StaticLibrary(target = 'kyrin_master_sentinel', source = 'src/server/master/kyrin_master_sentinel.cc')
+env.StaticLibrary(target = 'kyrin_chunk_gossiper', source = 'src/server/chunk/kyrin_chunk_gossiper.cc')
+env.StaticLibrary(target = 'kyrin_chunk_gossiper_server', source = 'src/server/chunk/kyrin_chunk_gossiper_server.cc')
+env.StaticLibrary(target = 'kyrin_chunk_gossiper_status', source = 'src/server/chunk/kyrin_chunk_gossiper_status.cc')
 env.StaticLibrary(target = 'kyrin_master_sentinel_server', source = 'src/server/master/kyrin_master_sentinel_server.cc')
 env.StaticLibrary(target = 'kyrin_base_config', source = 'src/common/configs/kyrin_base_config.cc')
 env.StaticLibrary(target = 'kyrin_cluster', source = 'src/common/kyrin_cluster.cc')
@@ -79,6 +84,7 @@ env.StaticLibrary(target = 'proto_test', source = 'src/protobuf/test.pb.cc')
 env.StaticLibrary(target = 'proto_upload_file', source = 'src/protobuf/upload_file.pb.cc')
 env.StaticLibrary(target = 'proto_operation_log', source = 'src/protobuf/operation_log.pb.cc')
 env.StaticLibrary(target = 'proto_get_oplog', source = 'src/protobuf/get_oplog.pb.cc')
+env.StaticLibrary(target = 'proto_chunk_cluster_status', source = 'src/protobuf/chunk_cluster_status.pb.cc')
 
 ### Link
 kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc',
@@ -125,7 +131,25 @@ kyrin_slavenode = env.Program('kyrin_slavenode', 'src/server/slavenode/kyrin_sla
                                        'hiredis',
                                       ],
                              )
-
+kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
+                           LIBS = [#'kyrin_chunk_server',
+                                   'kyrin_chunk_gossiper_status',
+                                   'kyrin_chunk_gossiper',
+                                   'kyrin_chunk_gossiper_server',
+                                   'kyrin_log',
+                                   'event',
+                                   'kyrin_base_server',
+                                   'kyrin_constants',
+                                   'kyrin_cluster',
+                                   'kyrin_base_config',
+                                   'kyrin_http_client',
+                                   'kyrin_base64',
+                                   'curl',
+                                   'proto_chunk_cluster_status',
+                                   'protobuf',
+                                   'pthread',
+                                  ]
+                         )
 test_protobuf = env.Program("test_protobuf", 'src/test/test_protobuf.cc', LIBS = ['proto_test', 'protobuf'])
 test_spinlock = env.Program('test_spinlock', 'src/test/test_spinlock.cpp', LIBS = ['pthread', ])
 test_http_client= env.Program('test_http_client', 'src/test/test_http_client.cpp', LIBS = ['event', 'curl', 'kyrin_http_client'])
@@ -135,3 +159,4 @@ test_sha1 = env.Program('test_sha1', 'src/test/test_sha1.cpp', LIBS = ['kyrin_sh
 ### release
 env.Install('release/bin/master', kyrin_master)
 env.Install('release/bin/slavenode', kyrin_slavenode)
+env.Install('release/bin/chunk', kyrin_chunk)

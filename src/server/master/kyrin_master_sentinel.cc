@@ -67,6 +67,7 @@ void KyrinMasterSentinel::sentinel_sync()
                                                               "/get_status",
                                                               response)
                           && retry != 3) {
+                          logger->log("sentinel_sync", "retry");
                           retry++;
                     }
                     if (retry == 3) {

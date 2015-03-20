@@ -30,8 +30,6 @@ public:
     bool get_vote_ticket(std::string &ticket);
 
 private:
-    bool read_config(char *filename);
-
     KyrinMasterStatus m_status;
     uint32_t m_leader;
     uint64_t m_vote;

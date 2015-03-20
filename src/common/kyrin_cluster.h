@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "configs/kyrin_master_config.h"
+#include "configs/kyrin_chunk_config.h"
 
 namespace kyrin {
 namespace common {
@@ -20,11 +21,40 @@ public:
 
     bool read_config_file(const char *filename);
 
-    configs::KyrinMasterConfig* get_master_config(uint32_t kbid = 0) {
+    configs::KyrinMasterConfig *get_master_config(uint32_t kbid = 0) {
         if (!kbid)
             kbid = m_kbid;
         return &m_master_configs[kbid-1];
     }
+
+    const char *get_chunk_ip(uint32_t kbid = 0) {
+        if (!kbid)
+            kbid = m_kbid;
+        return m_chunk_configs[kbid-3001].machine_address().c_str();
+    }
+
+    uint32_t get_chunk_gossip_port(uint32_t kbid = 0) {
+        if (!kbid)
+            kbid = m_kbid;
+        return m_chunk_configs[kbid-3001].gossip_server_port();
+    }
+
+    configs::KyrinChunkConfig *get_chunk_config(uint32_t kbid = 0) {
+        if (!kbid)
+            kbid = m_kbid;
+        return &m_chunk_configs[kbid-3001];
+    }
+
+    void get_chunk_status(std::vector<uint32_t> &seeds, std::vector<uint32_t> &commons) {
+        for (uint32_t i=0; i<m_chunk_configs.size(); i++) {
+            if (m_chunk_configs[i].role() == "Seed") {
+                seeds.push_back(i+3001);
+            } else {
+                commons.push_back(i+3001);
+            }
+        }
+    }
+
     const char *get_master_ip(uint32_t kbid = 0) {
         if (!kbid)
             kbid = m_kbid;
@@ -58,14 +88,18 @@ public:
     }
 
 private:
-    KyrinCluster() {}
+    KyrinCluster() {
+        read_config_file(constants::k_config_filepath);
+    }
     virtual ~KyrinCluster() {}
 
     static KyrinCluster *m_kyrin_cluster;
     KyrinServerType m_server_type;
     uint32_t m_kbid;
     uint32_t m_master_server_count;
+    uint32_t m_chunk_seed_count;
     std::vector<configs::KyrinMasterConfig> m_master_configs;
+    std::vector<configs::KyrinChunkConfig> m_chunk_configs;
 };
 
 } /* common */

@@ -1,0 +1,20 @@
+package kyrinbox.server;
+
+message ChunkStatus {
+    required uint32 kbid = 1;
+}
+
+message ChunkClusterStatus {
+    repeated ChunkStatus seeds            = 1;
+    repeated ChunkStatus commons          = 2;
+    repeated ChunkStatus dead_seeds       = 3;
+    repeated ChunkStatus dead_commons     = 4;
+    repeated ChunkClusterGossipData datas = 5;
+    required uint64 timestamp             = 6;
+}
+
+message ChunkClusterGossipData {
+    required uint32 kbid = 1;
+    required string host = 2;
+    required uint32 gossip_port = 3;
+}

@@ -2,5 +2,6 @@
 {
     "ServerType"            : "Master",
     "Kbid"                  : "DEPLOY_TO_PUT_KBID_IN",
-    "MasterServerCount"     : "3"
+    "MasterServerCount"     : "3",
+    "ChunkSeedCount"        : "3"
 }

@@ -29,6 +29,34 @@ public:
     uint64_t get_timestamp() {
         return m_timestamp;
     }
+    bool get_random_alive_3(std::vector<ChunkStatusConfig> &res) {
+        std::vector<uint32_t> v;
+        v.clear();
+        res.clear();
+        int n = m_seeds.size()+m_commons.size();
+        if (n < 3) {
+            return false;
+        }
+        for (uint32_t i=0; i<3;) {
+            uint32_t tk = rand()%n;
+            if (tk >= m_seeds.size())
+                tk = m_commons[tk-m_seeds.size()-1];
+            else
+                tk = m_seeds[tk];
+            for (uint32_t j=0; ;j++) {
+                if (j == i) {
+                    res.push_back(m_configs[tk]);
+                    v.push_back(tk);
+                    i++;
+                    break;
+                }
+                if (tk == v[j]) {
+                    break;
+                }
+            }
+        }
+        return true;
+    }
     uint32_t get_random_seed() {
         if (m_seeds.size() == 0)
             return 0;

@@ -96,6 +96,7 @@ kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.
                                     'confirm_oplog_request_handler',
                                     'upload_file_request_handler',
                                     'kyrin_database_wrapper',
+                                    'kyrin_chunk_gossiper_status',
                                     'leveldb',
                                     'kyrin_constants',
                                     'kyrin_base_config',
@@ -108,6 +109,7 @@ kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.
                                     'proto_upload_file',
                                     'proto_operation_log',
                                     'proto_get_oplog',
+                                    'proto_chunk_cluster_status',
                                     'protobuf',
                                    ],
                           )

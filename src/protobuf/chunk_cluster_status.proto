@@ -10,7 +10,7 @@ message ChunkClusterStatus {
     repeated ChunkStatus dead_seeds       = 3;
     repeated ChunkStatus dead_commons     = 4;
     repeated ChunkClusterGossipData datas = 5;
-    required uint64 timestamp             = 6;
+    optional uint64 timestamp             = 6;
 }
 
 message ChunkClusterGossipData {

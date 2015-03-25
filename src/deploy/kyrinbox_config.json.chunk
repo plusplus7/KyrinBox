@@ -1,0 +1,9 @@
+/*_This_is_a_fake_json_file,_do_*NOT*_change_the_format_of_data_nor_delete_this_line_*/
+{
+    "ServerType"                  : "DEPLOY_TO_PUT_ROLE",
+    "Kbid"                        : "DEPLOY_TO_PUT_KBID_IN",
+    "MasterServerCount"           : "3",
+    "ChunkSeedCount"              : "3",
+    "ChunkUploadChunkFilePort"    : "7077",
+    "ChunkUploadChunkFileBacklog" : "4096"
+}

@@ -31,6 +31,8 @@ const char* k_json_chunk_gossip_server_port         = "ChunkGossipServerPort";
 const char* k_json_chunk_gossip_server_backlog      = "ChunkGossipServerBacklog";
 const char* k_json_chunk_machine_address            = "ChunkMachineAddress";
 const char* k_json_chunk_role                       = "ChunkRole";
+const char* k_json_chunk_upload_chunk_file_port     = "ChunkUploadChunkFilePort";
+const char* k_json_chunk_upload_chunk_file_backlog  = "ChunkUploadChunkFileBacklog";
 
 const uint32_t k_server_max_post_data_size          = 1024;
 const uint32_t k_server_max_get_oplog_size          = 100;

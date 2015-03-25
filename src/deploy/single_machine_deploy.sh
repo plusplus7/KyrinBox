@@ -64,8 +64,9 @@ echo "* Place chunk config..."
 for (( i=0; i<${#chunk_list[@]}; i++)) do
     (( bp=$i+1 ))
     sed -e "s/DEPLOY_TO_PUT_KBID_IN/300$bp/g"\
-        -e "s/\"Master\"/\"Chunk\"/g"\
-        $kyrin_config_example\
+        -e "s/DEPLOY_TO_PUT_ROLE/Chunk/g"\
+        -e "s/7077/"$bp"7077/g"\
+        $kyrin_chunk_config_example\
         > $workspace_dir"/"${chunk_list[$i]}"/"kyrinbox_config.json
 done
 echo "* Place slavenode config..."

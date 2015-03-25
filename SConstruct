@@ -66,11 +66,12 @@ env.StaticLibrary(target = 'kyrin_database_wrapper', source = 'src/io/kyrin_data
 env.StaticLibrary(target = 'kyrin_http_client', source = 'src/io/kyrin_http_client.cc')
 env.StaticLibrary(target = 'kyrin_log', source = 'src/common/kyrin_log.cc')
 env.StaticLibrary(target = 'upload_file_request_handler', source = 'src/server/request_handlers/upload_file_request_handler.cc')
+env.StaticLibrary(target = 'upload_chunk_file_request_handler', source = 'src/server/request_handlers/upload_chunk_file_request_handler.cc')
 env.StaticLibrary(target = 'get_oplog_request_handler', source = 'src/server/request_handlers/get_oplog_request_handler.cc')
 env.StaticLibrary(target = 'confirm_oplog_request_handler', source = 'src/server/request_handlers/confirm_oplog_request_handler.cc')
 env.StaticLibrary(target = 'download_file_request_handler', source = 'src/server/request_handlers/download_file_request_handler.cc')
 env.StaticLibrary(target = 'kyrin_master_server', source = 'src/server/master/kyrin_master_server.cc')
-# env.StaticLibrary(target = 'kyrin_chunk_server', source = 'src/server/chunk/kyrin_chunk_server.cc')
+env.StaticLibrary(target = 'kyrin_chunk_server', source = 'src/server/chunk/kyrin_chunk_server.cc')
 env.StaticLibrary(target = 'kyrin_slavenode_server', source = 'src/server/slavenode/kyrin_slavenode_server.cc')
 env.StaticLibrary(target = 'kyrin_slavenode_sync', source = 'src/server/slavenode/kyrin_slavenode_sync.cc')
 env.StaticLibrary(target = 'kyrin_master_sentinel', source = 'src/server/master/kyrin_master_sentinel.cc')
@@ -134,7 +135,7 @@ kyrin_slavenode = env.Program('kyrin_slavenode', 'src/server/slavenode/kyrin_sla
                                       ],
                              )
 kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
-                           LIBS = [#'kyrin_chunk_server',
+                           LIBS = ['kyrin_chunk_server',
                                    'kyrin_chunk_gossiper_status',
                                    'kyrin_chunk_gossiper',
                                    'kyrin_chunk_gossiper_server',
@@ -148,6 +149,7 @@ kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
                                    'kyrin_base64',
                                    'curl',
                                    'proto_chunk_cluster_status',
+                                   'upload_chunk_file_request_handler',
                                    'protobuf',
                                    'pthread',
                                   ]

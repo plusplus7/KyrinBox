@@ -12,5 +12,6 @@ int main()
     server->server_start();
     server->server_free();
     delete server;
+    delete sync;
     return 0;
 }

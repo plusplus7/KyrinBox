@@ -1,5 +1,5 @@
-#ifndef KYRINBOX_SRC_SERVER_REQUEST_HANDLER_SET_FILE_KEY_INFO_H_
-#define KYRINBOX_SRC_SERVER_REQUEST_HANDLER_SET_FILE_KEY_INFO_H_
+#ifndef KYRINBOX_SRC_SERVER_REQUEST_HANDLER_SET_FILE_KEY_INFO_REQUEST_HANDLER_H_
+#define KYRINBOX_SRC_SERVER_REQUEST_HANDLER_SET_FILE_KEY_INFO_REQUEST_HANDLER_H_
 
 #include "server/chunk/kyrin_chunk_server.h"
 #include "server/chunk/kyrin_chunk_gossiper.h"
@@ -29,4 +29,4 @@ private:
 } /* server */
 } /* kyrin */
 
-#endif /* end of include guard: KYRINBOX_SRC_SERVER_REQUEST_HANDLER_SET_FILE_KEY_INFO_H_ */
+#endif /* end of include guard: KYRINBOX_SRC_SERVER_REQUEST_HANDLER_SET_FILE_KEY_INFO_REQUEST_HANDLER_H_ */

@@ -23,6 +23,9 @@ public:
 
 private:
     int upload_chunk_file_fd;
+    int download_chunk_file_fd;
+    int set_file_key_info_fd;
+    int get_file_key_info_fd;
     KyrinChunkGossiper *m_gossiper;
     UploadChunkFileRequestHandler *upload_chunk_file_request_handler;
 };

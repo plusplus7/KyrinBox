@@ -7,5 +7,7 @@
     "ChunkUploadChunkFilePort"    : "7077",
     "ChunkUploadChunkFileBacklog" : "4096",
     "ChunkSetFileKeyInfoPort"     : "7270",
-    "ChunkSetFileKeyInfoBacklog"  : "4096"
+    "ChunkSetFileKeyInfoBacklog"  : "4096",
+    "ChunkGetFileKeyInfoPort"     : "7370",
+    "ChunkGetFileKeyInfoBacklog"  : "4096",
 }

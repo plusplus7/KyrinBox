@@ -84,6 +84,24 @@ def SetFileKeyinfo(host, port, request, headers):
         return (response.getcode(), response.read())
     return (200, response.read())
 
+def GetFileKeyinfo(host, port, request, headers):
+    url = "http://%s:%d/GetFileKeyInfo" % (host, port)
+    ret = None
+    post_data = request.SerializeToString()
+    post_data = base64.b64encode(post_data)
+    request = urllib2.Request(url, post_data)
+    for k, v in headers.items():
+        request.add_header(k, v)
+    try:
+        response = urllib2.urlopen(request)
+    except urllib2.HTTPError, e:
+        response = e
+        return (response.getcode(), response.read())
+    get_file_key_info_response = upload_chunk_file_pb2.SetFileKeyInfo()
+    get_file_key_info_response.ParseFromString(base64.b64decode(response.read()))
+    return (200, get_file_key_info_response)
+
+
 if __name__ == "__main__":
     print FindLeader("127.0.0.1", (7777, 17777, 27777))
     id = LexicographicallyGetZero()

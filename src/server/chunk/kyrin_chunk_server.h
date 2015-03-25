@@ -6,12 +6,14 @@
 #include "server/chunk/kyrin_chunk_gossiper.h"
 #include "server/request_handlers/upload_chunk_file_request_handler.h"
 #include "server/request_handlers/set_file_key_info_request_handler.h"
+#include "server/request_handlers/get_file_key_info_request_handler.h"
 
 namespace kyrin {
 namespace server {
 
 class UploadChunkFileRequestHandler;
 class SetFileKeyInfoRequestHandler;
+class GetFileKeyInfoRequestHandler;
 
 class KyrinChunkServer : public KyrinBaseServer {
 public:
@@ -28,6 +30,10 @@ public:
         return set_file_key_info_request_handler;
     }
 
+    GetFileKeyInfoRequestHandler *get_get_file_key_info_request_handler() {
+        return get_file_key_info_request_handler;
+    }
+
 private:
     int upload_chunk_file_fd;
     int download_chunk_file_fd;
@@ -37,6 +43,7 @@ private:
     kyrin::io::KyrinDatabaseWrapper *m_keyinfo_db;
     UploadChunkFileRequestHandler *upload_chunk_file_request_handler;
     SetFileKeyInfoRequestHandler *set_file_key_info_request_handler;
+    GetFileKeyInfoRequestHandler *get_file_key_info_request_handler;
 };
 
 } /* server */

@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include "kyrin_chunk_server.h"
 #include "common/configs/kyrin_chunk_config.h"
+#include "common/kyrin_cluster.h"
 
 namespace kyrin {
 namespace server {
@@ -22,6 +23,7 @@ static void get_file_key_info_handler(evhttp_request *req, void *arg)
 
 static void set_file_key_info_handler(evhttp_request *req, void *arg)
 {
+    ((KyrinChunkServer *) arg)->get_set_file_key_info_request_handler()->handle_request((KyrinChunkServer *)arg, req);
 }
 
 bool KyrinChunkServer::server_initialize(KyrinChunkGossiper *gossiper)
@@ -40,7 +42,16 @@ bool KyrinChunkServer::server_initialize(KyrinChunkGossiper *gossiper)
          return false;
     }
 
+    if (!server_initialize_kyrin_server_socket(set_file_key_info_fd,
+         config->set_file_key_info_port(),
+         config->set_file_key_info_backlog())) {
+         delete config;
+         return false;
+    }
+
+    m_keyinfo_db = new io::KyrinDatabaseWrapper(KyrinCluster::get_instance()->get_chunk_config()->keyinfo_database_path().c_str());
     upload_chunk_file_request_handler = new UploadChunkFileRequestHandler(m_gossiper);
+    set_file_key_info_request_handler = new SetFileKeyInfoRequestHandler(m_gossiper, m_keyinfo_db);
     delete config;
     return true;
 }

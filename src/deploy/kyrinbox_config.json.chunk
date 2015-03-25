@@ -5,5 +5,7 @@
     "MasterServerCount"           : "3",
     "ChunkSeedCount"              : "3",
     "ChunkUploadChunkFilePort"    : "7077",
-    "ChunkUploadChunkFileBacklog" : "4096"
+    "ChunkUploadChunkFileBacklog" : "4096",
+    "ChunkSetFileKeyInfoPort"     : "7270",
+    "ChunkSetFileKeyInfoBacklog"  : "4096"
 }

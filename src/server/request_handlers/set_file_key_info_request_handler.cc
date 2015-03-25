@@ -1,6 +1,7 @@
-#include "set_key_info_request_handler.h"
+#include "set_file_key_info_request_handler.h"
 #include "common/kyrin_macros.h"
 #include "common/crypto/kyrin_base64.h"
+#include "protobuf/upload_chunk_file.pb.h"
 
 namespace kyrin {
 namespace server {
@@ -8,7 +9,7 @@ namespace server {
 using namespace std;
 using namespace kyrin::common;
 
-void SetFileKeyInfoRequestHandler::handler_request(KyrinChunkServer *server, evhttp_request *req)
+void SetFileKeyInfoRequestHandler::handle_request(KyrinChunkServer *server, evhttp_request *req)
 {
     string reply = "Service denied...";
     string request_body = "";
@@ -23,7 +24,11 @@ void SetFileKeyInfoRequestHandler::handler_request(KyrinChunkServer *server, evh
     kyrinbox::api::SetFileKeyInfo info;
     info.ParseFromString(request_body);
 
-    
+    string key = info.account()+info.file_name();
+    m_keyinfo_db->put(info.account()+info.file_name(), request_body);
+    reply = "Set file key info success";
+    server->server_send_reply_ok(req, reply);
+    return ;
 
     kyrin_done();
 

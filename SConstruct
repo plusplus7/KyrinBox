@@ -46,7 +46,8 @@ proto_list = ["test.proto",
               "upload_file.proto",
               "operation_log.proto",
               "get_oplog.proto",
-              "chunk_cluster_status.proto"
+              "chunk_cluster_status.proto",
+              "upload_chunk_file.proto",
              ]
 compile_protobuf(proto_list)
 
@@ -67,6 +68,7 @@ env.StaticLibrary(target = 'kyrin_http_client', source = 'src/io/kyrin_http_clie
 env.StaticLibrary(target = 'kyrin_log', source = 'src/common/kyrin_log.cc')
 env.StaticLibrary(target = 'upload_file_request_handler', source = 'src/server/request_handlers/upload_file_request_handler.cc')
 env.StaticLibrary(target = 'upload_chunk_file_request_handler', source = 'src/server/request_handlers/upload_chunk_file_request_handler.cc')
+env.StaticLibrary(target = 'set_file_key_info_request_handler', source = 'src/server/request_handlers/set_file_key_info_request_handler.cc')
 env.StaticLibrary(target = 'get_oplog_request_handler', source = 'src/server/request_handlers/get_oplog_request_handler.cc')
 env.StaticLibrary(target = 'confirm_oplog_request_handler', source = 'src/server/request_handlers/confirm_oplog_request_handler.cc')
 env.StaticLibrary(target = 'download_file_request_handler', source = 'src/server/request_handlers/download_file_request_handler.cc')
@@ -86,6 +88,7 @@ env.StaticLibrary(target = 'proto_upload_file', source = 'src/protobuf/upload_fi
 env.StaticLibrary(target = 'proto_operation_log', source = 'src/protobuf/operation_log.pb.cc')
 env.StaticLibrary(target = 'proto_get_oplog', source = 'src/protobuf/get_oplog.pb.cc')
 env.StaticLibrary(target = 'proto_chunk_cluster_status', source = 'src/protobuf/chunk_cluster_status.pb.cc')
+env.StaticLibrary(target = 'proto_upload_chunk_file', source = 'src/protobuf/upload_chunk_file.pb.cc')
 
 ### Link
 kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc',
@@ -147,9 +150,13 @@ kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
                                    'kyrin_base_config',
                                    'kyrin_http_client',
                                    'kyrin_base64',
+                                   'kyrin_database_wrapper',
                                    'curl',
                                    'proto_chunk_cluster_status',
+                                   'proto_upload_chunk_file',
+                                   'leveldb',
                                    'upload_chunk_file_request_handler',
+                                   'set_file_key_info_request_handler',
                                    'protobuf',
                                    'pthread',
                                   ]

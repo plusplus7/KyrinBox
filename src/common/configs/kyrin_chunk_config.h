@@ -28,12 +28,24 @@ public:
         return get_config(kyrin::common::constants::k_json_chunk_role);
     }
 
+    uint32_t set_file_key_info_port() {
+        return atoi(get_config(kyrin::common::constants::k_json_chunk_set_file_key_info_port).c_str());
+    }
+
+    uint32_t set_file_key_info_backlog() {
+        return atoi(get_config(kyrin::common::constants::k_json_chunk_set_file_key_info_backlog).c_str());
+    }
+
     uint32_t upload_chunk_file_port() {
         return atoi(get_config(kyrin::common::constants::k_json_chunk_upload_chunk_file_port).c_str());
     }
 
     uint32_t upload_chunk_file_backlog() {
         return atoi(get_config(kyrin::common::constants::k_json_chunk_upload_chunk_file_backlog).c_str());
+    }
+
+    std::string keyinfo_database_path() {
+        return get_config(kyrin::common::constants::k_json_chunk_keyinfo_database_path);
     }
 };
 

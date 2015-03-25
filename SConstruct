@@ -34,7 +34,7 @@ def prepare_for_external():
 
 def compile_protobuf(proto_list):
     for i in proto_list:
-        os.system("./src/external/protobuf-2.6.0/src/protoc -I=./src/protobuf --cpp_out=./src/protobuf --python_out=./src/protobuf ./src/protobuf/" + i)
+        os.system("./src/external/protobuf-2.6.0/src/protoc -I=./src/protobuf --cpp_out=./src/protobuf --python_out=./src/test ./src/protobuf/" + i)
 
 env = Environment(CC = 'gcc', CCFLAGS = '-O2')
 #dbg = Environment(CC = 'gcc', CCFLAGS = '-g')

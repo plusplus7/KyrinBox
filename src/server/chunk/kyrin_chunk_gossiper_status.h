@@ -3,6 +3,7 @@
 
 #include "protobuf/chunk_cluster_status.pb.h"
 #include "common/kyrin_lock.h"
+#include <utility>
 #include <vector>
 #include <iostream>
 
@@ -29,7 +30,7 @@ public:
     uint64_t get_timestamp() {
         return m_timestamp;
     }
-    bool get_random_alive_3(std::vector<ChunkStatusConfig> &res) {
+    bool get_random_alive_3(std::vector< std::pair<uint32_t, ChunkStatusConfig> > &res) {
         std::vector<uint32_t> v;
         v.clear();
         res.clear();
@@ -40,12 +41,12 @@ public:
         for (uint32_t i=0; i<3;) {
             uint32_t tk = rand()%n;
             if (tk >= m_seeds.size())
-                tk = m_commons[tk-m_seeds.size()-1];
+                tk = m_commons[tk-m_seeds.size()];
             else
                 tk = m_seeds[tk];
             for (uint32_t j=0; ;j++) {
                 if (j == i) {
-                    res.push_back(m_configs[tk]);
+                    res.push_back(std::make_pair(tk, m_configs[tk]));
                     v.push_back(tk);
                     i++;
                     break;

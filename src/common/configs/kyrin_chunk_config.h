@@ -44,6 +44,14 @@ public:
         return atoi(get_config(kyrin::common::constants::k_json_chunk_get_file_key_info_backlog).c_str());
     }
 
+    uint32_t download_chunk_file_port() {
+        return atoi(get_config(kyrin::common::constants::k_json_chunk_download_chunk_file_port).c_str());
+    }
+
+    uint32_t download_chunk_file_backlog() {
+        return atoi(get_config(kyrin::common::constants::k_json_chunk_download_chunk_file_backlog).c_str());
+    }
+
     uint32_t upload_chunk_file_port() {
         return atoi(get_config(kyrin::common::constants::k_json_chunk_upload_chunk_file_port).c_str());
     }

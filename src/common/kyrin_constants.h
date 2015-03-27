@@ -38,6 +38,8 @@ extern const char* k_json_chunk_machine_address;
 extern const char* k_json_chunk_role;
 extern const char* k_json_chunk_upload_chunk_file_port;
 extern const char* k_json_chunk_upload_chunk_file_backlog;
+extern const char* k_json_chunk_download_chunk_file_port;
+extern const char* k_json_chunk_download_chunk_file_backlog;
 extern const char* k_json_chunk_set_file_key_info_port;
 extern const char* k_json_chunk_set_file_key_info_backlog;
 extern const char* k_json_chunk_get_file_key_info_port;

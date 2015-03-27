@@ -104,7 +104,20 @@ def UploadChunkFile(host, port, request, headers):
     url = "http://%s:%d/UploadChunkFile" % (host, port)
     post_data = request.SerializeToString()
     post_data = base64.b64encode(post_data)
-    print post_data
+    request = urllib2.Request(url, post_data)
+    for k, v in headers.items():
+        request.add_header(k, v)
+    try:
+        response = urllib2.urlopen(request)
+    except urllib2.HTTPError, e:
+        response = e
+        return (response.getcode(), response.read())
+    return (200, response.read())
+
+def DownloadChunkFile(host, port, request, headers):
+    url = "http://%s:%d/DownloadChunkFile" %(host, port)
+    post_data = request.SerializeToString()
+    post_data = base64.b64encode(post_data)
     request = urllib2.Request(url, post_data)
     for k, v in headers.items():
         request.add_header(k, v)

@@ -15,6 +15,7 @@ static void upload_chunk_file_handler(evhttp_request *req, void *arg)
 
 static void download_chunk_file_handler(evhttp_request *req, void *arg)
 {
+    ((KyrinChunkServer *) arg)->get_download_chunk_file_request_handler()->handle_request((KyrinChunkServer *)arg, req);
 }
 
 static void get_file_key_info_handler(evhttp_request *req, void *arg)
@@ -43,6 +44,13 @@ bool KyrinChunkServer::server_initialize(KyrinChunkGossiper *gossiper)
          return false;
     }
 
+    if (!server_initialize_kyrin_server_socket(download_chunk_file_fd,
+         config->download_chunk_file_port(),
+         config->download_chunk_file_backlog())) {
+         delete config;
+         return false;
+    }
+
     if (!server_initialize_kyrin_server_socket(set_file_key_info_fd,
          config->set_file_key_info_port(),
          config->set_file_key_info_backlog())) {
@@ -59,6 +67,7 @@ bool KyrinChunkServer::server_initialize(KyrinChunkGossiper *gossiper)
 
     m_keyinfo_db = new io::KyrinDatabaseWrapper(KyrinCluster::get_instance()->get_chunk_config()->keyinfo_database_path().c_str());
     upload_chunk_file_request_handler = new UploadChunkFileRequestHandler(m_gossiper);
+    download_chunk_file_request_handler = new DownloadChunkFileRequestHandler();
     set_file_key_info_request_handler = new SetFileKeyInfoRequestHandler(m_keyinfo_db);
     get_file_key_info_request_handler = new GetFileKeyInfoRequestHandler(m_keyinfo_db);
     delete config;
@@ -70,8 +79,10 @@ bool KyrinChunkServer::server_free()
     KyrinBaseServer::server_free();
     close(upload_chunk_file_fd);
     delete upload_chunk_file_request_handler;
+    delete download_chunk_file_request_handler;
     delete set_file_key_info_request_handler;
     delete get_file_key_info_request_handler;
+    delete m_keyinfo_db;
     return true;
 }
 

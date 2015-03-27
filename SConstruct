@@ -68,6 +68,7 @@ env.StaticLibrary(target = 'kyrin_http_client', source = 'src/io/kyrin_http_clie
 env.StaticLibrary(target = 'kyrin_log', source = 'src/common/kyrin_log.cc')
 env.StaticLibrary(target = 'upload_file_request_handler', source = 'src/server/request_handlers/upload_file_request_handler.cc')
 env.StaticLibrary(target = 'upload_chunk_file_request_handler', source = 'src/server/request_handlers/upload_chunk_file_request_handler.cc')
+env.StaticLibrary(target = 'download_chunk_file_request_handler', source = 'src/server/request_handlers/download_chunk_file_request_handler.cc')
 env.StaticLibrary(target = 'set_file_key_info_request_handler', source = 'src/server/request_handlers/set_file_key_info_request_handler.cc')
 env.StaticLibrary(target = 'get_file_key_info_request_handler', source = 'src/server/request_handlers/get_file_key_info_request_handler.cc')
 env.StaticLibrary(target = 'get_oplog_request_handler', source = 'src/server/request_handlers/get_oplog_request_handler.cc')
@@ -157,6 +158,7 @@ kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
                                    'proto_upload_chunk_file',
                                    'leveldb',
                                    'upload_chunk_file_request_handler',
+                                   'download_chunk_file_request_handler',
                                    'set_file_key_info_request_handler',
                                    'get_file_key_info_request_handler',
                                    'protobuf',

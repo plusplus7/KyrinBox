@@ -7,6 +7,7 @@ namespace kyrin {
 namespace common {
 namespace constants {
 
+extern const uint32_t k_chunk_size;
 extern const char* k_config_filepath;
 
 extern const char* k_json_server_type;

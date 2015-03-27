@@ -127,7 +127,7 @@ bool KyrinBaseServer::server_send_reply_bad(evhttp_request *req, string &msg) {
 bool KyrinBaseServer::server_get_postdata(evhttp_request *req, string &post_data) {
     size_t post_size = evbuffer_get_length(evhttp_request_get_input_buffer(req));
     if (kyrin_likely((post_size > 0 && post_size < constants::k_server_max_post_data_size))) {
-        char _buf[1024]; /* FIXME */
+        char _buf[1024*65]; /* FIXME */
         memcpy(_buf, evbuffer_pullup(evhttp_request_get_input_buffer(req), -1), post_size);
         post_data.assign(_buf, post_size);
         return true;

@@ -4,6 +4,7 @@ namespace kyrin {
 namespace common {
 namespace constants {
 
+const uint32_t k_chunk_size                         = 1024;
 const char *k_config_filepath                       = "kyrinbox_config.json";
 
 const char* k_json_server_type                      = "ServerType";
@@ -31,8 +32,18 @@ const char* k_json_chunk_gossip_server_port         = "ChunkGossipServerPort";
 const char* k_json_chunk_gossip_server_backlog      = "ChunkGossipServerBacklog";
 const char* k_json_chunk_machine_address            = "ChunkMachineAddress";
 const char* k_json_chunk_role                       = "ChunkRole";
+const char* k_json_chunk_upload_chunk_file_port     = "ChunkUploadChunkFilePort";
+const char* k_json_chunk_upload_chunk_file_backlog  = "ChunkUploadChunkFileBacklog";
+const char* k_json_chunk_download_chunk_file_port   = "ChunkDownloadChunkFilePort";
+const char* k_json_chunk_download_chunk_file_backlog= "ChunkDownloadChunkFileBacklog";
+const char* k_json_chunk_set_file_key_info_port     = "ChunkSetFileKeyInfoPort";
+const char* k_json_chunk_set_file_key_info_backlog  = "ChunkSetFileKeyInfoBacklog";
+const char* k_json_chunk_get_file_key_info_port     = "ChunkGetFileKeyInfoPort";
+const char* k_json_chunk_get_file_key_info_backlog  = "ChunkGetFileKeyInfoBacklog";
 
-const uint32_t k_server_max_post_data_size          = 1024;
+const char *k_json_chunk_keyinfo_database_path      = "ChunkKeyinfoDatabasePath";
+
+const uint32_t k_server_max_post_data_size          = 1024*64;
 const uint32_t k_server_max_get_oplog_size          = 100;
 
 } /* constants */

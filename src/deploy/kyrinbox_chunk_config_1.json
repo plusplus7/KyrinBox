@@ -3,5 +3,6 @@
     "ChunkMachineAddress"           : "127.0.0.1",
     "ChunkGossipServerPort"         : "17170",
     "ChunkGossipServerBacklog"      : "4096",
+    "ChunkKeyinfoDatabasePath"      : "/tmp/kyrinkeyinfo_db_1",
     "ChunkRole"                     : "Seed"
 }

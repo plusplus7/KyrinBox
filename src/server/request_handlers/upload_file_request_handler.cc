@@ -70,12 +70,16 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
     gossip_response = crypto::base64_decode(gossip_response);
     KyrinChunkGossiperStatus chunk_status;
     chunk_status.from_string(gossip_response);
-    vector<ChunkStatusConfig> hosts;
-    chunk_status.get_random_alive_3(hosts);
+    vector<pair<uint32_t, ChunkStatusConfig> > hosts;
+    if (!chunk_status.get_random_alive_3(hosts)) {
+        reply = "Chunk server not ready...";
+        server->server_send_reply_bad(req, reply);
+        return ;
+    }
     for (uint32_t i=0; i<3; i++) {
         string *new_file_hosts = response->add_file_hosts();
         char gsp_port[30]; /* FIXME: hardcode */
-        sprintf(gsp_port, "%s:%u", hosts[i].host.c_str(), hosts[i].gossip_port);
+        sprintf(gsp_port, "%s %u", hosts[i].second.host.c_str(), hosts[i].first);
         new_file_hosts->assign(gsp_port, strlen(gsp_port));
     }
     response->set_file_size(request_pb.file_size());

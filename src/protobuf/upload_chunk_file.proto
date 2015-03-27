@@ -1,0 +1,28 @@
+package kyrinbox.api;
+
+message UploadChunkFileRequest {
+    required string account     = 1;
+    required string file_name   = 2;
+    required string chunk       = 3;
+    required int64  offset      = 4;
+}
+
+message DownloadChunkFileRequest {
+    required string account     = 1;
+    required string file_name   = 2;
+    required int64  offset      = 3;
+}
+
+message SetFileKeyInfo {
+    required string account     = 1;
+    required string file_name   = 2;
+    repeated string file_hosts  = 3;
+    required int64  file_size   = 4;
+    required string merkle_sha1 = 5;
+    required string key_aes     = 6;
+}
+
+message GetFileKeyInfo {
+    required string account     = 1;
+    required string file_name   = 2;
+}

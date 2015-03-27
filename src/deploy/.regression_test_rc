@@ -7,4 +7,5 @@ kyrin_slavenode_binary='/Users/apple/Workspace/KyrinBox/release/bin/slavenode/ky
 kyrin_chunk_binary='/Users/apple/Workspace/KyrinBox/release/bin/chunk/kyrin_chunk'
 kyrin_config_example='/Users/apple/Workspace/KyrinBox/src/deploy/kyrinbox_config.json'
 kyrin_slavenode_config_example='/Users/apple/Workspace/KyrinBox/src/deploy/kyrinbox_config.json.slavenode'
+kyrin_chunk_config_example='/Users/apple/Workspace/KyrinBox/src/deploy/kyrinbox_config.json.chunk'
 

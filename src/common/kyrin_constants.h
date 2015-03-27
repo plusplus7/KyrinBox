@@ -7,6 +7,7 @@ namespace kyrin {
 namespace common {
 namespace constants {
 
+extern const uint32_t k_chunk_size;
 extern const char* k_config_filepath;
 
 extern const char* k_json_server_type;
@@ -35,6 +36,16 @@ extern const char* k_json_chunk_gossip_server_port;
 extern const char* k_json_chunk_gossip_server_backlog;
 extern const char* k_json_chunk_machine_address;
 extern const char* k_json_chunk_role;
+extern const char* k_json_chunk_upload_chunk_file_port;
+extern const char* k_json_chunk_upload_chunk_file_backlog;
+extern const char* k_json_chunk_download_chunk_file_port;
+extern const char* k_json_chunk_download_chunk_file_backlog;
+extern const char* k_json_chunk_set_file_key_info_port;
+extern const char* k_json_chunk_set_file_key_info_backlog;
+extern const char* k_json_chunk_get_file_key_info_port;
+extern const char* k_json_chunk_get_file_key_info_backlog;
+
+extern const char* k_json_chunk_keyinfo_database_path;
 
 extern const uint32_t   k_server_max_post_data_size;
 extern const uint32_t   k_server_max_get_oplog_size;

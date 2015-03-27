@@ -4,7 +4,7 @@ namespace kyrin {
 namespace common {
 namespace constants {
 
-const uint32_t k_chunk_size                         = 1024*64;
+const uint32_t k_chunk_size                         = 1024;
 const char *k_config_filepath                       = "kyrinbox_config.json";
 
 const char* k_json_server_type                      = "ServerType";

@@ -20,6 +20,9 @@ done
 for s_dir in ${chunk_list[*]}; do
     mkdir $workspace_dir/$s_dir
 done
+for s_dir in ${keycenter_list[*]}; do
+    mkdir $workspace_dir/$s_dir
+done
 
 echo "* Copy binary to working directory..."
 if [ ! -f "$kyrin_master_binary" ]; then
@@ -43,6 +46,13 @@ fi
 for s_dir in ${chunk_list[*]}; do
     cp $kyrin_chunk_binary $workspace_dir/$s_dir
 done
+if [ ! -f "$kyrin_keycenter_binary" ]; then
+    echo "Cannot find kyrin keycenter binary at $kyrin_keycenter_binary"
+    exit 1
+fi
+for s_dir in ${keycenter_list[*]}; do
+    cp $kyrin_keycenter_binary $workspace_dir/$s_dir
+done
 
 echo "* Place configuration file..."
 if [ ! -f "$kyrin_config_example" ]; then
@@ -51,6 +61,10 @@ if [ ! -f "$kyrin_config_example" ]; then
 fi
 if [ ! -f "$kyrin_slavenode_config_example" ]; then
     echo "Cannot find kyrin slavenode config example file at $kyrin_slavenode_config_example"
+    exit 1
+fi
+if [ ! -f "$kyrin_keycenter_config_example" ]; then
+    echo "Cannot find kyrin keycenter config example file at $kyrin_keycenter_config_example"
     exit 1
 fi
 echo "* Place master config..."
@@ -81,6 +95,13 @@ for (( i=0; i<${#slavenode_list[@]}; i++)) do
         $kyrin_slavenode_config_example\
         > $workspace_dir"/"${slavenode_list[$i]}"/"kyrinbox_config.json
 done
+echo "* Place keycenter config..."
+for (( i=0; i<${#keycenter_list[@]}; i++)) do
+    (( bp=$i+1 ))
+    sed -e "s/DEPLOY_TO_PUT_REDISPORT_IN/"$bp"6378/g"\
+        $kyrin_keycenter_config_example\
+        > $workspace_dir"/"${keycenter_list[$i]}"/"kyrinbox_config.json
+done
 for s_dir in ${master_list[*]}; do
     cp kyrinbox_master_* $workspace_dir/$s_dir
     cp kyrinbox_chunk_* $workspace_dir/$s_dir
@@ -108,5 +129,10 @@ done
 for s_dir in ${chunk_list[*]}; do
     cd "$workspace_dir"/"$s_dir"
     nohup ./kyrin_chunk 2>&1 > /dev/null &
+    cd - > /dev/null
+done
+for s_dir in ${keycenter_list[*]}; do
+    cd "$workspace_dir"/"$s_dir"
+    nohup ./kyrin_keycenter 2>&1 > /dev/null &
     cd - > /dev/null
 done

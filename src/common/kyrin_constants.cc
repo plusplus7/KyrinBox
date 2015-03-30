@@ -41,6 +41,13 @@ const char* k_json_chunk_set_file_key_info_backlog  = "ChunkSetFileKeyInfoBacklo
 const char* k_json_chunk_get_file_key_info_port     = "ChunkGetFileKeyInfoPort";
 const char* k_json_chunk_get_file_key_info_backlog  = "ChunkGetFileKeyInfoBacklog";
 
+const char *k_json_keycenter_redis_host             = "KeyCenterRedisHost";
+const char *k_json_keycenter_redis_port             = "KeyCenterRedisPort";
+const char* k_json_keycenter_set_kyrin_key_port     = "KeyCenterSetKyrinKeyPort";
+const char* k_json_keycenter_set_kyrin_key_backlog  = "KeyCenterSetKyrinKeyBacklog";
+const char* k_json_keycenter_get_kyrin_key_port     = "KeyCenterGetKyrinKeyPort";
+const char* k_json_keycenter_get_kyrin_key_backlog  = "KeyCenterGetKyrinKeyBacklog";
+
 const char *k_json_chunk_keyinfo_database_path      = "ChunkKeyinfoDatabasePath";
 
 const uint32_t k_server_max_post_data_size          = 1024*64;

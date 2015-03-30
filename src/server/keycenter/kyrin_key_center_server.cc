@@ -31,7 +31,6 @@ bool KyrinKeyCenterServer::server_initialize()
         return false;
     }
 
-    logger->log("server_initialize", "1");
     if (!server_initialize_kyrin_server_socket(set_key_fd,
          config->set_key_port(),
          config->set_key_backlog())) {
@@ -40,9 +39,7 @@ bool KyrinKeyCenterServer::server_initialize()
     }
 
     get_kyrin_key_request_handler = new GetKyrinKeyRequestHandler((char *)config->redis_host().c_str(), config->redis_port());
-    logger->log("server_initialize", "2");
     set_kyrin_key_request_handler = new SetKyrinKeyRequestHandler((char *)config->redis_host().c_str(), config->redis_port());
-    logger->log("server_initialize", "3");
     delete config;
     return true;
 }
@@ -59,9 +56,7 @@ bool KyrinKeyCenterServer::server_free()
 
 bool KyrinKeyCenterServer::server_start()
 {
-    logger->log("server_initialize", "4");
     server_run(2);
-    logger->log("server_initialize", "4");
     return true;
 }
 
@@ -74,7 +69,6 @@ bool KyrinKeyCenterServer::server_set_processor(evhttp *server, int thread_code)
         server_put_callback(server, "/GetKyrinKey", get_kyrin_key_handler, this);
         server_set_evhttp_accept_socket(server, get_key_fd);
     }
-    logger->log("server_initialize", "5");
     return true;
 }
 

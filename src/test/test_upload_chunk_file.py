@@ -6,7 +6,6 @@ import base64
 
 def main():
     fp = open("a.out", "rb+")
-    help(fp)
     arr = []
     while True:
         pr = fp.tell()

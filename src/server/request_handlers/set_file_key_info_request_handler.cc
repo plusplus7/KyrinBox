@@ -2,6 +2,9 @@
 #include "common/kyrin_macros.h"
 #include "common/crypto/kyrin_base64.h"
 #include "protobuf/upload_chunk_file.pb.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace kyrin {
 namespace server {
@@ -26,6 +29,18 @@ void SetFileKeyInfoRequestHandler::handle_request(KyrinChunkServer *server, evht
 
     string key = info.account()+info.file_name();
     m_keyinfo_db->put(info.account()+info.file_name(), request_body);
+
+    struct stat st = {0};
+    char user_dir[1024];
+    sprintf(user_dir, "./%s", info.account().c_str());
+    if (stat(user_dir, &st) == -1) {
+        mkdir(user_dir, 0755);
+    }
+
+    sprintf(user_dir, "./%s/%s.chunkfile", info.account().c_str(), info.file_name().c_str());
+    FILE *fp = fopen(user_dir, "wb");
+    fclose(fp);
+
     reply = "Set file key info success";
     server->server_send_reply_ok(req, reply);
     return ;

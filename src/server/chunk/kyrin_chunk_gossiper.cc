@@ -115,9 +115,6 @@ void KyrinChunkGossiper::gossip_sync()
                 logger->log("gossip_sync", "detect failure");
                 continue;
             }
-            cout << " ====== my status ======" << endl;
-            m_status.show();
-            cout << " ====== my status end ======" << endl;
             response = crypto::base64_decode(response);
             /* FIXME: waste of resource*/
             KyrinChunkGossiperStatus t_status;

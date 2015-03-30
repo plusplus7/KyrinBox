@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <set>
 #include <fstream>
-#include <iostream>
 #include <utility>
 
 namespace kyrin {
@@ -103,7 +102,7 @@ void KyrinMasterSentinel::sentinel_sync()
                                 uint64_t epoch, vote;
                                 sscanf(response.c_str(), "%llu %llu", &epoch, &vote);
 
-                                cout<< epoch<<" "<<vote<<endl;
+                                logger->log("Get response", response.c_str());
 
                                 if (epoch != m_epoch) {
                                     m_leader_lock.lock();
@@ -139,9 +138,8 @@ void KyrinMasterSentinel::sentinel_sync()
                             }
                         }
 
-                        cout << "max: " << max_candidate << endl;
                         if (max_candidate == -1) {
-                            cout << "unexpected candidate" << endl;
+                            logger->log("Sentinel", "unexpected candidate");
                             break;
                         }
                         if (leader == -1) {
@@ -153,13 +151,15 @@ void KyrinMasterSentinel::sentinel_sync()
                             m_leader_lock.lock();
                             m_leader = leader;
                             if (leader != cluster->get_kbid()) {
-                                cout << "status: follower" << endl;
+                                logger->log("Sentinel", "status: follower");
                                 m_status = k_status_follower;
                             } else {
-                                cout << "status: leader" << endl;
+                                logger->log("Sentinel", "status: leader");
                                 m_status = k_status_leader;
                             }
-                            cout << "leader: " << leader << endl;
+                            char tolog[20];
+                            sprintf(tolog, "leader: %u", leader);
+                            logger->log("Sentinel", tolog);
                             m_leader_lock.unlock();
                             m_status_lock.unlock();
                             break;

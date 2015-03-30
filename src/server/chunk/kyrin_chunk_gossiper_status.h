@@ -5,7 +5,6 @@
 #include "common/kyrin_lock.h"
 #include <utility>
 #include <vector>
-#include <iostream>
 
 namespace kyrin {
 namespace server {
@@ -79,7 +78,7 @@ public:
         return get_random(m_dead_commons);
     }
     /* FIXME: remove me when going to merge */
-    void show() {
+    /* void show() {
         std::cout << "timestamp:" << " " << m_timestamp << std::endl;
         std::cout << "seeds:";
         for (auto i : m_seeds) {
@@ -101,7 +100,7 @@ public:
             std::cout << " " << i;
         }
         std::cout<<std::endl;
-    }
+    } */
 
 private:
     void set_item(std::vector<uint32_t> &a, std::vector<uint32_t> &b, uint32_t kbid);

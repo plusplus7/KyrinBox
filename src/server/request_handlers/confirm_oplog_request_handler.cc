@@ -150,11 +150,11 @@ void ConfirmOplogRequestHandler::handle_request(KyrinMasterServer *server, evhtt
                 server->server_send_reply_ok(req, reply);
                 return ;
             } else {
-                reply = "No suck operation type...";
+                reply = "No such operation type...";
                 break;
             }
         } else {
-            reply = "No sucking current id";
+            reply = "No such current id";
             break;
         }
     }

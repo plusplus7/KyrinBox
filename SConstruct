@@ -62,6 +62,7 @@ env.Append(LIBPATH = ['src/external/lib'])
 env.StaticLibrary(target = 'kyrin_base_server', source = 'src/server/base/kyrin_base_server.cc')
 env.StaticLibrary(target = 'kyrin_constants', source = 'src/common/kyrin_constants.cc')
 env.StaticLibrary(target = 'kyrin_base64', source = 'src/common/crypto/kyrin_base64.cc')
+env.StaticLibrary(target = 'kyrin_rsa', source = 'src/common/crypto/kyrin_rsa.cc')
 env.StaticLibrary(target = 'kyrin_sha1', source = 'src/common/crypto/kyrin_sha1.cc')
 env.StaticLibrary(target = 'kyrin_database_wrapper', source = 'src/io/kyrin_database_wrapper.cc')
 env.StaticLibrary(target = 'kyrin_http_client', source = 'src/io/kyrin_http_client.cc')
@@ -88,6 +89,7 @@ env.StaticLibrary(target = 'kyrin_chunk_gossiper_status', source = 'src/server/c
 env.StaticLibrary(target = 'kyrin_master_sentinel_server', source = 'src/server/master/kyrin_master_sentinel_server.cc')
 env.StaticLibrary(target = 'kyrin_base_config', source = 'src/common/configs/kyrin_base_config.cc')
 env.StaticLibrary(target = 'kyrin_cluster', source = 'src/common/kyrin_cluster.cc')
+env.StaticLibrary(target = 'kyrin_rsa_helper', source = 'src/common/kyrin_rsa_helper.cc')
 env.StaticLibrary(target = 'proto_test', source = 'src/protobuf/test.pb.cc')
 env.StaticLibrary(target = 'proto_upload_file', source = 'src/protobuf/upload_file.pb.cc')
 env.StaticLibrary(target = 'proto_operation_log', source = 'src/protobuf/operation_log.pb.cc')
@@ -166,6 +168,7 @@ kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
                                    'get_file_key_info_request_handler',
                                    'protobuf',
                                    'pthread',
+                                   'kyrin_rsa_helper',
                                   ]
                          )
 kyrin_keycenter = env.Program('kyrin_keycenter', 'src/server/keycenter/kyrin_key_center_main.cc',
@@ -187,6 +190,7 @@ test_spinlock = env.Program('test_spinlock', 'src/test/test_spinlock.cpp', LIBS 
 test_http_client= env.Program('test_http_client', 'src/test/test_http_client.cpp', LIBS = ['event', 'curl', 'kyrin_http_client'])
 test_lexicographically_helper = env.Program('test_lexicographically_helper', 'src/test/test_lexicographically_helper.cpp', LIBS = ['leveldb', ])
 test_sha1 = env.Program('test_sha1', 'src/test/test_sha1.cpp', LIBS = ['kyrin_sha1', 'ssl', 'crypto'])
+test_rsa = env.Program('test_rsa', 'src/test/test_rsa.cpp', LIBS = ['kyrin_rsa', 'ssl', 'crypto'])
 
 ### release
 env.Install('release/bin/master', kyrin_master)

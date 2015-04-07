@@ -30,7 +30,7 @@ bool KyrinRsaHelper::examine_legality(string &public_key, string &digest, string
 
 bool KyrinRsaHelper::fetch_public_key(string &issuer, string &public_key)
 {
-    
+    return true;
 }
 
 } /* kyrin */

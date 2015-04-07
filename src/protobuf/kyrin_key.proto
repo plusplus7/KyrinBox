@@ -1,0 +1,10 @@
+package kyrinbox.api;
+
+message SetKyrinKeyRequest {
+    required string key_id     = 1;
+    required string key_public = 2;
+}
+
+message GetKyrinKeyRequest {
+    required string key_id     = 1;
+}

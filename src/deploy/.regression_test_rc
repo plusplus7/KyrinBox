@@ -11,3 +11,4 @@ kyrin_config_example='/Users/apple/Workspace/KyrinBox/src/deploy/kyrinbox_config
 kyrin_slavenode_config_example='/Users/apple/Workspace/KyrinBox/src/deploy/kyrinbox_config.json.slavenode'
 kyrin_chunk_config_example='/Users/apple/Workspace/KyrinBox/src/deploy/kyrinbox_config.json.chunk'
 kyrin_keycenter_config_example='/Users/apple/Workspace/KyrinBox/src/deploy/kyrinbox_config.json.keycenter'
+redis_server='/Users/apple/Workspace/KyrinBox/src/external/redis-2.8.19/src/redis-server'

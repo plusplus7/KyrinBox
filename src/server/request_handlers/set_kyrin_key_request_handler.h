@@ -2,6 +2,7 @@
 #define KYRINBOX_SRC_SERVER_REQUEST_HANDLER_SET_KYRIN_KEY_REQUEST_HANDLER_H_
 
 #include "server/keycenter/kyrin_key_center_server.h"
+#include "common/kyrin_rsa_helper.h"
 #include "hiredis/hiredis.h"
 
 namespace kyrin {
@@ -18,6 +19,7 @@ public:
 
 private:
     redisContext *m_redis_context;
+    kyrin::common::KyrinRsaHelper m_rsa_helper;
 };
 
 } /* server */

@@ -45,6 +45,13 @@ extern const char* k_json_chunk_set_file_key_info_backlog;
 extern const char* k_json_chunk_get_file_key_info_port;
 extern const char* k_json_chunk_get_file_key_info_backlog;
 
+extern const char* k_json_keycenter_redis_host;
+extern const char* k_json_keycenter_redis_port;
+extern const char* k_json_keycenter_set_kyrin_key_port;
+extern const char* k_json_keycenter_set_kyrin_key_backlog;
+extern const char* k_json_keycenter_get_kyrin_key_port;
+extern const char* k_json_keycenter_get_kyrin_key_backlog;
+
 extern const char* k_json_chunk_keyinfo_database_path;
 
 extern const uint32_t   k_server_max_post_data_size;

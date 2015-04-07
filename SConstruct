@@ -48,6 +48,7 @@ proto_list = ["test.proto",
               "get_oplog.proto",
               "chunk_cluster_status.proto",
               "upload_chunk_file.proto",
+              "kyrin_key.proto",
              ]
 compile_protobuf(proto_list)
 
@@ -62,6 +63,7 @@ env.Append(LIBPATH = ['src/external/lib'])
 env.StaticLibrary(target = 'kyrin_base_server', source = 'src/server/base/kyrin_base_server.cc')
 env.StaticLibrary(target = 'kyrin_constants', source = 'src/common/kyrin_constants.cc')
 env.StaticLibrary(target = 'kyrin_base64', source = 'src/common/crypto/kyrin_base64.cc')
+env.StaticLibrary(target = 'kyrin_rsa', source = 'src/common/crypto/kyrin_rsa.cc')
 env.StaticLibrary(target = 'kyrin_sha1', source = 'src/common/crypto/kyrin_sha1.cc')
 env.StaticLibrary(target = 'kyrin_database_wrapper', source = 'src/io/kyrin_database_wrapper.cc')
 env.StaticLibrary(target = 'kyrin_http_client', source = 'src/io/kyrin_http_client.cc')
@@ -71,12 +73,15 @@ env.StaticLibrary(target = 'upload_chunk_file_request_handler', source = 'src/se
 env.StaticLibrary(target = 'download_chunk_file_request_handler', source = 'src/server/request_handlers/download_chunk_file_request_handler.cc')
 env.StaticLibrary(target = 'set_file_key_info_request_handler', source = 'src/server/request_handlers/set_file_key_info_request_handler.cc')
 env.StaticLibrary(target = 'get_file_key_info_request_handler', source = 'src/server/request_handlers/get_file_key_info_request_handler.cc')
+env.StaticLibrary(target = 'get_kyrin_key_request_handler', source = 'src/server/request_handlers/get_kyrin_key_request_handler.cc')
+env.StaticLibrary(target = 'set_kyrin_key_request_handler', source = 'src/server/request_handlers/set_kyrin_key_request_handler.cc')
 env.StaticLibrary(target = 'get_oplog_request_handler', source = 'src/server/request_handlers/get_oplog_request_handler.cc')
 env.StaticLibrary(target = 'confirm_oplog_request_handler', source = 'src/server/request_handlers/confirm_oplog_request_handler.cc')
 env.StaticLibrary(target = 'download_file_request_handler', source = 'src/server/request_handlers/download_file_request_handler.cc')
 env.StaticLibrary(target = 'kyrin_master_server', source = 'src/server/master/kyrin_master_server.cc')
 env.StaticLibrary(target = 'kyrin_chunk_server', source = 'src/server/chunk/kyrin_chunk_server.cc')
 env.StaticLibrary(target = 'kyrin_slavenode_server', source = 'src/server/slavenode/kyrin_slavenode_server.cc')
+env.StaticLibrary(target = 'kyrin_key_center_server', source = 'src/server/keycenter/kyrin_key_center_server.cc')
 env.StaticLibrary(target = 'kyrin_slavenode_sync', source = 'src/server/slavenode/kyrin_slavenode_sync.cc')
 env.StaticLibrary(target = 'kyrin_master_sentinel', source = 'src/server/master/kyrin_master_sentinel.cc')
 env.StaticLibrary(target = 'kyrin_chunk_gossiper', source = 'src/server/chunk/kyrin_chunk_gossiper.cc')
@@ -85,12 +90,14 @@ env.StaticLibrary(target = 'kyrin_chunk_gossiper_status', source = 'src/server/c
 env.StaticLibrary(target = 'kyrin_master_sentinel_server', source = 'src/server/master/kyrin_master_sentinel_server.cc')
 env.StaticLibrary(target = 'kyrin_base_config', source = 'src/common/configs/kyrin_base_config.cc')
 env.StaticLibrary(target = 'kyrin_cluster', source = 'src/common/kyrin_cluster.cc')
+env.StaticLibrary(target = 'kyrin_rsa_helper', source = 'src/common/kyrin_rsa_helper.cc')
 env.StaticLibrary(target = 'proto_test', source = 'src/protobuf/test.pb.cc')
 env.StaticLibrary(target = 'proto_upload_file', source = 'src/protobuf/upload_file.pb.cc')
 env.StaticLibrary(target = 'proto_operation_log', source = 'src/protobuf/operation_log.pb.cc')
 env.StaticLibrary(target = 'proto_get_oplog', source = 'src/protobuf/get_oplog.pb.cc')
 env.StaticLibrary(target = 'proto_chunk_cluster_status', source = 'src/protobuf/chunk_cluster_status.pb.cc')
 env.StaticLibrary(target = 'proto_upload_chunk_file', source = 'src/protobuf/upload_chunk_file.pb.cc')
+env.StaticLibrary(target = 'proto_kyrin_key', source = 'src/protobuf/kyrin_key.pb.cc')
 
 ### Link
 kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.cc',
@@ -117,6 +124,10 @@ kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.
                                     'proto_get_oplog',
                                     'proto_chunk_cluster_status',
                                     'protobuf',
+                                    'kyrin_rsa',
+                                    'kyrin_sha1',
+                                    'ssl',
+                                    'crypto',
                                    ],
                           )
 kyrin_slavenode = env.Program('kyrin_slavenode', 'src/server/slavenode/kyrin_slavenode_main.cc',
@@ -137,6 +148,10 @@ kyrin_slavenode = env.Program('kyrin_slavenode', 'src/server/slavenode/kyrin_sla
                                        'proto_get_oplog',
                                        'protobuf',
                                        'hiredis',
+                                       'kyrin_rsa',
+                                       'kyrin_sha1',
+                                       'ssl',
+                                       'crypto',
                                       ],
                              )
 kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
@@ -163,15 +178,44 @@ kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
                                    'get_file_key_info_request_handler',
                                    'protobuf',
                                    'pthread',
+                                   'kyrin_rsa_helper',
+                                   'kyrin_rsa',
+                                   'kyrin_sha1',
+                                   'ssl',
+                                   'crypto',
                                   ]
                          )
+kyrin_keycenter = env.Program('kyrin_keycenter', 'src/server/keycenter/kyrin_key_center_main.cc',
+                              LIBS = ['kyrin_key_center_server',
+                                      'kyrin_base_server',
+                                      'kyrin_log',
+                                      'kyrin_base64',
+                                      'event',
+                                      'kyrin_base_server',
+                                      'kyrin_constants',
+                                      'kyrin_base_config',
+                                      'get_kyrin_key_request_handler',
+                                      'set_kyrin_key_request_handler',
+                                      'hiredis',
+                                      'proto_kyrin_key',
+                                      'kyrin_rsa_helper',
+                                      'protobuf',
+                                      'kyrin_rsa',
+                                      'kyrin_sha1',
+                                      'ssl',
+                                      'crypto',
+                                     ]
+                             )
+
 test_protobuf = env.Program("test_protobuf", 'src/test/test_protobuf.cc', LIBS = ['proto_test', 'protobuf'])
 test_spinlock = env.Program('test_spinlock', 'src/test/test_spinlock.cpp', LIBS = ['pthread', ])
 test_http_client= env.Program('test_http_client', 'src/test/test_http_client.cpp', LIBS = ['event', 'curl', 'kyrin_http_client'])
 test_lexicographically_helper = env.Program('test_lexicographically_helper', 'src/test/test_lexicographically_helper.cpp', LIBS = ['leveldb', ])
 test_sha1 = env.Program('test_sha1', 'src/test/test_sha1.cpp', LIBS = ['kyrin_sha1', 'ssl', 'crypto'])
+test_rsa = env.Program('test_rsa', 'src/test/test_rsa.cpp', LIBS = ['kyrin_rsa', 'ssl', 'crypto'])
 
 ### release
 env.Install('release/bin/master', kyrin_master)
 env.Install('release/bin/slavenode', kyrin_slavenode)
 env.Install('release/bin/chunk', kyrin_chunk)
+env.Install('release/bin/keycenter', kyrin_keycenter)

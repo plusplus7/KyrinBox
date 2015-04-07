@@ -40,6 +40,7 @@ release
 kyrin_master
 kyrin_slavenode
 kyrin_chunk
+kyrin_keycenter
 test_http_client
 test_lexicographically_helper
 test_protobuf

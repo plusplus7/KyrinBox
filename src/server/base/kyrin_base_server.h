@@ -31,6 +31,7 @@ public:
     bool server_send_reply_ok(evhttp_request *req, std::string &msg);
     bool server_send_reply_bad(evhttp_request *req, std::string &msg);
     bool server_get_postdata(evhttp_request *req, std::string &post_data);
+    bool server_get_digest(evhttp_request *req, std::string &reply, std::string &digest);
 
 private:
     int server_listen_fd;

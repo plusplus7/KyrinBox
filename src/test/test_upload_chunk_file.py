@@ -6,7 +6,6 @@ import base64
 
 def main():
     fp = open("a.out", "rb+")
-    help(fp)
     arr = []
     while True:
         pr = fp.tell()
@@ -19,7 +18,7 @@ def main():
     for i in arr:
         ucfr = upload_chunk_file_pb2.UploadChunkFileRequest()
         ucfr.account        = "plusplus7"
-        ucfr.file_name      = "sssogs103"
+        ucfr.file_name      = "sssogs"
         ucfr.offset         = idx*1024
         idx = idx+1
         ucfr.chunk          = base64.b64encode(i)

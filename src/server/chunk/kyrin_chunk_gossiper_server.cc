@@ -1,5 +1,4 @@
 #include <unistd.h>
-#include <iostream>
 #include "kyrin_chunk_gossiper_server.h"
 #include "server/base/kyrin_base_server.h"
 #include "common/crypto/kyrin_base64.h"

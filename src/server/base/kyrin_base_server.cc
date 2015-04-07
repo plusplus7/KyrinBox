@@ -2,6 +2,8 @@
 #include "common/kyrin_log.h"
 #include "common/kyrin_constants.h"
 #include "common/kyrin_macros.h"
+#include "common/crypto/kyrin_sha1.h"
+#include "common/crypto/kyrin_rsa.h"
 #include <iostream>
 #include <string>
 #include <fcntl.h>
@@ -133,6 +135,23 @@ bool KyrinBaseServer::server_get_postdata(evhttp_request *req, string &post_data
         return true;
     }
     return false;
+}
+
+bool KyrinBaseServer::server_get_digest(evhttp_request *req, string &reply, string &digest)
+{
+    string timestamp = "";
+    string post_data = "";
+    if (!server_get_postdata(req, post_data)) {
+        reply = "Can't read post data..";
+        return false;
+    }
+    if (!server_get_header(req, "KYRIN-TIMESTAMP", timestamp)) {
+        reply = "Can't read post timestamp..";
+        return false;
+    }
+    digest = timestamp + post_data;
+    crypto::kyrin_sha1(digest, digest);
+    return true;
 }
 
 } /* server */

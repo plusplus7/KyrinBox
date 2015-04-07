@@ -5,6 +5,7 @@ import get_oplog_pb2
 import upload_file_pb2
 import operation_log_pb2
 import upload_chunk_file_pb2
+import kyrin_key_pb2
 import base64
 
 def LexicographicallyGetZero():
@@ -116,6 +117,20 @@ def UploadChunkFile(host, port, request, headers):
 
 def DownloadChunkFile(host, port, request, headers):
     url = "http://%s:%d/DownloadChunkFile" %(host, port)
+    post_data = request.SerializeToString()
+    post_data = base64.b64encode(post_data)
+    request = urllib2.Request(url, post_data)
+    for k, v in headers.items():
+        request.add_header(k, v)
+    try:
+        response = urllib2.urlopen(request)
+    except urllib2.HTTPError, e:
+        response = e
+        return (response.getcode(), response.read())
+    return (200, response.read())
+
+def SetKyrinKey(host, port, request, headers):
+    url = "http://%s:%d/SetKyrinKey" %(host, port)
     post_data = request.SerializeToString()
     post_data = base64.b64encode(post_data)
     request = urllib2.Request(url, post_data)

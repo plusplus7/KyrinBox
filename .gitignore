@@ -45,6 +45,7 @@ test_http_client
 test_lexicographically_helper
 test_protobuf
 test_sha1
+test_rsa
 test_spinlock
 
 # Me protobuf

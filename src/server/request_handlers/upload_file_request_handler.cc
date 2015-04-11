@@ -112,7 +112,6 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
     message.set_state(1);
 
     kyrinbox::api::OperationLog *op_log = message.mutable_op_log();
-    string op_protobuf;
     operation.SerializeToString(op_log->mutable_log_data());
     op_log->set_op_type(1);
     string confirm_response;

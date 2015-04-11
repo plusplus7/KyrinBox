@@ -62,6 +62,7 @@ bool KyrinCluster::read_config_file(const char *filename)
         chunk_config.read_config_file(t_filename);
         m_chunk_configs.push_back(chunk_config);
     }
+    m_keycenter_config.read_config_file("kyrinbox_keycenter_config_1.json");
     return true;
 }
 

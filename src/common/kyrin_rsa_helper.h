@@ -8,12 +8,16 @@ namespace common {
 
 class KyrinRsaHelper {
 public:
-    KyrinRsaHelper(uint32_t size = 65535) : m_cache(size) {}
+    KyrinRsaHelper(const char *host, int port, uint32_t size = 65535) : m_host(host), m_port(port), m_cache(size) {}
     bool examine_legality_from_user(std::string &issuer, std::string &digest, std::string &signature);
     static bool examine_legality(std::string &public_key, std::string &digest, std::string &signature);
+
 private:
     bool fetch_public_key(std::string &issuer, std::string &public_key);
     KyrinLruCache<std::string, std::string> m_cache;
+    const char *m_host;
+    int m_port;
+
 };
 
 } /* common */

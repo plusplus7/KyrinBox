@@ -1,11 +1,15 @@
 #include "kyrin_rsa_helper.h"
 #include "kyrin_log.h"
 #include "common/crypto/kyrin_rsa.h"
+#include "io/kyrin_http_client.h"
+#include "common/crypto/kyrin_base64.h"
+#include "protobuf/kyrin_key.pb.h"
 
 namespace kyrin {
 namespace common {
 
 using namespace std;
+using namespace kyrin::io;
 
 static KyrinLog *logger = KyrinLog::get_instance();
 bool KyrinRsaHelper::examine_legality_from_user(string &issuer, string &digest, string &signature)
@@ -30,6 +34,10 @@ bool KyrinRsaHelper::examine_legality(string &public_key, string &digest, string
 
 bool KyrinRsaHelper::fetch_public_key(string &issuer, string &public_key)
 {
+    string postdata;
+    if (!KyrinHttpClient::make_request_post(m_host, m_port, "/GetKyrinKey", public_key, issuer)) {
+        return false;
+    }
     return true;
 }
 

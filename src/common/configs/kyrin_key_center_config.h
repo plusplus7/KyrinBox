@@ -12,6 +12,9 @@ namespace configs {
 
 class KyrinKeyCenterConfig : public KyrinBaseConfig {
 public:
+    std::string& machine_address() {
+        return get_config(kyrin::common::constants::k_json_machine_address);
+    }
     std::string& redis_host() {
         return get_config(kyrin::common::constants::k_json_keycenter_redis_host);
     }

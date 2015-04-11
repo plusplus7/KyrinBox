@@ -2,6 +2,7 @@
 #include "common/kyrin_log.h"
 #include "kyrin_key_center_server.h"
 #include "common/configs/kyrin_key_center_config.h"
+#include "common/kyrin_cluster.h"
 
 namespace kyrin {
 namespace server {
@@ -22,25 +23,21 @@ static void set_kyrin_key_handler(evhttp_request *req, void *arg)
 
 bool KyrinKeyCenterServer::server_initialize()
 {
-    configs::KyrinKeyCenterConfig *config = new configs::KyrinKeyCenterConfig();
-    config->read_config_file((char *)"kyrinbox_config.json");
+    KyrinCluster *cluster = KyrinCluster::get_instance();
     if (!server_initialize_kyrin_server_socket(get_key_fd,
-         config->get_key_port(),
-         config->get_key_backlog())) {
-        delete config;
+         cluster->get_keycenter_get_key_port(),
+         cluster->get_keycenter_get_key_backlog())) {
         return false;
     }
 
     if (!server_initialize_kyrin_server_socket(set_key_fd,
-         config->set_key_port(),
-         config->set_key_backlog())) {
-        delete config;
+         cluster->get_keycenter_set_key_port(),
+         cluster->get_keycenter_set_key_backlog())) {
         return false;
     }
 
-    get_kyrin_key_request_handler = new GetKyrinKeyRequestHandler((char *)config->redis_host().c_str(), config->redis_port());
-    set_kyrin_key_request_handler = new SetKyrinKeyRequestHandler((char *)config->redis_host().c_str(), config->redis_port());
-    delete config;
+    get_kyrin_key_request_handler = new GetKyrinKeyRequestHandler((char *)cluster->get_keycenter_redis_host().c_str(), cluster->get_keycenter_redis_port());
+    set_kyrin_key_request_handler = new SetKyrinKeyRequestHandler((char *)cluster->get_keycenter_redis_host().c_str(), cluster->get_keycenter_redis_port());
     return true;
 }
 

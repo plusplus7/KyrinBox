@@ -61,6 +61,7 @@ env.Append(LIBPATH = ['src/external/lib'])
 
 ### Compile statics
 env.StaticLibrary(target = 'kyrin_base_server', source = 'src/server/base/kyrin_base_server.cc')
+env.StaticLibrary(target = 'kyrin_base_request_filter', source = 'src/server/request_filters/kyrin_base_request_filter.cc')
 env.StaticLibrary(target = 'kyrin_constants', source = 'src/common/kyrin_constants.cc')
 env.StaticLibrary(target = 'kyrin_base64', source = 'src/common/crypto/kyrin_base64.cc')
 env.StaticLibrary(target = 'kyrin_rsa', source = 'src/common/crypto/kyrin_rsa.cc')
@@ -163,9 +164,7 @@ kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
                                    'event',
                                    'kyrin_base_server',
                                    'kyrin_constants',
-                                   'kyrin_cluster',
                                    'kyrin_base_config',
-                                   'kyrin_http_client',
                                    'kyrin_base64',
                                    'kyrin_database_wrapper',
                                    'curl',
@@ -179,6 +178,8 @@ kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
                                    'protobuf',
                                    'pthread',
                                    'kyrin_rsa_helper',
+                                   'kyrin_cluster',
+                                   'kyrin_http_client',
                                    'kyrin_rsa',
                                    'kyrin_sha1',
                                    'ssl',
@@ -202,7 +203,10 @@ kyrin_keycenter = env.Program('kyrin_keycenter', 'src/server/keycenter/kyrin_key
                                       'protobuf',
                                       'kyrin_rsa',
                                       'kyrin_sha1',
+                                      'kyrin_cluster',
+                                      'kyrin_http_client',
                                       'ssl',
+                                      'curl',
                                       'crypto',
                                      ]
                              )

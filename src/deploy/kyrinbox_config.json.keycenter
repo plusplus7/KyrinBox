@@ -3,8 +3,5 @@
     "ServerType"                    : "KeyCenter",
     "KeyCenterRedisHost"            : "127.0.0.1",
     "KeyCenterRedisPort"            : "DEPLOY_TO_PUT_REDISPORT_IN",
-    "KeyCenterSetKyrinKeyPort"      : "7086",
-    "KeyCenterSetKyrinKeyBacklog"   : "4096",
-    "KeyCenterGetKyrinKeyPort"      : "7087",
-    "KeyCenterGetKyrinKeyBacklog"   : "4096"
+    "KeyCenterCount"                : "1",
 }

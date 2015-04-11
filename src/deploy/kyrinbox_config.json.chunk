@@ -4,6 +4,7 @@
     "Kbid"                          : "DEPLOY_TO_PUT_KBID_IN",
     "MasterServerCount"             : "3",
     "ChunkSeedCount"                : "3",
+    "KeyCenterCount"                : "1",
     "ChunkUploadChunkFilePort"      : "7077",
     "ChunkUploadChunkFileBacklog"   : "4096",
     "ChunkDownloadChunkFilePort"    : "7477",

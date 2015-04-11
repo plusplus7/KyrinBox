@@ -1,7 +1,6 @@
 #include "common/kyrin_macros.h"
 #include "common/crypto/kyrin_base64.h"
 #include "common/kyrin_macros.h"
-#include "common/kyrin_rsa_helper.h"
 #include "common/kyrin_log.h"
 #include "set_kyrin_key_request_handler.h"
 #include "protobuf/kyrin_key.pb.h"

@@ -6,6 +6,7 @@
 #include <utility>
 #include "configs/kyrin_master_config.h"
 #include "configs/kyrin_chunk_config.h"
+#include "configs/kyrin_key_center_config.h"
 
 namespace kyrin {
 namespace common {
@@ -13,7 +14,8 @@ namespace common {
 enum KyrinServerType{
     k_type_master = 1,
     k_type_slavenode = 2,
-    k_type_chunk = 3
+    k_type_chunk = 3,
+    k_type_keycenter = 4
 };
 
 class KyrinCluster {
@@ -60,6 +62,33 @@ public:
         }
     }
 
+    std::string& get_keycenter_redis_host() {
+        return m_keycenter_config.get_config(kyrin::common::constants::k_json_keycenter_redis_host);
+    }
+
+    int get_keycenter_redis_port() {
+        return atoi(m_keycenter_config.get_config(kyrin::common::constants::k_json_keycenter_redis_port).c_str());
+    }
+
+    const char *get_keycenter_host() {
+        return m_keycenter_config.machine_address().c_str();
+    }
+
+    uint32_t get_keycenter_get_key_port() {
+        return m_keycenter_config.get_key_port();
+    }
+
+    uint32_t get_keycenter_set_key_port() {
+        return m_keycenter_config.set_key_port();
+    }
+
+    uint32_t get_keycenter_get_key_backlog() {
+        return m_keycenter_config.get_key_backlog();
+    }
+
+    uint32_t get_keycenter_set_key_backlog() {
+        return m_keycenter_config.set_key_backlog();
+    }
     const char *get_master_ip(uint32_t kbid = 0) {
         if (!kbid)
             kbid = m_kbid;
@@ -106,6 +135,7 @@ private:
     uint32_t m_chunk_seed_count;
     std::vector<configs::KyrinMasterConfig> m_master_configs;
     std::vector<configs::KyrinChunkConfig> m_chunk_configs;
+    configs::KyrinKeyCenterConfig m_keycenter_config;
 };
 
 } /* common */

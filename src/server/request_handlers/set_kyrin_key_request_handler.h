@@ -19,7 +19,6 @@ public:
 
 private:
     redisContext *m_redis_context;
-    kyrin::common::KyrinRsaHelper m_rsa_helper;
 };
 
 } /* server */

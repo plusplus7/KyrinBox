@@ -137,7 +137,7 @@ bool KyrinBaseServer::server_get_postdata(evhttp_request *req, string &post_data
     return false;
 }
 
-bool KyrinBaseServer::server_get_digest(evhttp_request *req, string &reply, string &digest)
+bool KyrinBaseServer::server_get_digest(evhttp_request *req, std::string &reply, std::string &digest)
 {
     string timestamp = "";
     string post_data = "";
@@ -146,10 +146,10 @@ bool KyrinBaseServer::server_get_digest(evhttp_request *req, string &reply, stri
         return false;
     }
     if (!server_get_header(req, "KYRIN-TIMESTAMP", timestamp)) {
-        reply = "Can't read post timestamp..";
+        reply = "Can't read post KYRIN-TIMESTAMP..";
         return false;
     }
-    digest = timestamp + post_data;
+    digest = timestamp + post_data;   
     crypto::kyrin_sha1(digest, digest);
     return true;
 }

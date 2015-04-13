@@ -1,6 +1,6 @@
 master_list=('kyrinbox_master_one' 'kyrinbox_master_two' 'kyrinbox_master_three')
 slavenode_list=('kyrinbox_slavenode_one' 'kyrinbox_slavenode_two')
-chunk_list=('kyrinbox_chunk_one' 'kyrinbox_chunk_two' 'kyrinbox_chunk_three' 'kyrinbox_chunk_four' 'kyrinbox_chunk_five')
+chunk_list=('kyrinbox_chunk_one' 'kyrinbox_chunk_two' 'kyrinbox_chunk_three')
 keycenter_list=('kyrinbox_keycenter')
 workspace_dir='/tmp/kyrinbox_regression_test'
 kyrin_master_binary='/Users/apple/Workspace/KyrinBox/release/bin/master/kyrin_master'

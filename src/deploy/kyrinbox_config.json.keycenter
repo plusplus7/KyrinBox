@@ -1,10 +1,8 @@
 /*_This_is_a_fake_json_file,_do_*NOT*_change_the_format_of_data_nor_delete_this_line_*/
 {
     "ServerType"                    : "KeyCenter",
-    "KeyCenterRedisHost"            : "127.0.0.1",
-    "KeyCenterRedisPort"            : "DEPLOY_TO_PUT_REDISPORT_IN",
-    "KeyCenterSetKyrinKeyPort"      : "7086",
-    "KeyCenterSetKyrinKeyBacklog"   : "4096",
-    "KeyCenterGetKyrinKeyPort"      : "7087",
-    "KeyCenterGetKyrinKeyBacklog"   : "4096"
+    "Kbid"                          : "90000",
+    "MasterServerCount"             : "3",
+    "SlavenodeServerCount"          : "3",
+    "KeyCenterCount"                : "1",
 }

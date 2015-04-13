@@ -3,6 +3,8 @@
     "ServerType"                    : "Slavenode",
     "Kbid"                          : "DEPLOY_TO_PUT_KBID_IN",
     "MasterServerCount"             : "3",
+    "ChunkSeedCount"                : "3",
+    "KeyCenterCount"                : "1"
     "SlavenodeRedisHost"            : "127.0.0.1",
     "SlavenodeRedisPort"            : "DEPLOY_TO_PUT_REDISPORT_IN",
     "SlavenodeDownloadFilePort"     : "7000",

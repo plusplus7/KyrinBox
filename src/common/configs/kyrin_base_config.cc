@@ -16,7 +16,9 @@ bool KyrinBaseConfig::read_config_file(char *filename)
     m_config_map.clear();
     file >> key >> key;
     while (file >> key >> value >> value)
+    {
         m_config_map[key.substr(1, key.length()-2)] = value.substr(1, value.length()-(value.back()==','?3:2));
+    }
 
     file.close();
     return true;

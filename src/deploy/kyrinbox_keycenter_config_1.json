@@ -1,0 +1,10 @@
+/*_This_is_a_fake_json_file,_do_*NOT*_change_the_format_of_data_nor_delete_this_line_*/
+{
+    "MachineAddress"                : "127.0.0.1",
+    "KeyCenterSetKyrinKeyPort"      : "7086",
+    "KeyCenterSetKyrinKeyBacklog"   : "4096",
+    "KeyCenterGetKyrinKeyPort"      : "7087",
+    "KeyCenterGetKyrinKeyBacklog"   : "4096"
+    "KeyCenterRedisHost"            : "127.0.0.1",
+    "KeyCenterRedisPort"            : "16378",
+}

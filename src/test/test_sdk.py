@@ -129,11 +129,9 @@ def DownloadChunkFile(host, port, request, headers):
         return (response.getcode(), response.read())
     return (200, response.read())
 
-def SetKyrinKey(host, port, request, headers):
+def SetKyrinKey(host, port, postdata, headers):
     url = "http://%s:%d/SetKyrinKey" %(host, port)
-    post_data = request.SerializeToString()
-    post_data = base64.b64encode(post_data)
-    request = urllib2.Request(url, post_data)
+    request = urllib2.Request(url, postdata)
     for k, v in headers.items():
         request.add_header(k, v)
     try:

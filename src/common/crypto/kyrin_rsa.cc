@@ -31,6 +31,9 @@ static RSA *create_rsa(unsigned char *key, bool is_public)
 bool public_encrypt(string &plaintext, string &key, string &encrypted)
 {
     RSA *rsa = create_rsa((unsigned char *)key.c_str(), true);
+    if (rsa == NULL) {
+        return false;
+    }
     unsigned char encrypt[4098]={};  /* FIXME: hardcode 4098*/
     int length = RSA_public_encrypt(plaintext.length(), (const unsigned char *)plaintext.c_str(), encrypt, rsa, RSA_PKCS1_PADDING);
     if (length == -1) {
@@ -43,6 +46,9 @@ bool public_encrypt(string &plaintext, string &key, string &encrypted)
 bool public_decrypt(string &ciphertext, string &key, string &decrypted)
 {
     RSA *rsa = create_rsa((unsigned char *)key.c_str(), true);
+    if (rsa == NULL) {
+        return false;
+    }
     unsigned char decrypt[4098]={}; 
     int length = RSA_public_decrypt(ciphertext.length(), (const unsigned char *)ciphertext.c_str(), decrypt, rsa, RSA_PKCS1_PADDING);
     if (length == -1) {
@@ -55,6 +61,9 @@ bool public_decrypt(string &ciphertext, string &key, string &decrypted)
 bool private_encrypt(string &plaintext, string &key, string &encrypted)
 {
     RSA *rsa = create_rsa((unsigned char *)key.c_str(), false);
+    if (rsa == NULL) {
+        return false;
+    }
     unsigned char encrypt[4098]={}; 
     int length = RSA_private_encrypt(plaintext.length(), (const unsigned char *)plaintext.c_str(), encrypt, rsa, RSA_PKCS1_PADDING);
     if (length == -1) {
@@ -67,6 +76,9 @@ bool private_encrypt(string &plaintext, string &key, string &encrypted)
 bool private_decrypt(string &ciphertext, string &key, string &decrypted)
 {
     RSA *rsa = create_rsa((unsigned char *)key.c_str(), false);
+    if (rsa == NULL) {
+        return false;
+    }
     unsigned char decrypt[4098]={}; 
     int length = RSA_private_decrypt(ciphertext.length(), (const unsigned char *)ciphertext.c_str(), decrypt, rsa, RSA_PKCS1_PADDING);
     if (length == -1) {

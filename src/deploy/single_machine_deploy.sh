@@ -105,14 +105,22 @@ done
 for s_dir in ${master_list[*]}; do
     cp kyrinbox_master_* $workspace_dir/$s_dir
     cp kyrinbox_chunk_* $workspace_dir/$s_dir
+    cp kyrinbox_keycenter_* $workspace_dir/$s_dir
 done
 for s_dir in ${slavenode_list[*]}; do
     cp kyrinbox_master_* $workspace_dir/$s_dir
     cp kyrinbox_chunk_* $workspace_dir/$s_dir
+    cp kyrinbox_keycenter_* $workspace_dir/$s_dir
 done
 for s_dir in ${chunk_list[*]}; do
     cp kyrinbox_master_* $workspace_dir/$s_dir
     cp kyrinbox_chunk_* $workspace_dir/$s_dir
+    cp kyrinbox_keycenter_* $workspace_dir/$s_dir
+done
+for s_dir in ${keycenter_list[*]}; do
+    cp kyrinbox_master_* $workspace_dir/$s_dir
+    cp kyrinbox_chunk_* $workspace_dir/$s_dir
+    cp kyrinbox_keycenter_* $workspace_dir/$s_dir
 done
 
 echo "* Start services..."
@@ -142,3 +150,4 @@ done
 for (( i=1; i<=${#keycenter_list[@]}; i++)) do
     nohup $redis_server redis_conf_keycenter_"$i".conf 2>&1 > /dev/null &
 done
+python reset_keycenter.py

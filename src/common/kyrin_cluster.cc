@@ -30,14 +30,15 @@ bool KyrinCluster::read_config_file(const char *filename)
         t_map[key.substr(1, key.length()-2)] = value.substr(1, value.length()-(value.back()==','?3:2));
     file.close();
     if (t_map.count(constants::k_json_server_type) == 0
-     || t_map.count(constants::k_json_kbid) == 0
-     || t_map.count(constants::k_json_master_server_count) == 0)
+     || t_map.count(constants::k_json_kbid) == 0)
         return false;
 
     if (t_map[constants::k_json_server_type] == "Master") {
         m_server_type = k_type_master;
     } else if (t_map[constants::k_json_server_type] == "Slavenode") {
         m_server_type = k_type_slavenode;
+    } else if (t_map[constants::k_json_server_type] == "KeyCenter") {
+        m_server_type = k_type_keycenter;
     } else {
         m_server_type = k_type_chunk;
     }
@@ -62,7 +63,10 @@ bool KyrinCluster::read_config_file(const char *filename)
         chunk_config.read_config_file(t_filename);
         m_chunk_configs.push_back(chunk_config);
     }
-    m_keycenter_config.read_config_file("kyrinbox_keycenter_config_1.json");
+    {
+        char t_filename[40] = "kyrinbox_keycenter_config_1.json";
+        m_keycenter_config.read_config_file(t_filename);
+    }
     return true;
 }
 

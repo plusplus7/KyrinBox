@@ -7,6 +7,7 @@
 namespace kyrin {
 namespace server {
 
+using namespace std;
 using namespace kyrin::common;
 
 static KyrinLog *logger = KyrinLog::get_instance();

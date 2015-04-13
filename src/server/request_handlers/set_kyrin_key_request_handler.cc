@@ -4,6 +4,7 @@
 #include "common/kyrin_log.h"
 #include "set_kyrin_key_request_handler.h"
 #include "protobuf/kyrin_key.pb.h"
+#include <iostream>
 
 namespace kyrin {
 namespace server {
@@ -16,6 +17,7 @@ static KyrinLog *logger = KyrinLog::get_instance();
 SetKyrinKeyRequestHandler::SetKyrinKeyRequestHandler(char *host, int port)
 {
     m_redis_context = redisConnect(host, port);
+    redisCommand(m_redis_context, "auth asdf"); /* FIXME: hardcode secret...*/
 }
 
 void SetKyrinKeyRequestHandler::handle_request(KyrinKeyCenterServer *server, evhttp_request *req)
@@ -42,6 +44,11 @@ void SetKyrinKeyRequestHandler::handle_request(KyrinKeyCenterServer *server, evh
     string public_key(redis_reply->str);
     string signature = "";
     string digest = "";
+    if (!server->server_get_header(req, "KYRIN-SIGNATURE", signature)) {
+        reply = "No signature found";
+        break;
+    }
+    signature = crypto::base64_decode(signature);
     server->server_get_digest(req, reply, digest);
     if (!KyrinRsaHelper::examine_legality(public_key, digest, signature)) {
         reply = "Unauthorized";

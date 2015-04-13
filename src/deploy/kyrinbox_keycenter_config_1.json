@@ -5,4 +5,6 @@
     "KeyCenterSetKyrinKeyBacklog"   : "4096",
     "KeyCenterGetKyrinKeyPort"      : "7087",
     "KeyCenterGetKyrinKeyBacklog"   : "4096"
+    "KeyCenterRedisHost"            : "127.0.0.1",
+    "KeyCenterRedisPort"            : "16378",
 }

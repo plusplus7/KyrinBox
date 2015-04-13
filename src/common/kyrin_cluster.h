@@ -14,7 +14,8 @@ namespace common {
 enum KyrinServerType{
     k_type_master = 1,
     k_type_slavenode = 2,
-    k_type_chunk = 3
+    k_type_chunk = 3,
+    k_type_keycenter = 4
 };
 
 class KyrinCluster {

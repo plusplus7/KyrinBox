@@ -41,6 +41,7 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
     //// Collect data
 
     KyrinCluster *cluster = KyrinCluster::get_instance();
+    request_body = crypto::base64_decode(request_body);
     kyrinbox::api::UploadFileRequest request_pb;
     request_pb.ParseFromString(request_body);
     logger->log("pb data account",     request_pb.account().c_str());
@@ -63,7 +64,7 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
     string gossip_request = "Read"; /* FIXME: hardcode */
     KyrinHttpClient::make_request_post(to_gossip.first,
                                        to_gossip.second,
-                                       "/get_status",
+                                       "/GetStatus",
                                        gossip_response,
                                        gossip_request);
     logger->log("gossip_response", gossip_response.c_str());
@@ -94,7 +95,7 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
     operation.set_key(request_pb.account()+request_pb.file_name()); /* FIXME */
     string value;
     if (m_userdata_db->exist(operation.key())) {
-        reply = "Filename existed...";
+        reply = operation.key() + "Filename existed...";
         server->server_send_reply_bad(req, reply);
         return ;
     }
@@ -172,7 +173,8 @@ void UploadFileRequestHandler::handle_request(KyrinMasterServer *server, evhttp_
         return ;
     }
 
-    server->server_send_reply_ok(req, operation_data);
+    reply = crypto::base64_encode((unsigned char const*)operation_data.c_str(), operation_data.length());
+    server->server_send_reply_ok(req, reply);
     return ;
  
 }

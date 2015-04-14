@@ -63,7 +63,7 @@ void KyrinMasterSentinel::sentinel_sync()
                     int retry = 0;
                     while (!KyrinHttpClient::make_request_get(cluster->get_master_ip(leader),
                                                               cluster->get_master_sentinel_port(leader),
-                                                              "/get_status",
+                                                              "/GetStatus",
                                                               response)
                           && retry != 3) {
                           logger->log("sentinel_sync", "retry");
@@ -95,7 +95,7 @@ void KyrinMasterSentinel::sentinel_sync()
                             string response;
                             KyrinHttpClient::make_request_post(cluster->get_master_ip(i),
                                                                cluster->get_master_sentinel_port(i),
-                                                               "/get_vote",
+                                                               "/GetVote",
                                                                response,
                                                                me_vote);
                             if (check_response(response)) {

@@ -99,7 +99,7 @@ void KyrinChunkGossiper::gossip_sync()
 
             while (!KyrinHttpClient::make_request_post(config.host.c_str(),
                                                        config.gossip_port,
-                                                       "/get_status",
+                                                       "/GetStatus",
                                                        response,
                                                        to_post)
                    && retry < 3) {

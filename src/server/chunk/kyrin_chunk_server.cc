@@ -101,10 +101,10 @@ bool KyrinChunkServer::server_set_processor(evhttp *server, int thread_code)
         server_put_callback(server, "/DownloadChunkFile", download_chunk_file_handler, this);
         server_set_evhttp_accept_socket(server, download_chunk_file_fd);
     } else if (thread_code == 2) {
-        server_put_callback(server, "/SetFileKeyInfo", set_file_key_info_handler, this);
+        server_put_callback(server, "/SetFileKeyinfo", set_file_key_info_handler, this);
         server_set_evhttp_accept_socket(server, set_file_key_info_fd);
     } else {
-        server_put_callback(server, "/GetFileKeyInfo", get_file_key_info_handler, this);
+        server_put_callback(server, "/GetFileKeyinfo", get_file_key_info_handler, this);
         server_set_evhttp_accept_socket(server, get_file_key_info_fd);
     }
     return true;

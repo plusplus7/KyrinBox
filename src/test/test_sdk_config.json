@@ -1,0 +1,77 @@
+{
+    "Master" : [
+        {
+            "Kbid"              : 1,
+            "Host"              : "127.0.0.1",
+            "UploadFilePort"    : 17770,
+            "ConfirmOplogPort"  : 17700,
+            "GetOplogPort"      : 17070,
+            "GetStatusPort"     : 7777
+        },
+        {
+            "Kbid"              : 2,
+            "Host"              : "127.0.0.1",
+            "UploadFilePort"    : 27770,
+            "ConfirmOplogPort"  : 27700,
+            "GetOplogPort"      : 27070,
+            "GetStatusPort"     : 17777
+        },
+        {
+            "Kbid"              : 3,
+            "Host"              : "127.0.0.1",
+            "UploadFilePort"    : 37770,
+            "ConfirmOplogPort"  : 37700,
+            "GetOplogPort"      : 37070,
+            "GetStatusPort"     : 27777
+        }
+    ],
+    "Slavenode" : [
+        {
+            "Kbid"              : 21,
+            "Host"              : "127.0.0.1",
+            "DownloadFilePort"  : 17000
+        },
+        {
+            "Kbid"              : 21,
+            "Host"              : "127.0.0.1",
+            "DownloadFilePort"  : 27000
+        }
+    ],
+    "Chunk"     : [
+        {
+            "Kbid"                  : 3001,
+            "Host"                  : "127.0.0.1",
+            "UploadChunkFilePort"   : 17077,
+            "DownloadChunkFilePort" : 17477,
+            "GetStatusPort"         : 17170,
+            "SetFileKeyinfoPort"    : 17270,
+            "GetFileKeyinfoPort"    : 17370
+        },
+        {
+            "Kbid"                  : 3002,
+            "Host"                  : "127.0.0.1",
+            "UploadChunkFilePort"   : 27077,
+            "DownloadChunkFilePort" : 27477,
+            "GetStatusPort"         : 27170,
+            "SetFileKeyinfoPort"    : 27270,
+            "GetFileKeyinfoPort"    : 27370
+        },
+        {
+            "Kbid"                  : 3003,
+            "Host"                  : "127.0.0.1",
+            "UploadChunkFilePort"   : 37077,
+            "DownloadChunkFilePort" : 37477,
+            "GetStatusPort"         : 37170,
+            "SetFileKeyinfoPort"    : 37270,
+            "GetFileKeyinfoPort"    : 37370
+        }
+    ],
+    "KeyCenter"     : [
+        {
+            "Kbid"                  : 90000,
+            "Host"                  : "127.0.0.1",
+            "SetKyrinKeyPort"       : 7086,
+            "GetKyrinKeyPort"       : 7087
+        }
+    ]
+}

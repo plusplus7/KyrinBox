@@ -69,8 +69,8 @@ bool KyrinMasterSentinelServer::server_initialize(KyrinMasterSentinel *sentinel,
 
 bool KyrinMasterSentinelServer::server_set_processor(evhttp *server, int thread_code)
 {
-    server_put_callback(server, "/get_status", get_sentinel_status_handler, this);
-    server_put_callback(server, "/get_vote", get_sentinel_vote_handler, this);
+    server_put_callback(server, "/GetStatus", get_sentinel_status_handler, this);
+    server_put_callback(server, "/GetVote", get_sentinel_vote_handler, this);
     server_set_evhttp_accept_socket(server, server_listen_fd);
     return true;
 }

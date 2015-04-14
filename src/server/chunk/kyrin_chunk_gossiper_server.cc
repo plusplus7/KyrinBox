@@ -24,7 +24,7 @@ bool KyrinChunkGossiperServer::server_initialize(KyrinChunkGossiper *gossiper, i
 
 bool KyrinChunkGossiperServer::server_set_processor(evhttp *server, int thread_code)
 {
-    server_put_callback(server, "/get_status", get_gossiper_status_handler, this);
+    server_put_callback(server, "/GetStatus", get_gossiper_status_handler, this);
     server_set_evhttp_accept_socket(server, server_listen_fd);
     return true;
 }

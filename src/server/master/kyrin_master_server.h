@@ -5,6 +5,7 @@
 #include "server/request_handlers/upload_file_request_handler.h"
 #include "server/request_handlers/get_oplog_request_handler.h"
 #include "server/request_handlers/confirm_oplog_request_handler.h"
+#include "server/request_filters/examine_identity_request_filter.h"
 #include "kyrin_master_sentinel.h"
 #include "io/kyrin_database_wrapper.h"
 
@@ -20,17 +21,9 @@ public:
     bool server_free();
     bool server_set_processor(evhttp *server, int thread_code);
 
-    UploadFileRequestHandler* get_upload_file_request_handler() {
-        return upload_file_request_handler;
-    }
-
-    GetOplogRequestHandler* get_get_oplog_request_handler() {
-        return get_oplog_request_handler;
-    }
-
-    ConfirmOplogRequestHandler* get_confirm_oplog_request_handler() {
-        return confirm_oplog_request_handler;
-    }
+    void process_upload_file_request(evhttp_request *req);
+    void process_get_oplog_request(evhttp_request *req);
+    void process_confirm_oplog_request(evhttp_request *req);
 
 private:
     int upload_file_fd;
@@ -39,9 +32,11 @@ private:
     kyrin::server::KyrinMasterSentinel *m_sentinel;
     kyrin::io::KyrinDatabaseWrapper *m_userdata_db;
     kyrin::io::KyrinDatabaseWrapper *m_oplog_db;
-    UploadFileRequestHandler *upload_file_request_handler;
-    GetOplogRequestHandler *get_oplog_request_handler;
-    ConfirmOplogRequestHandler *confirm_oplog_request_handler;
+    UploadFileRequestHandler *m_upload_file_request_handler;
+    GetOplogRequestHandler *m_get_oplog_request_handler;
+    ConfirmOplogRequestHandler *m_confirm_oplog_request_handler;
+
+    ExamineIdentityRequestFilter *m_examine_identity_request_filter;
 
 };
 

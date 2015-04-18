@@ -197,11 +197,17 @@ class TestSdk:
         return self.download_chunk_file_pb(index, download_chunk_file_request)
 
 if __name__ == "__main__":
-    ts = TestSdk("Admin", "../deploy/key.pem")
+    tmst = TestSdk("KeyCenterAdminPublicKey", "../deploy/key.pem")
+    fp = open("../deploy/cert.pem", "r")
+    print tmst.set_kyrin_key("plusplus7", fp.read())
+    fp.close()
+    print tmst.get_kyrin_key("plusplus7")
+    ts = TestSdk("plusplus7", "../deploy/key.pem")
     print "get_status_master: ", ts.get_status_master()
     print "get_master_leader: ", ts.get_master_leader()
     filename = "sssogs"+str(int(time.time()))
     (httpcode, res) = ts.upload_file("plusplus7", filename, "sha1", 1024)
+    print (httpcode, res)
     for i in res.file_hosts:
         index = ts.get_index_by_kbid(int(i.split(" ")[1]))
         print "set_file_keyinfo: ", ts.set_file_keyinfo(index, "plusplus7", filename, res.file_hosts, res.file_size, res.merkle_sha1, "key_aes")

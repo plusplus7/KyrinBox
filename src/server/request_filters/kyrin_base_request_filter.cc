@@ -3,8 +3,9 @@
 namespace kyrin {
 namespace server {
 
-KyrinBaseRequestFilter::KyrinBaseRequestFilter(KyrinBaseServer *server) : m_server(server)
+KyrinBaseRequestFilter::KyrinBaseRequestFilter()
 {
+
 }
 
 } /* server */

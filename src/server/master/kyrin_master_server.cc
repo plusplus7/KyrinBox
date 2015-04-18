@@ -26,17 +26,34 @@ static KyrinLog *logger = KyrinLog::get_instance();
 
 static void get_oplog_handler(evhttp_request *req, void *arg)
 {
-    ((KyrinMasterServer *) arg)->get_get_oplog_request_handler()->handle_request((KyrinMasterServer *) arg, req);
+    ((KyrinMasterServer *) arg)->process_get_oplog_request(req);
 }
 
 static void upload_file_handler(evhttp_request *req, void *arg)
 {
-    ((KyrinMasterServer *) arg)->get_upload_file_request_handler()->handle_request((KyrinMasterServer *) arg, req);
+    ((KyrinMasterServer *) arg)->process_upload_file_request(req);
 }
 
 static void confirm_oplog_handler(evhttp_request *req, void *arg)
 {
-    ((KyrinMasterServer *) arg)->get_confirm_oplog_request_handler()->handle_request((KyrinMasterServer *) arg, req);
+    ((KyrinMasterServer *) arg)->process_confirm_oplog_request(req);
+}
+
+void KyrinMasterServer::process_upload_file_request(evhttp_request *req)
+{
+    if (!m_examine_identity_request_filter->filter_request(this, req))
+        return ;
+    m_upload_file_request_handler->handle_request(this, req);
+}
+
+void KyrinMasterServer::process_get_oplog_request(evhttp_request *req)
+{
+    m_get_oplog_request_handler->handle_request(this, req);
+}
+
+void KyrinMasterServer::process_confirm_oplog_request(evhttp_request *req)
+{
+    m_confirm_oplog_request_handler->handle_request(this, req);
 }
 
 bool KyrinMasterServer::server_initialize(KyrinMasterSentinel *sentinel)
@@ -62,11 +79,12 @@ bool KyrinMasterServer::server_initialize(KyrinMasterSentinel *sentinel)
         return false;
     }
 
-    m_userdata_db = new KyrinDatabaseWrapper(KyrinCluster::get_instance()->get_master_config()->userdata_database_path());
-    m_oplog_db    = new KyrinDatabaseWrapper(KyrinCluster::get_instance()->get_master_config()->oplog_database_path());
-    upload_file_request_handler = new UploadFileRequestHandler(m_sentinel, m_userdata_db, m_oplog_db);
-    get_oplog_request_handler = new GetOplogRequestHandler(m_oplog_db);
-    confirm_oplog_request_handler = new ConfirmOplogRequestHandler(m_sentinel, m_userdata_db, m_oplog_db);
+    m_userdata_db                       = new KyrinDatabaseWrapper(KyrinCluster::get_instance()->get_master_config()->userdata_database_path());
+    m_oplog_db                          = new KyrinDatabaseWrapper(KyrinCluster::get_instance()->get_master_config()->oplog_database_path());
+    m_upload_file_request_handler       = new UploadFileRequestHandler(m_sentinel, m_userdata_db, m_oplog_db);
+    m_get_oplog_request_handler         = new GetOplogRequestHandler(m_oplog_db);
+    m_confirm_oplog_request_handler     = new ConfirmOplogRequestHandler(m_sentinel, m_userdata_db, m_oplog_db);
+    m_examine_identity_request_filter   = new ExamineIdentityRequestFilter(KyrinCluster::get_instance()->get_keycenter_host(), KyrinCluster::get_instance()->get_keycenter_get_key_port());
 
     return true;
 }
@@ -79,9 +97,10 @@ bool KyrinMasterServer::server_free()
     close(confirm_oplog_fd);
     delete m_userdata_db;
     delete m_oplog_db;
-    delete upload_file_request_handler;
-    delete get_oplog_request_handler;
-    delete confirm_oplog_request_handler;
+    delete m_upload_file_request_handler;
+    delete m_get_oplog_request_handler;
+    delete m_confirm_oplog_request_handler;
+    delete m_examine_identity_request_filter;
     return true;
 }
 

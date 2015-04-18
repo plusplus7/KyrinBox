@@ -124,6 +124,14 @@ for s_dir in ${keycenter_list[*]}; do
 done
 
 echo "* Start services..."
+for (( i=1; i<=${#slavenode_list[@]}; i++)) do
+    nohup $redis_server redis_conf_slavenode_"$i".conf 2>&1 > /dev/null &
+done
+for (( i=1; i<=${#keycenter_list[@]}; i++)) do
+    nohup $redis_server redis_conf_keycenter_"$i".conf 2>&1 > /dev/null &
+done
+python reset_keycenter.py
+sleep 2
 for s_dir in ${master_list[*]}; do
     cd "$workspace_dir"/"$s_dir"
     nohup ./kyrin_master 2>&1 > /dev/null &
@@ -144,10 +152,3 @@ for s_dir in ${keycenter_list[*]}; do
     nohup ./kyrin_keycenter 2>&1 > /dev/null &
     cd - > /dev/null
 done
-for (( i=1; i<=${#slavenode_list[@]}; i++)) do
-    nohup $redis_server redis_conf_slavenode_"$i".conf 2>&1 > /dev/null &
-done
-for (( i=1; i<=${#keycenter_list[@]}; i++)) do
-    nohup $redis_server redis_conf_keycenter_"$i".conf 2>&1 > /dev/null &
-done
-python reset_keycenter.py

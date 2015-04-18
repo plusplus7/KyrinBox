@@ -16,7 +16,10 @@ static KyrinLog *logger = KyrinLog::get_instance();
 
 SetKyrinKeyRequestHandler::SetKyrinKeyRequestHandler(char *host, int port)
 {
-    m_redis_context = redisConnect(host, port);
+    m_redis_context = NULL;
+    while (m_redis_context == NULL) {
+        m_redis_context = redisConnect(host, port);
+    }
     redisCommand(m_redis_context, "auth asdf"); /* FIXME: hardcode secret...*/
 }
 

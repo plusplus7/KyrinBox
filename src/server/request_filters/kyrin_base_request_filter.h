@@ -7,12 +7,8 @@ namespace server {
 
 class KyrinBaseRequestFilter {
 public:
-    virtual bool filter_request(KyrinBaseServer *server, evhttp_request *req);
-    virtual ~KyrinBaseRequestFilter() {}
-
-protected:
-    KyrinBaseRequestFilter(KyrinBaseServer *server);
-    KyrinBaseServer *m_server;
+    virtual bool filter_request(KyrinBaseServer *server, evhttp_request *req) = 0;
+    KyrinBaseRequestFilter();
 
 }; /* KyrinBaseRequestFilter */
 

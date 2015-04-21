@@ -62,6 +62,7 @@ env.Append(LIBPATH = ['src/external/lib'])
 ### Compile statics
 env.StaticLibrary(target = 'kyrin_base_server', source = 'src/server/base/kyrin_base_server.cc')
 env.StaticLibrary(target = 'kyrin_base_request_filter', source = 'src/server/request_filters/kyrin_base_request_filter.cc')
+env.StaticLibrary(target = 'examine_identity_request_filter', source = 'src/server/request_filters/examine_identity_request_filter.cc')
 env.StaticLibrary(target = 'kyrin_constants', source = 'src/common/kyrin_constants.cc')
 env.StaticLibrary(target = 'kyrin_base64', source = 'src/common/crypto/kyrin_base64.cc')
 env.StaticLibrary(target = 'kyrin_rsa', source = 'src/common/crypto/kyrin_rsa.cc')
@@ -120,12 +121,16 @@ kyrin_master = env.Program('kyrin_master', 'src/server/master/kyrin_master_main.
                                     'curl',
                                     'kyrin_http_client',
                                     'kyrin_base64',
+                                    'kyrin_base_request_filter',
+                                    'examine_identity_request_filter',
                                     'proto_upload_file',
                                     'proto_operation_log',
                                     'proto_get_oplog',
+                                    'proto_kyrin_key',
                                     'proto_chunk_cluster_status',
                                     'protobuf',
                                     'kyrin_rsa',
+                                    'kyrin_rsa_helper',
                                     'kyrin_sha1',
                                     'ssl',
                                     'crypto',
@@ -175,6 +180,9 @@ kyrin_chunk = env.Program('kyrin_chunk', 'src/server/chunk/kyrin_chunk_main.cc',
                                    'download_chunk_file_request_handler',
                                    'set_file_key_info_request_handler',
                                    'get_file_key_info_request_handler',
+                                   'kyrin_base_request_filter',
+                                   'examine_identity_request_filter',
+                                   'proto_kyrin_key',
                                    'protobuf',
                                    'pthread',
                                    'kyrin_rsa_helper',

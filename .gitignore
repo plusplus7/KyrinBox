@@ -60,3 +60,6 @@ test_spinlock
 
 # Redis dump
 *.rdb
+
+# RSA pem
+*.pem

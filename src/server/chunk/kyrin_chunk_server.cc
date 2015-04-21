@@ -8,24 +8,52 @@ namespace server {
 
 using namespace kyrin::common;
 
+void KyrinChunkServer::process_upload_chunk_file_request(evhttp_request *req)
+{
+    if (!m_examine_identity_request_filter->filter_request(this, req))
+        return ;
+    m_upload_chunk_file_request_handler->handle_request(this, req);
+}
+
+void KyrinChunkServer::process_download_chunk_file_request(evhttp_request *req)
+{
+    if (!m_examine_identity_request_filter->filter_request(this, req))
+        return ;
+    m_download_chunk_file_request_handler->handle_request(this, req);
+}
+
+void KyrinChunkServer::process_set_file_key_info_request(evhttp_request *req)
+{
+    if (!m_examine_identity_request_filter->filter_request(this, req))
+        return ;
+    m_set_file_key_info_request_handler->handle_request(this, req);
+}
+
+void KyrinChunkServer::process_get_file_key_info_request(evhttp_request *req)
+{
+    if (!m_examine_identity_request_filter->filter_request(this, req))
+        return ;
+    m_get_file_key_info_request_handler->handle_request(this, req);
+}
+
 static void upload_chunk_file_handler(evhttp_request *req, void *arg)
 {
-    ((KyrinChunkServer *) arg)->get_upload_chunk_file_request_handler()->handle_request((KyrinChunkServer *)arg, req);
+    ((KyrinChunkServer *) arg)->process_upload_chunk_file_request(req);
 }
 
 static void download_chunk_file_handler(evhttp_request *req, void *arg)
 {
-    ((KyrinChunkServer *) arg)->get_download_chunk_file_request_handler()->handle_request((KyrinChunkServer *)arg, req);
+    ((KyrinChunkServer *) arg)->process_download_chunk_file_request(req);
 }
 
 static void get_file_key_info_handler(evhttp_request *req, void *arg)
 {
-    ((KyrinChunkServer *) arg)->get_get_file_key_info_request_handler()->handle_request((KyrinChunkServer *)arg, req);
+    ((KyrinChunkServer *) arg)->process_get_file_key_info_request(req);
 }
 
 static void set_file_key_info_handler(evhttp_request *req, void *arg)
 {
-    ((KyrinChunkServer *) arg)->get_set_file_key_info_request_handler()->handle_request((KyrinChunkServer *)arg, req);
+    ((KyrinChunkServer *) arg)->process_set_file_key_info_request(req);
 }
 
 bool KyrinChunkServer::server_initialize(KyrinChunkGossiper *gossiper)
@@ -66,10 +94,11 @@ bool KyrinChunkServer::server_initialize(KyrinChunkGossiper *gossiper)
     }
 
     m_keyinfo_db = new io::KyrinDatabaseWrapper(KyrinCluster::get_instance()->get_chunk_config()->keyinfo_database_path().c_str());
-    upload_chunk_file_request_handler = new UploadChunkFileRequestHandler(m_gossiper);
-    download_chunk_file_request_handler = new DownloadChunkFileRequestHandler();
-    set_file_key_info_request_handler = new SetFileKeyInfoRequestHandler(m_keyinfo_db);
-    get_file_key_info_request_handler = new GetFileKeyInfoRequestHandler(m_keyinfo_db);
+    m_upload_chunk_file_request_handler = new UploadChunkFileRequestHandler(m_gossiper);
+    m_download_chunk_file_request_handler = new DownloadChunkFileRequestHandler();
+    m_set_file_key_info_request_handler = new SetFileKeyInfoRequestHandler(m_keyinfo_db);
+    m_get_file_key_info_request_handler = new GetFileKeyInfoRequestHandler(m_keyinfo_db);
+    m_examine_identity_request_filter   = new ExamineIdentityRequestFilter(KyrinCluster::get_instance()->get_keycenter_host(), KyrinCluster::get_instance()->get_keycenter_get_key_port());
     delete config;
     return true;
 }
@@ -78,11 +107,12 @@ bool KyrinChunkServer::server_free()
 {
     KyrinBaseServer::server_free();
     close(upload_chunk_file_fd);
-    delete upload_chunk_file_request_handler;
-    delete download_chunk_file_request_handler;
-    delete set_file_key_info_request_handler;
-    delete get_file_key_info_request_handler;
+    delete m_upload_chunk_file_request_handler;
+    delete m_download_chunk_file_request_handler;
+    delete m_set_file_key_info_request_handler;
+    delete m_get_file_key_info_request_handler;
     delete m_keyinfo_db;
+    delete m_examine_identity_request_filter;
     return true;
 }
 

@@ -17,7 +17,7 @@ bool KyrinRsaHelper::examine_legality_from_user(string &issuer, string &digest, 
 {
     string public_key;
     if (!m_cache.get(issuer, public_key) && !fetch_public_key(issuer, public_key)) {
-        logger->log("RsaHelper", ("Can't fetch" + issuer).c_str());
+        logger->log("RsaHelper", ("Can't fetch " + issuer).c_str());
         return false;
     }
     return examine_legality(public_key, digest, signature);
@@ -42,7 +42,7 @@ bool KyrinRsaHelper::fetch_public_key(string &issuer, string &public_key)
     string postdata;
     request.SerializeToString(&postdata);
     postdata = crypto::base64_encode((unsigned char const*)postdata.c_str(), postdata.length());
-    if (!KyrinHttpClient::make_request_post(m_host, m_port, "/GetKyrinKey", public_key, postdata)) {
+    if (!KyrinHttpClient::make_request_post(m_host, m_port, "/GetKyrinKey", public_key, postdata) || public_key == "") {
         return false;
     }
     return true;

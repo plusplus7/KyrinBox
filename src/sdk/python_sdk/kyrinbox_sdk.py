@@ -68,6 +68,12 @@ class KyrinboxSdk:
             response = e
         return (response.getcode(), response.read())
 
+    def get_oplog(self, index, op_id = None):
+        if op_id == None:
+            op_id = LexicographicallyGetZero()
+        postdata = base64.b64encode("".join(op_id))
+        return self.do_request_post("Master", index, "GetOplog", postdata)
+
     def set_kyrin_key(self, key_id, key_pub):
         set_key_request = kyrin_key_pb2.SetKyrinKeyRequest()
         set_key_request.key_id      = key_id
@@ -199,7 +205,7 @@ class KyrinboxSdk:
 if __name__ == "__main__":
     tmst = KyrinboxSdk("test_sdk_config.json", "KeyCenterAdminPublicKey", "../../ci/secret/key.pem")
     fp = open("../../ci/secret/cert.pem", "r")
-    print tmst.set_kyrin_key("plusplus7", fp.read())
+    # print tmst.set_kyrin_key("plusplus7", fp.read())
     fp.close()
     print tmst.get_kyrin_key("plusplus7")
     ts = KyrinboxSdk("test_sdk_config.json", "plusplus7", "../../ci/secret/key.pem")

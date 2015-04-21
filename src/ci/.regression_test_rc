@@ -1,0 +1,14 @@
+master_list=('kyrinbox_master_one' 'kyrinbox_master_two' 'kyrinbox_master_three')
+slavenode_list=('kyrinbox_slavenode_one' 'kyrinbox_slavenode_two')
+chunk_list=('kyrinbox_chunk_one' 'kyrinbox_chunk_two' 'kyrinbox_chunk_three')
+keycenter_list=('kyrinbox_keycenter')
+workspace_dir='/tmp/kyrinbox_regression_test'
+kyrin_master_binary='./bin/master/kyrin_master'
+kyrin_slavenode_binary='./bin/slavenode/kyrin_slavenode'
+kyrin_chunk_binary='./bin/chunk/kyrin_chunk'
+kyrin_keycenter_binary='./bin/keycenter/kyrin_keycenter'
+kyrin_config_example='./kyrinbox_config.json'
+kyrin_slavenode_config_example='./kyrinbox_config.json.slavenode'
+kyrin_chunk_config_example='./kyrinbox_config.json.chunk'
+kyrin_keycenter_config_example='./kyrinbox_config.json.keycenter'
+redis_server='../external/redis-2.8.19/src/redis-server'

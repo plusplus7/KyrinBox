@@ -74,6 +74,7 @@ for (( i=0; i<${#master_list[@]}; i++)) do
         $kyrin_config_example\
         > $workspace_dir"/"${master_list[$i]}"/"kyrinbox_config.json
 done
+
 echo "* Place chunk config..."
 for (( i=0; i<${#chunk_list[@]}; i++)) do
     (( bp=$i+1 ))
@@ -86,6 +87,7 @@ for (( i=0; i<${#chunk_list[@]}; i++)) do
         $kyrin_chunk_config_example\
         > $workspace_dir"/"${chunk_list[$i]}"/"kyrinbox_config.json
 done
+
 echo "* Place slavenode config..."
 for (( i=0; i<${#slavenode_list[@]}; i++)) do
     (( bp=$i+1 ))
@@ -95,6 +97,7 @@ for (( i=0; i<${#slavenode_list[@]}; i++)) do
         $kyrin_slavenode_config_example\
         > $workspace_dir"/"${slavenode_list[$i]}"/"kyrinbox_config.json
 done
+
 echo "* Place keycenter config..."
 for (( i=0; i<${#keycenter_list[@]}; i++)) do
     (( bp=$i+1 ))
@@ -102,36 +105,45 @@ for (( i=0; i<${#keycenter_list[@]}; i++)) do
         $kyrin_keycenter_config_example\
         > $workspace_dir"/"${keycenter_list[$i]}"/"kyrinbox_config.json
 done
+
+echo "* Place common config..."
 for s_dir in ${master_list[*]}; do
-    cp kyrinbox_master_* $workspace_dir/$s_dir
-    cp kyrinbox_chunk_* $workspace_dir/$s_dir
-    cp kyrinbox_keycenter_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_master_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_chunk_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_keycenter_* $workspace_dir/$s_dir
 done
 for s_dir in ${slavenode_list[*]}; do
-    cp kyrinbox_master_* $workspace_dir/$s_dir
-    cp kyrinbox_chunk_* $workspace_dir/$s_dir
-    cp kyrinbox_keycenter_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_master_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_chunk_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_keycenter_* $workspace_dir/$s_dir
 done
 for s_dir in ${chunk_list[*]}; do
-    cp kyrinbox_master_* $workspace_dir/$s_dir
-    cp kyrinbox_chunk_* $workspace_dir/$s_dir
-    cp kyrinbox_keycenter_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_master_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_chunk_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_keycenter_* $workspace_dir/$s_dir
 done
 for s_dir in ${keycenter_list[*]}; do
-    cp kyrinbox_master_* $workspace_dir/$s_dir
-    cp kyrinbox_chunk_* $workspace_dir/$s_dir
-    cp kyrinbox_keycenter_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_master_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_chunk_* $workspace_dir/$s_dir
+    cp "$kyrin_common_conf_dir"/kyrinbox_keycenter_* $workspace_dir/$s_dir
 done
 
-echo "* Start services..."
+echo "* Start redis services..."
 for (( i=1; i<=${#slavenode_list[@]}; i++)) do
-    nohup $redis_server redis_conf_slavenode_"$i".conf 2>&1 > /dev/null &
+    nohup $redis_server "$kyrin_common_conf_dir"/redis_conf_slavenode_"$i".conf 2>&1 > /dev/null &
 done
 for (( i=1; i<=${#keycenter_list[@]}; i++)) do
-    nohup $redis_server redis_conf_keycenter_"$i".conf 2>&1 > /dev/null &
+    nohup $redis_server "$kyrin_common_conf_dir"/redis_conf_keycenter_"$i".conf 2>&1 > /dev/null &
 done
+
+echo "* Generate rsa keys..."
+sh make_secret.sh
+
+echo "* Reset redis..."
 python reset_keycenter.py
 sleep 2
+
+echo "* Start kyrinbox services..."
 for s_dir in ${master_list[*]}; do
     cd "$workspace_dir"/"$s_dir"
     nohup ./kyrin_master 2>&1 > /dev/null &

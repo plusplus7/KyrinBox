@@ -26,10 +26,10 @@ def LexicographicallyAddOne(id):
     id = "".join(t)
     return id
 
-class TestSdk:
+class KyrinboxSdk:
 
-    def __init__(self, username, key_path):
-        fp = open("test_sdk_config.json", "r")
+    def __init__(self, conf_path, username, key_path):
+        fp = open(conf_path, "r")
         self.config = json.load(fp)
         fp.close()
         fp = open(key_path, "r")
@@ -67,6 +67,12 @@ class TestSdk:
         except urllib2.HTTPError, e:
             response = e
         return (response.getcode(), response.read())
+
+    def get_oplog(self, index, op_id = None):
+        if op_id == None:
+            op_id = LexicographicallyGetZero()
+        postdata = base64.b64encode("".join(op_id))
+        return self.do_request_post("Master", index, "GetOplog", postdata)
 
     def set_kyrin_key(self, key_id, key_pub):
         set_key_request = kyrin_key_pb2.SetKyrinKeyRequest()
@@ -197,12 +203,12 @@ class TestSdk:
         return self.download_chunk_file_pb(index, download_chunk_file_request)
 
 if __name__ == "__main__":
-    tmst = TestSdk("KeyCenterAdminPublicKey", "../deploy/key.pem")
-    fp = open("../deploy/cert.pem", "r")
-    print tmst.set_kyrin_key("plusplus7", fp.read())
+    tmst = KyrinboxSdk("test_sdk_config.json", "KeyCenterAdminPublicKey", "../../ci/secret/key.pem")
+    fp = open("../../ci/secret/cert.pem", "r")
+    # print tmst.set_kyrin_key("plusplus7", fp.read())
     fp.close()
     print tmst.get_kyrin_key("plusplus7")
-    ts = TestSdk("plusplus7", "../deploy/key.pem")
+    ts = KyrinboxSdk("test_sdk_config.json", "plusplus7", "../../ci/secret/key.pem")
     print "get_status_master: ", ts.get_status_master()
     print "get_master_leader: ", ts.get_master_leader()
     filename = "sssogs"+str(int(time.time()))

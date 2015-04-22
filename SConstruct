@@ -231,3 +231,8 @@ env.Install('release/bin/master', kyrin_master)
 env.Install('release/bin/slavenode', kyrin_slavenode)
 env.Install('release/bin/chunk', kyrin_chunk)
 env.Install('release/bin/keycenter', kyrin_keycenter)
+
+env.Install('src/ci/bin/master', kyrin_master)
+env.Install('src/ci/bin/slavenode', kyrin_slavenode)
+env.Install('src/ci/bin/chunk', kyrin_chunk)
+env.Install('src/ci/bin/keycenter', kyrin_keycenter)

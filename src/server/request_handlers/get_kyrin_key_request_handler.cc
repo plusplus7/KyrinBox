@@ -54,7 +54,7 @@ void GetKyrinKeyRequestHandler::handle_request(KyrinKeyCenterServer *server, evh
 
     kyrin_done();
 
-    server->server_send_reply_ok(req, reply);
+    server->server_send_reply_bad(req, reply);
 }
 
 } /* server */

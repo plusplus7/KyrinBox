@@ -1,3 +1,4 @@
 export PYTHONPATH=$PYTHONPATH:../../sdk/python_sdk
 
-python function_test.py
+echo "* Run function test..."
+python function_test.py -v

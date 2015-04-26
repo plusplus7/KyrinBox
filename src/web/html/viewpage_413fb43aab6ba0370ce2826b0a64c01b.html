@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>KyrinEye</title>
+        <link rel="stylesheet" href="./static/bootstrap-3.3.2-dist/css/bootstrap.min.css"/>
+    </head>
+    
+    <body>
+        <div class="container-fluid" onLoad="reflush()">
+            <div class="col-md-12">
+                <nav class="navbar navbar-default">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">Kyrinbox</a>
+                    </div>
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active">
+                                <a href="./">Home</a>
+                            </li>
+                            <li>
+                                <a href="./about.html">About</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Master 1</div>
+                    <div class="panel-body">
+                        <div id="MasterStatus_1">
+                            MasterOne
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Master 2</div>
+                    <div class="panel-body">
+                        <div id="MasterStatus_2">
+                            MasterTwo
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Master 3</div>
+                    <div class="panel-body">
+                        <div id="MasterStatus_3">
+                            MasterThree
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Chunk 1</div>
+                    <div class="panel-body">
+                        <div id="ChunkStatus_1">
+                            ChunkOne
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Chunk 2</div>
+                    <div class="panel-body">
+                        <div id="ChunkStatus_2">
+                            ChunkTwo
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-info">
+                    <div class="panel-heading">Chunk 3</div>
+                    <div class="panel-body">
+                        <div id="ChunkStatus_3">
+                            ChunkThree
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function httpGet(url)
+            {
+                var xmlHttp = null;
+                xmlHttp = new XMLHttpRequest();
+                xmlHttp.open( "GET", url, false );
+                xmlHttp.send( null );
+                return xmlHttp.responseText;
+            }
+            function reflush()
+            {
+                var SpanDown      = "<span class=\"label label-danger\">宕机</span>";
+                var SpanRunning   = "<span class=\"label label-primary\">运行中</span>";
+                var SpanFollower  = "<span class=\"label label-warning\">Follower</span>"
+                var SpanConsensus = "<span class=\"label label-info\">Consensus</span>"
+                var SpanLeader    = "<span class=\"label label-Success\">Leader</span>"
+
+                for (i=1; i<=3; i++) {
+                    var res = httpGet("./status/Master"+i.toString());
+                    var doc = "";
+                    if (res == "down") {
+                        doc = doc + "当前状态：" + SpanDown;
+                    } else {
+                        doc = doc + "当前状态：" + SpanRunning;
+                        doc = doc + "<br/><br/>" + "角色：";
+                        if (res == "follower")
+                            doc = doc + SpanFollower;
+                        else if (res == "consensus")
+                            doc = doc + SpanConsensus;
+                        else if (res == "leader")
+                            doc = doc + SpanLeader;
+                    }
+                    document.getElementById("MasterStatus_"+i.toString()).innerHTML = doc;
+                }
+                for (i=1; i<=3; i++) {
+                    var res = httpGet("./status/Chunk"+i.toString());
+                    var doc = "";
+                    if (res == "down") {
+                        doc = doc + "当前状态：" + SpanDown;
+                    } else {
+                        doc = doc + "当前状态：" + SpanRunning;
+                        var jres = JSON.parse(res);
+                        function getDoc(name, key) { 
+                            var jdoc = name + " : ";
+                            for (var q in jres[key]) {
+                                jdoc = jdoc + jres[key][q] + " ";
+                            }
+                            return jdoc;
+                        }
+                        doc = doc + "<br/>" + getDoc("种子节点", "Seeds");
+                        doc = doc + "<br/>" + getDoc("通常节点", "Commons");
+                        doc = doc + "<br/>" + getDoc("死亡种子节点", "DeadSeeds");
+                        doc = doc + "<br/>" + getDoc("死亡通常节点", "DeadCommons");
+                    }
+                    document.getElementById("ChunkStatus_"+i.toString()).innerHTML = doc;
+                }
+                setTimeout("reflush()", 200);
+            }
+            reflush();
+        </script>
+        <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+        <script src="http://cdn.bootcss.com/jquery/1.11.2/jquery.min.js">
+        </script>
+        <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+        <script src="http://cdn.bootcss.com/bootstrap/3.3.4/js/bootstrap.min.js">
+        </script>
+    </body>
+</html>

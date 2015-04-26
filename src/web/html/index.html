@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <title>KyrinEye</title>
+        <link rel="stylesheet" href="./static/bootstrap-3.3.2-dist/css/bootstrap.min.css"/>
+    </head>
+    <script>
+        function processContentSwitch(contentId) {
+            contentSwitch(contentId);
+        }
+    </script>
+    <body>
+        <div class="container-fluid">
+            <div class="col-md-12">
+            <nav class="navbar navbar-default">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">Kyrinbox</a>
+                    </div>
+                    <div class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li class="active">
+                                <a href="./">Home</a>
+                            </li>
+                            <li>
+                                <a href="./about.html">About</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div id="content-main"></div>
+                <div id="content-login" style="display: none">
+                    <method>hex</method>
+                    <data>3c64697620636c6173733d226a756d626f74726f6e223e0a3c68313e0a4b7972696e457965e99b86e7bea4e4bfa1e681afe5b195e7a4bae9a1b5e99da20a3c2f68313e0a3c703e0ae7b3bbe7bb9fe99c80e8a681e7a1aee8aea4e682a8e79a84e8baabe4bbbde4bba5e58f8ae8aebfe997aee69d83e999900a3c2f703e0a3c64697620636c6173733d22666f726d2d67726f7570223e0a3c7020636c6173733d22666f726d2d636f6e74726f6c2d737461746963223e0ae8baabe4bbbde9aa8ce8af81e7a0810a3c2f703e0a3c2f6469763e0a3c64697620636c6173733d22666f726d2d67726f7570223e0a3c6c6162656c20666f723d22696e70757450617373776f7264322220636c6173733d2273722d6f6e6c79223e0a5365637265740a3c2f6c6162656c3e0a3c696e70757420747970653d2270617373776f72642220636c6173733d22666f726d2d636f6e74726f6c222069643d225365637265742220706c616365686f6c6465723d22536563726574222f3e0a3c2f6469763e0a3c627574746f6e20747970653d227375626d69742220636c6173733d2262746e2062746e2d64656661756c74222069643d22436f6e74656e74537769746368657222206f6e436c69636b3d2270726f63657373436f6e74656e745377697463682827636f6e74656e742d73797374656d2729223e0a20202020436f6d6d69740a3c2f627574746f6e3e0a3c2f6469763e0a<data>
+                </div> <!-- content-login -->
+                <div id="content-system" style="display: none">
+            		<method>aes</method>
+                    <data>U2FsdGVkX1/cWOe4urjLEqC0wNdm5Cs4Rz/hD7Lvw0X74MVXapyvJodtyz5oP1ncs/nt1pSCUd7zxA+l9wT76nLDqmsJ4fUCBZWu0UHoGwBSNo+uPL4sDWmyCYRMsNv5nMPNaz+6uacurq1aUoXvrg==</data>
+                </div> <!-- content-system -->
+            </div>
+        </div>
+    <script src="./static/bootstrap-3.3.2-dist/js/jquery.min.js"></script>
+    <script src="./static/crypto-js/rollups/aes.js"></script>
+    <script src="./static/crypto-js/components/core-min.js"></script>
+    <script src="./static/crypto-js/components/enc-utf16-min.js"></script>
+    <script src="./static/crypto-js/components/enc-base64-min.js"></script>
+    <script src="./static/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
+    <script>
+        function getContentDocument(contentId) {
+            var content = document.getElementById(contentId);
+            var method = content.getElementsByTagName("method")[0].innerHTML;
+            var data = content.getElementsByTagName("data")[0].innerHTML;
+            console.debug(contentId);
+            console.debug(secret);
+            console.debug(data);
+            if (method == "hex") {
+                var plaintext = CryptoJS.enc.Hex.parse(data).toString(CryptoJS.enc.Utf8);
+                return plaintext;
+            } else if (method == "aes") {
+                var secret = document.getElementById("Secret").value;
+                var plaintext = CryptoJS.AES.decrypt(data, secret).toString(CryptoJS.enc.Utf8);
+                return plaintext
+            }
+        }
+        function contentSwitch(contentId) {
+            console.debug("contentId" + contentId);
+            var content = getContentDocument(contentId);
+            document.getElementById("content-main").innerHTML = content;
+        }
+        contentSwitch("content-login");
+    </script>
+    </body>
+</html>

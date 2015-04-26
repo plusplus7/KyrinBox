@@ -52,6 +52,9 @@ test_spinlock
 *.pb.*
 *_pb2.py*
 
+# Me folders
+src/web/html/static/
+src/web/html/status/
 # Vim swap
 *.swp
 

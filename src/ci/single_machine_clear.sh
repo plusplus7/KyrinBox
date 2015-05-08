@@ -26,5 +26,5 @@ for i in ${pids[*]}; do
 done
 
 echo "* Setup database..."
-rm -rf /tmp/kyrinuserdata_db*
-rm -rf /tmp/kyrinoplog_db*
+rm -rf /kyrinbox/kyrinuserdata_db*
+rm -rf /kyrinbox/kyrinoplog_db*

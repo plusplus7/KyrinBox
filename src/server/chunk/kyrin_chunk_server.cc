@@ -2,12 +2,14 @@
 #include "kyrin_chunk_server.h"
 #include "common/configs/kyrin_chunk_config.h"
 #include "common/kyrin_cluster.h"
+#include "common/kyrin_log.h"
 
 namespace kyrin {
 namespace server {
 
 using namespace kyrin::common;
 
+static KyrinLog *logger = KyrinLog::get_instance();
 void KyrinChunkServer::process_upload_chunk_file_request(evhttp_request *req)
 {
     if (!m_examine_identity_request_filter->filter_request(this, req))
@@ -94,6 +96,7 @@ bool KyrinChunkServer::server_initialize(KyrinChunkGossiper *gossiper)
     }
 
     m_keyinfo_db = new io::KyrinDatabaseWrapper(KyrinCluster::get_instance()->get_chunk_config()->keyinfo_database_path().c_str());
+    logger->log("chunk_server_initialize", KyrinCluster::get_instance()->get_chunk_config()->keyinfo_database_path().c_str());
     m_upload_chunk_file_request_handler = new UploadChunkFileRequestHandler(m_gossiper);
     m_download_chunk_file_request_handler = new DownloadChunkFileRequestHandler();
     m_set_file_key_info_request_handler = new SetFileKeyInfoRequestHandler(m_keyinfo_db);

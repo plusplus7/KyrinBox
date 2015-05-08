@@ -21,10 +21,20 @@ void KyrinChunkGossiperStatus::initialize(vector<uint32_t> &seeds, vector<uint32
     }
     srand(time(NULL));
     for (uint32_t i=0; i<seeds.size(); i++) {
-        m_configs[seeds[i]] = ChunkStatusConfig(cluster->get_chunk_ip(seeds[i]), cluster->get_chunk_gossip_port(seeds[i]));
+        m_configs[seeds[i]] = ChunkStatusConfig(cluster->get_chunk_ip(seeds[i]),
+                                                cluster->get_chunk_gossip_port(seeds[i]),
+                                                cluster->get_chunk_download_chunk_file_port(seeds[i]),
+                                                cluster->get_chunk_upload_chunk_file_port(seeds[i]),
+                                                cluster->get_chunk_set_file_key_info_port(seeds[i]),
+                                                cluster->get_chunk_get_file_key_info_port(seeds[i]));
     }
     for (uint32_t i=0; i<commons.size(); i++) {
-        m_configs[commons[i]] = ChunkStatusConfig(cluster->get_chunk_ip(commons[i]), cluster->get_chunk_gossip_port(commons[i]));
+        m_configs[commons[i]] = ChunkStatusConfig(cluster->get_chunk_ip(commons[i]),
+                                                  cluster->get_chunk_gossip_port(commons[i]),
+                                                  cluster->get_chunk_download_chunk_file_port(commons[i]),
+                                                  cluster->get_chunk_upload_chunk_file_port(commons[i]),
+                                                  cluster->get_chunk_set_file_key_info_port(commons[i]),
+                                                  cluster->get_chunk_get_file_key_info_port(commons[i]));
     }
     m_status_lock.unlock();
 }
@@ -36,7 +46,7 @@ bool KyrinChunkGossiperStatus::check_commons(kyrinbox::server::ChunkClusterGossi
     uint32_t kbid = data.kbid();
     if (m_configs.count(kbid) == 0) {
         m_commons.push_back(kbid);
-        m_configs[kbid] = ChunkStatusConfig(data.host(), data.gossip_port());
+        m_configs[kbid] = ChunkStatusConfig(data.host(), data.gossip_port(), data.download_chunk_port(), data.upload_chunk_port(), data.set_file_keyinfo_port(), data.get_file_keyinfo_port());
         m_timestamp = time(NULL);
         ret = true;
     }
@@ -90,6 +100,10 @@ bool KyrinChunkGossiperStatus::to_protobuf(kyrinbox::server::ChunkClusterStatus 
         c_data->set_kbid(iter->first);
         c_data->set_host((iter->second).host);
         c_data->set_gossip_port((iter->second).gossip_port);
+        c_data->set_download_chunk_port((iter->second).download_chunk_port);
+        c_data->set_upload_chunk_port((iter->second).upload_chunk_port);
+        c_data->set_set_file_keyinfo_port((iter->second).set_file_keyinfo_port);
+        c_data->set_get_file_keyinfo_port((iter->second).get_file_keyinfo_port);
     }
     status.set_timestamp(m_timestamp);
 
@@ -135,7 +149,13 @@ bool KyrinChunkGossiperStatus::from_string(string &status_str)
     }
 
     for (uint32_t i=0; i<status.datas_size(); i++) {
-        m_configs[status.datas(i).kbid()] = ChunkStatusConfig(status.datas(i).host(), status.datas(i).gossip_port());
+        m_configs[status.datas(i).kbid()] = ChunkStatusConfig(status.datas(i).host(),
+                                                              status.datas(i).gossip_port(),
+                                                              status.datas(i).download_chunk_port(),
+                                                              status.datas(i).upload_chunk_port(),
+                                                              status.datas(i).set_file_keyinfo_port(),
+                                                              status.datas(i).get_file_keyinfo_port());
+
     }
     m_timestamp = status.timestamp();
     m_status_lock.unlock();

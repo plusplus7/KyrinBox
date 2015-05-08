@@ -42,6 +42,23 @@ class KyrinboxSdk:
         postdata = base64.b64encode(postdata)
         return postdata
 
+    def invoke_method(self, host, port, api, postdata = None):
+        timestamp = str(int(time.time()))
+        digest = hashlib.sha1(timestamp+postdata).hexdigest()
+        headers = {}
+        headers["KYRIN-SIGNATURE"] = base64.b64encode(self.key.private_encrypt(digest, RSA.pkcs1_padding))
+        headers["KYRIN-TIMESTAMP"] = timestamp
+        headers["KYRIN-ISSUER"]    = self.username
+        url = "http://%s:%d/%s" % (host, port, api)
+        request = urllib2.Request(url, postdata)
+        for k, v in headers.items():
+            request.add_header(k, v)
+        try:
+            response = urllib2.urlopen(request)
+        except urllib2.HTTPError, e:
+            response = e
+        return (response.getcode(), response.read())
+
     def do_request_post(self, server, index, api, postdata = None):
         timestamp = str(int(time.time()))
         digest = hashlib.sha1(timestamp+postdata).hexdigest()
@@ -133,6 +150,22 @@ class KyrinboxSdk:
         else:
             return (httpcode, response)
 
+    def download_file(self, account, file_name):
+        postdata = account+file_name
+        (httpcode, response) = self.do_request_post("Slavenode", 0, "DownloadFile", postdata)
+        if httpcode == 200:
+            res = {}
+            data = response.split("|")
+            res["chunks"] = []
+            for i in range(3):
+                td = data[i].strip().split(" ")
+                res["chunks"].append({"host" : td[0], "kbid" : td[1]})
+            res["size"] = int(data[3])
+            res["sha1"] = data[4]
+            return (httpcode, res)
+        else:
+            return (httpcode, response)
+
     def get_oplog(self, index, op_id = None):
         if op_id == None:
             op_id = LexicographicallyGetZero()
@@ -149,6 +182,17 @@ class KyrinboxSdk:
         postdata = self.protobuf_to_postdata(set_file_key)
         return self.do_request_post("Chunk", index, "SetFileKeyinfo", postdata)
 
+    def set_file_keyinfo_invoke(self, host, port, account, file_name, file_hosts, file_size, merkle_sha1, key_aes):
+        set_file_key = upload_chunk_file_pb2.SetFileKeyInfo()
+        set_file_key.account        = account
+        set_file_key.file_name      = file_name
+        set_file_key.file_hosts.extend(file_hosts)
+        set_file_key.file_size      = file_size
+        set_file_key.merkle_sha1    = merkle_sha1
+        set_file_key.key_aes        = key_aes
+        postdata = self.protobuf_to_postdata(set_file_key)
+        return self.invoke_method(host, port, "SetFileKeyinfo", postdata)
+
     def set_file_keyinfo(self, index, account, file_name, file_hosts, file_size, merkle_sha1, key_aes):
         set_file_key = upload_chunk_file_pb2.SetFileKeyInfo()
         set_file_key.account        = account
@@ -159,6 +203,20 @@ class KyrinboxSdk:
         set_file_key.key_aes        = key_aes
 
         return self.set_file_keyinfo_pb(index, set_file_key)
+
+    def get_file_keyinfo_invoke(self, host, port, account, file_name):
+        get_file_key = upload_chunk_file_pb2.GetFileKeyInfo()
+        get_file_key.account    = account
+        get_file_key.file_name  = file_name
+
+        postdata = self.protobuf_to_postdata(get_file_key)
+        (httpcode, response) = self.invoke_method(host, port, "GetFileKeyinfo", postdata)
+        if httpcode == 200:
+            get_file_keyinfo_response = upload_chunk_file_pb2.SetFileKeyInfo()
+            get_file_keyinfo_response.ParseFromString(base64.b64decode(response))
+            return (httpcode, get_file_keyinfo_response)
+        else:
+            return (httpcode, response)
 
     def get_file_keyinfo_pb(self, index, get_file_key):
         postdata = self.protobuf_to_postdata(get_file_key)
@@ -177,6 +235,15 @@ class KyrinboxSdk:
         else:
             return (httpcode, response)
 
+    def upload_chunk_file_invoke(self, host, port, account, file_name, offset, chunkdata):
+        upload_chunk_file_request = upload_chunk_file_pb2.UploadChunkFileRequest()
+        upload_chunk_file_request.account   = account
+        upload_chunk_file_request.file_name = file_name
+        upload_chunk_file_request.offset    = offset
+        upload_chunk_file_request.chunk     = base64.b64encode(chunkdata)
+        postdata = self.protobuf_to_postdata(upload_chunk_file_request)
+        return self.invoke_method(host, port, "UploadChunkFile", postdata)
+
     def upload_chunk_file_pb(self, index, proto):
         postdata = self.protobuf_to_postdata(proto)
         return self.do_request_post("Chunk", index, "UploadChunkFile", postdata)
@@ -189,6 +256,14 @@ class KyrinboxSdk:
         upload_chunk_file_request.chunk     = base64.b64encode(chunkdata)
 
         return self.upload_chunk_file_pb(index, upload_chunk_file_request)
+
+    def download_chunk_file_invoke(self, host, port, account, file_name, offset):
+        download_chunk_file_request = upload_chunk_file_pb2.DownloadChunkFileRequest()
+        download_chunk_file_request.account     = account
+        download_chunk_file_request.file_name   = file_name
+        download_chunk_file_request.offset      = offset
+        postdata = self.protobuf_to_postdata(download_chunk_file_request)
+        return self.invoke_method(host, port, "DownloadChunkFile", postdata)
 
     def download_chunk_file_pb(self, index, proto):
         postdata = self.protobuf_to_postdata(proto)
@@ -214,6 +289,8 @@ if __name__ == "__main__":
     filename = "sssogs"+str(int(time.time()))
     (httpcode, res) = ts.upload_file("plusplus7", filename, "sha1", 1024)
     print (httpcode, res)
+    time.sleep(1.5)
+    print ts.download_file("plusplus7", filename)
     for i in res.file_hosts:
         index = ts.get_index_by_kbid(int(i.split(" ")[1]))
         print "set_file_keyinfo: ", ts.set_file_keyinfo(index, "plusplus7", filename, res.file_hosts, res.file_size, res.merkle_sha1, "key_aes")

@@ -12,7 +12,22 @@ namespace server {
 struct ChunkStatusConfig {
     std::string host;
     uint32_t gossip_port;
-    ChunkStatusConfig(std::string th = "", uint32_t gp = 0):host(th), gossip_port(gp) {}
+    uint32_t download_chunk_port;
+    uint32_t upload_chunk_port;
+    uint32_t set_file_keyinfo_port;
+    uint32_t get_file_keyinfo_port;
+    ChunkStatusConfig(std::string th = "",
+                      uint32_t gp = 0,
+                      uint32_t dcp = 0,
+                      uint32_t ucp = 0,
+                      uint32_t sfkp = 0,
+                      uint32_t gfkp = 0) : host(th),
+                                           gossip_port(gp),
+                                           download_chunk_port(dcp),
+                                           upload_chunk_port(ucp),
+                                           set_file_keyinfo_port(sfkp),
+                                           get_file_keyinfo_port(gfkp)
+                                           {}
     ~ChunkStatusConfig(){}
 };
 

@@ -9,6 +9,6 @@
     "MasterConfirmOplogBacklog"     : "4096",
     "MasterGetOplogBacklog"         : "4096",
     "MasterServerThreads"           : "5",
-    "MasterUserdataDatabasePath"    : "/tmp/kyrinuserdata_db_0",
-    "MasterOplogDatabasePath"       : "/tmp/kyrinoplog_db_0",
+    "MasterUserdataDatabasePath"    : "/kyrinbox/kyrinuserdata_db_0",
+    "MasterOplogDatabasePath"       : "/kyrinbox/kyrinoplog_db_0",
 }

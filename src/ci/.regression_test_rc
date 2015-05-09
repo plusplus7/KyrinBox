@@ -3,7 +3,7 @@ slavenode_list=('kyrinbox_slavenode_one' 'kyrinbox_slavenode_two')
 chunk_list=('kyrinbox_chunk_one' 'kyrinbox_chunk_two' 'kyrinbox_chunk_three')
 keycenter_list=('kyrinbox_keycenter')
 
-workspace_dir='/tmp/kyrinbox_regression_test'
+workspace_dir='/kyrinbox/kyrinbox_regression_test'
 
 kyrin_master_binary='./bin/master/kyrin_master'
 kyrin_slavenode_binary='./bin/slavenode/kyrin_slavenode'

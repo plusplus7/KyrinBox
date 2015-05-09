@@ -14,6 +14,10 @@ static KyrinLog *logger = KyrinLog::get_instance();
 DownloadFileRequestHandler::DownloadFileRequestHandler(char *host, int port)
 {
     m_redis_context = redisConnect(host, port);
+    while (m_redis_context == NULL) {
+        m_redis_context = redisConnect(host, port);
+    }
+    redisCommand(m_redis_context, "auth asdf"); /* FIXME: hardcode secret...*/
 }
 
 void DownloadFileRequestHandler::handle_request(KyrinBaseServer *server, evhttp_request *req)

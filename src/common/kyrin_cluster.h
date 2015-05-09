@@ -46,6 +46,30 @@ public:
         return m_chunk_configs[kbid-3001].gossip_server_port();
     }
 
+    uint32_t get_chunk_set_file_key_info_port(uint32_t kbid = 0) {
+        if (!kbid)
+            kbid = m_kbid;
+        return m_chunk_configs[kbid-3001].set_file_key_info_port();
+    }
+
+    uint32_t get_chunk_get_file_key_info_port(uint32_t kbid = 0) {
+        if (!kbid)
+            kbid = m_kbid;
+        return m_chunk_configs[kbid-3001].get_file_key_info_port();
+    }
+
+    uint32_t get_chunk_upload_chunk_file_port(uint32_t kbid = 0) {
+        if (!kbid)
+            kbid = m_kbid;
+        return m_chunk_configs[kbid-3001].upload_chunk_file_port();
+    }
+
+    uint32_t get_chunk_download_chunk_file_port(uint32_t kbid = 0) {
+        if (!kbid)
+            kbid = m_kbid;
+        return m_chunk_configs[kbid-3001].download_chunk_file_port();
+    }
+
     configs::KyrinChunkConfig *get_chunk_config(uint32_t kbid = 0) {
         if (!kbid)
             kbid = m_kbid;

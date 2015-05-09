@@ -14,7 +14,11 @@ message ChunkClusterStatus {
 }
 
 message ChunkClusterGossipData {
-    required uint32 kbid = 1;
-    required string host = 2;
-    required uint32 gossip_port = 3;
+    required uint32 kbid                    = 1;
+    required string host                    = 2;
+    required uint32 gossip_port             = 3;
+    required uint32 download_chunk_port     = 4;
+    required uint32 upload_chunk_port       = 5;
+    required uint32 set_file_keyinfo_port   = 6;
+    required uint32 get_file_keyinfo_port   = 7;
 }

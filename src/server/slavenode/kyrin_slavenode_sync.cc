@@ -26,6 +26,7 @@ static void *kyrin_slavenode_sync_func(void *arg)
     configs::KyrinSlavenodeConfig *config = new configs::KyrinSlavenodeConfig();
     config->read_config_file((char *)"kyrinbox_config.json");
     redisContext *redis_context = redisConnect(config->redis_host().c_str(), config->redis_port());
+    redisCommand(redis_context, "auth asdf"); /* FIXME: hardcode secret...*/
     delete config;
 
     if (redis_context != NULL && redis_context->err) {

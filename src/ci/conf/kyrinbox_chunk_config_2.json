@@ -3,6 +3,14 @@
     "ChunkMachineAddress"           : "127.0.0.1",
     "ChunkGossipServerPort"         : "27170",
     "ChunkGossipServerBacklog"      : "4096",
-    "ChunkKeyinfoDatabasePath"      : "/tmp/kyrinkeyinfo_db_2",
+    "ChunkKeyinfoDatabasePath"      : "/kyrinbox/kyrinkeyinfo_db_2",
     "ChunkRole"                     : "Seed"
+    "ChunkUploadChunkFilePort"      : "27077",
+    "ChunkUploadChunkFileBacklog"   : "4096",
+    "ChunkDownloadChunkFilePort"    : "27477",
+    "ChunkDownloadChunkFileBacklog" : "4096",
+    "ChunkSetFileKeyInfoPort"       : "27270",
+    "ChunkSetFileKeyInfoBacklog"    : "4096",
+    "ChunkGetFileKeyInfoPort"       : "27370",
+    "ChunkGetFileKeyInfoBacklog"    : "4096",
 }

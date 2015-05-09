@@ -89,6 +89,11 @@ void KyrinChunkGossiper::gossip_sync()
             send.set_kbid(cluster->get_kbid());
             send.set_host(cluster->get_chunk_ip());
             send.set_gossip_port(cluster->get_chunk_gossip_port());
+            
+            send.set_download_chunk_port(cluster->get_chunk_download_chunk_file_port());
+            send.set_upload_chunk_port(cluster->get_chunk_upload_chunk_file_port());
+            send.set_set_file_keyinfo_port(cluster->get_chunk_set_file_key_info_port());
+            send.set_get_file_keyinfo_port(cluster->get_chunk_get_file_key_info_port());
             send.SerializeToString(&to_post);
             ChunkStatusConfig config;
             if (m_status.get_config(random_chunk, config) == false) {
